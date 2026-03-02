@@ -2287,8 +2287,68 @@
         font-size: 0.72rem;
       }
 
+      /* --- Transport Modal Mobile --- */
+      .transport-modal-overlay {
+        padding: 1rem;
+        padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+        -webkit-align-items: flex-end;
+        align-items: flex-end;
+      }
+
       .transport-modal {
-        padding: 2rem 1.5rem;
+        padding: 1.8rem 1.3rem;
+        max-height: calc(100vh - 6rem - env(safe-area-inset-bottom, 0px));
+        max-height: calc(100dvh - 6rem - env(safe-area-inset-bottom, 0px));
+        border-radius: 12px 12px 4px 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .transport-modal-close {
+        top: 0.6rem;
+        right: 0.8rem;
+        font-size: 1.6rem;
+        padding: 0.4rem 0.6rem;
+        z-index: 2;
+      }
+
+      .transport-modal-title {
+        font-size: 0.88rem;
+        letter-spacing: 3px;
+      }
+
+      .transport-modal-subtitle {
+        font-size: 0.72rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .transport-section-title {
+        font-size: 0.82rem;
+      }
+
+      .transport-stop-name {
+        font-size: 0.78rem;
+      }
+
+      .transport-stop-note {
+        font-size: 0.72rem;
+      }
+
+      .transport-route {
+        font-size: 0.72rem;
+        line-height: 1.85;
+      }
+
+      .transport-car-label {
+        font-size: 0.75rem;
+      }
+
+      .transport-car-item {
+        font-size: 0.72rem;
+        line-height: 1.85;
+      }
+
+      .transport-divider {
+        margin: 1rem 0;
       }
 
       /* --- Gallery Pages Mobile --- */
@@ -2474,6 +2534,19 @@
 
       .gallery-item {
         border-radius: 4px;
+      }
+
+      .transport-modal {
+        padding: 1.5rem 1rem;
+      }
+
+      .transport-modal-title {
+        font-size: 0.82rem;
+        letter-spacing: 2px;
+      }
+
+      .transport-route li {
+        margin-bottom: 0.25rem;
       }
     }
 
