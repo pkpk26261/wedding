@@ -2991,6 +2991,13 @@
       padding: 4rem 2rem;
       position: relative;
       gap: 1.8rem;
+      /* 預設隱藏，點擊提示後才顯示 */
+      display: none;
+    }
+
+    .hero-music-section.revealed {
+      display: -webkit-flex;
+      display: flex;
     }
 
     .hero-music-section .music-label {
@@ -3196,7 +3203,7 @@
         </div>
         <!-- Scroll down gesture hint -->
         <div class="hero-scroll-hint" id="heroScrollHint">
-          <span class="scroll-hint-text">往下滑動聆聽我們的歌</span>
+          <span class="scroll-hint-text">點擊聆聽我們的歌</span>
           <div class="swipe-down-anim">
             <div class="swipe-dot"></div>
             <div class="swipe-line"></div>
@@ -4689,15 +4696,16 @@
 
     // ===== Hero Scroll Hint & Music Auto-Play =====
     var _musicAutoPlayed = false;
-    var _playerPrimed = false;
-    var _scrolledToMusic = false;
     (function() {
       var hint = document.getElementById('heroScrollHint');
       var homeScroll = document.getElementById('homeScroll');
       var playBtn = document.getElementById('ytPlayBtn');
+      var musicSection = document.getElementById('heroMusicSection');
       if (!hint || !homeScroll) return;
 
-      // --- 播放音樂 ---
+      // 鎖定滾動：預設不允許滾輪/觸摸滾動
+      homeScroll.style.overflow = 'hidden';
+
       function playMusic() {
         if (_musicAutoPlayed || !ytPlayerReady || !ytPlayer) return;
         _musicAutoPlayed = true;
@@ -4709,45 +4717,23 @@
         if (playBtn) playBtn.classList.add('hidden');
       }
 
-      // --- 預熱播放器：在用戶點擊/觸摸時靜音快速 play→pause 解鎖媒體播放權限 ---
-      function primePlayer() {
-        if (_playerPrimed || !ytPlayerReady || !ytPlayer) return;
-        _playerPrimed = true;
-        try {
-          ytPlayer.mute();
-          ytPlayer.playVideo();
-          setTimeout(function() {
-            if (!_musicAutoPlayed) {
-              try { ytPlayer.pauseVideo(); } catch(e) {}
-            }
-            try { ytPlayer.unMute(); } catch(e) {}
-          }, 300);
-        } catch(e) {}
-      }
-
-      // --- 用戶首次點擊/觸摸頁面：預熱播放器 + 如果已滾動到音樂區就直接播放 ---
-      function onFirstInteraction() {
-        if (_scrolledToMusic && !_musicAutoPlayed && ytPlayerReady && ytPlayer) {
-          // 已經滾到音樂區了，直接在用戶手勢中播放（保證成功）
-          playMusic();
-        } else {
-          // 還沒滾到，先預熱播放器
-          primePlayer();
-        }
-        document.removeEventListener('click', onFirstInteraction, true);
-        document.removeEventListener('touchstart', onFirstInteraction, true);
-      }
-      document.addEventListener('click', onFirstInteraction, true);
-      document.addEventListener('touchstart', onFirstInteraction, true);
-
-      // --- 點擊「往下滑動聆聽我們的歌」提示 ---
+      // --- 點擊提示：顯示音樂區 + 解鎖滾動 + 自動播放 ---
       hint.addEventListener('click', function() {
-        var musicSection = document.getElementById('heroMusicSection');
+        // 顯示音樂區塊
         if (musicSection) {
-          musicSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          musicSection.classList.add('revealed');
         }
-        // 點擊 = 用戶手勢，可直接播放
-        _scrolledToMusic = true;
+        // 解鎖滾動
+        homeScroll.style.overflow = '';
+        // 隱藏提示
+        hint.classList.add('hidden');
+        // 滾動到音樂區
+        setTimeout(function() {
+          if (musicSection) {
+            musicSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 50);
+        // 播放音樂（點擊 = 用戶手勢，保證成功）
         if (ytPlayerReady && ytPlayer) {
           playMusic();
         } else {
@@ -4755,7 +4741,7 @@
         }
       });
 
-      // --- 播放按鈕點擊（最終保底）---
+      // --- 播放按鈕點擊（保底）---
       if (playBtn) {
         playBtn.addEventListener('click', function() {
           if (ytPlayer && ytPlayerReady) {
@@ -4766,30 +4752,6 @@
           }
         });
       }
-
-      // --- 滾動偵測 ---
-      homeScroll.addEventListener('scroll', function() {
-        if (homeScroll.scrollTop > 60) {
-          hint.classList.add('hidden');
-        } else {
-          hint.classList.remove('hidden');
-        }
-
-        // 標記已滾動到音樂區
-        if (!_musicAutoPlayed && homeScroll.scrollTop > 100) {
-          _scrolledToMusic = true;
-          // 如果播放器已預熱過（用戶之前有點擊/觸摸），嘗試播放
-          if (_playerPrimed && ytPlayerReady && ytPlayer) {
-            try {
-              ytPlayer.unMute();
-              ytPlayer.setVolume(100);
-              ytPlayer.playVideo();
-              _musicAutoPlayed = true;
-              if (playBtn) playBtn.classList.add('hidden');
-            } catch(e) {}
-          }
-        }
-      }, { passive: true });
     })();
 
     // ===== YouTube IFrame API Player =====
