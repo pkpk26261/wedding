@@ -10,6 +10,11 @@
   <title>玉蕙 & 永成 — 我們的婚禮</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://drive.google.com" crossorigin>
+  <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://drive.google.com">
+  <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=LXGW+WenKai+TC:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -486,9 +491,12 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center center;
+      background-color: var(--charcoal);
+      image-rendering: auto;
       opacity: 0;
-      transition: opacity 1.8s ease-in-out;
+      transition: opacity 1.2s ease-in-out;
       will-change: opacity, transform;
+      contain: layout style paint;
     }
 
     .hero-bg-slide.active {
@@ -3542,14 +3550,14 @@
       }
       spawnParticles();
 
-      // Phase transition: after 2.5s, fade out announcement and show names
+      // Phase transition: after 1.8s, fade out announcement and show names
       setTimeout(() => {
         announce.classList.add('phase-out');
         setTimeout(() => {
           announce.style.display = 'none';
           reveal.classList.add('show');
-        }, 700);
-      }, 2500);
+        }, 600);
+      }, 1800);
 
       function animateProgress() {
         if (loaded) return;
@@ -3561,14 +3569,14 @@
       }
 
       // Start progress bar after phase 2 appears
-      setTimeout(() => { animateProgress(); }, 3800);
+      setTimeout(() => { animateProgress(); }, 2800);
 
       window.addEventListener('load', () => {
         loaded = true;
         progress = 100;
         progressBar.style.width = '100%';
         const elapsed = performance.now();
-        const minDisplay = 5200;
+        const minDisplay = 3800;
         const delay = Math.max(600, minDisplay - elapsed);
         setTimeout(() => {
           loader.classList.add('hidden');
@@ -3679,22 +3687,54 @@
         return div;
       }
 
+      // 預先載入下一張圖片的快取
+      let prefetchedSrc = null;
+      let prefetchedImg = null;
+
+      function prefetchNext() {
+        if (allImages.length <= 1) return;
+        prefetchedSrc = getNextImage();
+        prefetchedImg = new Image();
+        prefetchedImg.src = prefetchedSrc;
+      }
+
       // Preload image then show slide — first image appears as soon as it's downloaded
       function showNext() {
         if (allImages.length === 0 || paused) return;
-        const nextSrc = getNextImage();
-        const preload = new Image();
-        preload.onload = () => {
+        // 優先使用已預載的圖片
+        let nextSrc, imgToUse;
+        if (prefetchedSrc && prefetchedImg && prefetchedImg.complete && prefetchedImg.naturalWidth > 0) {
+          nextSrc = prefetchedSrc;
+          imgToUse = prefetchedImg;
+          prefetchedSrc = null;
+          prefetchedImg = null;
+        } else {
+          nextSrc = getNextImage();
+          imgToUse = null;
+        }
+
+        function applySlide() {
           if (prevSlide) prevSlide.remove();
           if (currentSlide) { currentSlide.classList.remove('active'); prevSlide = currentSlide; }
           currentSlide = createSlide(nextSrc);
-          requestAnimationFrame(() => { currentSlide.classList.add('active'); });
-        };
-        preload.onerror = () => {
-          // Skip failed image, try next
-          if (allImages.length > 1) showNext();
-        };
-        preload.src = nextSrc;
+          requestAnimationFrame(() => {
+            currentSlide.classList.add('active');
+            // 顯示後立即預載下一張
+            prefetchNext();
+          });
+        }
+
+        if (imgToUse) {
+          applySlide();
+        } else {
+          const preload = new Image();
+          preload.onload = applySlide;
+          preload.onerror = () => {
+            // Skip failed image, try next
+            if (allImages.length > 1) showNext();
+          };
+          preload.src = nextSrc;
+        }
       }
 
       function startTimer() {
@@ -3725,7 +3765,7 @@
           index = 0;
 
           // 先分類，分類到第一張符合方向的圖就立刻播放
-          // 若 5 秒後仍未開始（沒有符合方向的圖），退回播放全部
+          // 若 2.5 秒後仍未開始（沒有符合方向的圖），退回播放全部
           const fallbackTimer = setTimeout(() => {
             if (!started) {
               started = true;
@@ -3734,7 +3774,7 @@
               showNext();
               startTimer();
             }
-          }, 5000);
+          }, 2500);
 
           // Classify in background using tiny thumbnails
           classifyImagesInBackground(allImages);
@@ -3756,6 +3796,70 @@
     let isTransitioning = false;
     const curtain = document.getElementById('curtain');
     const navEl = document.getElementById('nav');
+
+    // ===== Gallery Hero 台詞自動輪換 =====
+    const galleryHeroQuotes = {
+      paris: [
+        '在光影之間，定格屬於我們最美的瞬間',
+        '每一道光，都為你而來',
+        '鏡頭前的幸福，是最真實的模樣',
+        '時光雕刻的不只是影像，更是愛的溫度',
+        '快門聲裡，藏著我們的悄悄話',
+        '美好的瞬間，值得被永遠珍藏',
+        '因為是你，每個畫面都閃閃發光',
+        '光與影的交織，是最溫柔的告白',
+        '一個眼神，勝過千言萬語',
+        '幸福不需要台詞，微笑已是最好的劇本',
+        '這一刻的心動，想和你說一輩子',
+        '鏡頭捕捉不了的，是心底滿溢的愛',
+        '你的側臉，是我最珍貴的收藏',
+        '每一幀畫面，都藏著一句我愛你',
+        '最好的濾鏡，是你在我身邊',
+        '靜止的影像裡，流動著不停的心跳',
+        '光線再美，也美不過你的笑容',
+        '相機記錄瞬間，而你住進了永恆',
+        '在你眼裡，我看見了最美的光',
+        '幸福的模樣，就是現在這個樣子',
+      ],
+      studio: [
+        '每一張照片，都是愛的見證',
+        '微風輕拂，幸福如陽光灑落',
+        '最美的風景，是有你在身邊',
+        '在天地之間，許下最浪漫的誓言',
+        '自然的光影，映照最真的笑容',
+        '走過每個角落，都是我們的故事',
+        '你的笑容，是我最愛的風景',
+        '陽光正好，而你比陽光更耀眼',
+        '牽著你的手，哪裡都是最美的遠方',
+        '風景因你而完整，故事因你而動人',
+        '踩過的每一寸土地，都沾染了幸福',
+        '天空為我們調了最美的色溫',
+        '和你並肩的路，步步都是風景',
+        '把最好的季節，留給最愛的你',
+        '世界很大，但我的世界只有你',
+        '山與海都是背景，你才是主角',
+        '微風知道我們的秘密，花朵見證我們的愛',
+        '最浪漫的事，是和你走在同一條路上',
+        '大自然的每一刻，都在為我們喝彩',
+        '攜手走過的路，比任何風景都珍貴',
+      ]
+    };
+    const galleryHeroQuoteIndex = { paris: 0, studio: 0 };
+
+    function rotateGalleryHeroSub(pageId) {
+      const quotes = galleryHeroQuotes[pageId];
+      if (!quotes) return;
+      const subEl = document.querySelector('#page-' + pageId + ' .gallery-hero-sub');
+      if (!subEl) return;
+      galleryHeroQuoteIndex[pageId] = (galleryHeroQuoteIndex[pageId] + 1) % quotes.length;
+      // 淡出 → 換詞 → 淡入
+      subEl.style.transition = 'opacity 0.35s ease';
+      subEl.style.opacity = '0';
+      setTimeout(() => {
+        subEl.textContent = quotes[galleryHeroQuoteIndex[pageId]];
+        subEl.style.opacity = '1';
+      }, 350);
+    }
 
     function updateNav(pageId) {
       document.querySelectorAll('.nav a').forEach(a =>
@@ -3781,6 +3885,11 @@
           if (scrollEl) scrollEl.scrollTop = 0;
           currentPage = pageId;
           updateNav(pageId);
+
+          // 切換到相簿頁時輪換台詞
+          if (pageId === 'paris' || pageId === 'studio') {
+            rotateGalleryHeroSub(pageId);
+          }
 
           if (pageId === 'home') heroSlideshow.resume();
           else heroSlideshow.pause();
@@ -4225,7 +4334,7 @@
             : imgSrcs[Math.floor(Math.random() * imgSrcs.length)];
           heroBgEl.style.backgroundImage = "url('" + fallback + "')";
         }
-      }, 2500);
+      }, 1500);
     }
 
     // 填充相簿格子
@@ -4243,8 +4352,9 @@
       files.forEach(function(file) {
         const thumbUrl = file.driveId ? driveThumb(file.driveId, thumbWidth) : file.src;
         const fullUrl  = file.driveId ? driveThumb(file.driveId, 2000) : file.src;
-        // 首頁輪播用高解析度圖片（螢幕寬度 × 裝置像素比，最高 2560px）
-        var heroWidth = Math.min(Math.round((window.innerWidth || 1920) * (window.devicePixelRatio || 1)), 2560);
+        // 首頁輪播用適中解析度圖片（螢幕寬度 × 裝置像素比，最高 1600px，行動裝置最高 900px）
+        var maxHero = window.innerWidth <= 768 ? 900 : 1600;
+        var heroWidth = Math.min(Math.round((window.innerWidth || 1200) * Math.min(window.devicePixelRatio || 1, 2)), maxHero);
         const heroUrl = file.driveId ? driveThumb(file.driveId, heroWidth) : file.src;
         srcs.push(heroUrl);
         const div = document.createElement('div');
