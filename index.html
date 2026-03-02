@@ -3000,6 +3000,45 @@
       }
     }
 
+    /* ===== Unmute Button Overlay ===== */
+    .yt-unmute-btn {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.2rem;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 30px;
+      font-family: var(--font-serif);
+      font-size: 0.82rem;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.3s, transform 0.3s, border-color 0.3s;
+      animation: unmutePulse 2s ease-in-out infinite;
+    }
+    .yt-unmute-btn:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      transform: scale(1.06);
+      animation: none;
+    }
+    .yt-unmute-btn svg {
+      width: 18px; height: 18px;
+      fill: #fff;
+      flex-shrink: 0;
+    }
+    .yt-unmute-btn.visible { display: inline-flex; }
+    @keyframes unmutePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212,132,159,0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(212,132,159,0); }
+    }
+
   </style>
 </head>
 <body>
@@ -3115,6 +3154,10 @@
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
           </a>
+          <button class="yt-unmute-btn" id="ytUnmuteBtn" aria-label="開啟聲音">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            點擊開啟聲音
+          </button>
         </div>
       </div>
     </div>
@@ -4476,6 +4519,40 @@
       });
 
       var musicAutoPlayed = false;
+      window._ytPendingAutoPlay = false;
+
+      function tryAutoPlay() {
+        if (musicAutoPlayed || !ytPlayerReady || !ytPlayer) return;
+        musicAutoPlayed = true;
+        try {
+          // 先嘗試帶聲音播放
+          ytPlayer.playVideo();
+          // 延遲檢查是否真的在播放，若被瀏覽器擋住就改用靜音播放
+          setTimeout(function() {
+            try {
+              var state = ytPlayer.getPlayerState();
+              // state: -1=未開始, 0=結束, 1=播放中, 2=暫停, 3=緩衝, 5=已提示
+              if (state !== 1 && state !== 3) {
+                // 帶聲音播放被擋，改用靜音播放
+                ytPlayer.mute();
+                ytPlayer.playVideo();
+                // 顯示取消靜音按鈕
+                var unmuteBtn = document.getElementById('ytUnmuteBtn');
+                if (unmuteBtn) unmuteBtn.classList.add('visible');
+              }
+            } catch(e) {}
+          }, 800);
+        } catch(e) {
+          // 萬一 playVideo 直接報錯，嘗試靜音播放
+          try {
+            ytPlayer.mute();
+            ytPlayer.playVideo();
+            var unmuteBtn = document.getElementById('ytUnmuteBtn');
+            if (unmuteBtn) unmuteBtn.classList.add('visible');
+          } catch(e2) {}
+        }
+      }
+
       homeScroll.addEventListener('scroll', function() {
         if (homeScroll.scrollTop > 60) {
           hint.classList.add('hidden');
@@ -4483,18 +4560,13 @@
           hint.classList.remove('hidden');
         }
 
-        // 自動播放音樂：當滾動到音樂區塊時播放
-        if (!musicAutoPlayed && ytPlayerReady && ytPlayer) {
-          var musicSection = document.getElementById('heroMusicSection');
-          if (musicSection) {
-            var rect = musicSection.getBoundingClientRect();
-            // 當音樂區塊頂部進入可視範圍時觸發
-            if (rect.top < window.innerHeight * 0.85) {
-              musicAutoPlayed = true;
-              try {
-                ytPlayer.playVideo();
-              } catch(e) {}
-            }
+        // 自動播放音樂：當滾動超過 100px（音樂區塊出現）時觸發
+        if (!musicAutoPlayed && homeScroll.scrollTop > 100) {
+          if (ytPlayerReady && ytPlayer) {
+            tryAutoPlay();
+          } else {
+            // 播放器還沒就緒，設定待播放旗標
+            window._ytPendingAutoPlay = true;
           }
         }
       }, { passive: true });
@@ -4523,6 +4595,17 @@
           events: {
             onReady: function () {
               ytPlayerReady = true;
+              // 如果用戶已經滾動到音樂區但播放器才剛就緒，立即播放
+              if (window._ytPendingAutoPlay) {
+                window._ytPendingAutoPlay = false;
+                // 播放器剛就緒時，用靜音播放最可靠
+                try {
+                  ytPlayer.mute();
+                  ytPlayer.playVideo();
+                  var unmuteBtn = document.getElementById('ytUnmuteBtn');
+                  if (unmuteBtn) unmuteBtn.classList.add('visible');
+                } catch(e) {}
+              }
             },
             onStateChange: function (e) {
               // 影片播放結束時重置到開頭，避免顯示推薦影片
@@ -4543,6 +4626,20 @@
           }
         });
       };
+
+      // 取消靜音按鈕
+      var unmuteBtn = document.getElementById('ytUnmuteBtn');
+      if (unmuteBtn) {
+        unmuteBtn.addEventListener('click', function() {
+          if (ytPlayer && ytPlayerReady) {
+            try {
+              ytPlayer.unMute();
+              ytPlayer.setVolume(100);
+            } catch(e) {}
+          }
+          unmuteBtn.classList.remove('visible');
+        });
+      }
     })();
 
     // ===== Romantic Particle Effects =====
