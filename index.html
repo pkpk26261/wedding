@@ -2718,6 +2718,7 @@
       let started = false;
       let timerId = null;
       let paused = false;
+      let classified = false;
 
       function isMobile() { return window.innerWidth <= 768; }
 
@@ -2730,20 +2731,39 @@
         return a;
       }
 
-      function classifyImages(srcs) {
-        return Promise.all(srcs.map(src => new Promise(resolve => {
+      // Use tiny thumbnails (w50) just to detect orientation — very fast
+      function classifyImagesInBackground(srcs) {
+        let i = 0;
+        function next() {
+          if (i >= srcs.length) {
+            classified = true;
+            // Re-shuffle with proper pool once classification done
+            shuffled = shuffle(getPool());
+            index = 0;
+            return;
+          }
+          const src = srcs[i++];
           const img = new Image();
+          // Use a tiny thumbnail just for dimension detection
+          const detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
           img.onload = () => {
             if (img.naturalWidth > img.naturalHeight) landscapeImages.push(src);
             else portraitImages.push(src);
-            resolve();
+            // Process next in idle time to avoid blocking
+            if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
+            else setTimeout(next, 10);
           };
-          img.onerror = () => resolve();
-          img.src = src;
-        })));
+          img.onerror = () => {
+            if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
+            else setTimeout(next, 10);
+          };
+          img.src = detectUrl;
+        }
+        next();
       }
 
       function getPool() {
+        if (!classified) return allImages;
         const pool = isMobile() ? portraitImages : landscapeImages;
         return pool.length > 0 ? pool : allImages;
       }
@@ -2765,12 +2785,22 @@
         return div;
       }
 
+      // Preload image then show slide — first image appears as soon as it's downloaded
       function showNext() {
         if (allImages.length === 0 || paused) return;
-        if (prevSlide) prevSlide.remove();
-        if (currentSlide) { currentSlide.classList.remove('active'); prevSlide = currentSlide; }
-        currentSlide = createSlide(getNextImage());
-        requestAnimationFrame(() => { currentSlide.classList.add('active'); });
+        const nextSrc = getNextImage();
+        const preload = new Image();
+        preload.onload = () => {
+          if (prevSlide) prevSlide.remove();
+          if (currentSlide) { currentSlide.classList.remove('active'); prevSlide = currentSlide; }
+          currentSlide = createSlide(nextSrc);
+          requestAnimationFrame(() => { currentSlide.classList.add('active'); });
+        };
+        preload.onerror = () => {
+          // Skip failed image, try next
+          if (allImages.length > 1) showNext();
+        };
+        preload.src = nextSrc;
       }
 
       function startTimer() {
@@ -2785,22 +2815,29 @@
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { shuffled = shuffle(getPool()); index = 0; }, 500);
+        resizeTimer = setTimeout(() => {
+          if (classified) { shuffled = shuffle(getPool()); index = 0; }
+        }, 500);
       });
 
       return {
-        setImages: async function(images) {
+        setImages: function(images) {
           allImages = images;
           landscapeImages = [];
           portraitImages = [];
-          await classifyImages(allImages);
-          shuffled = shuffle(getPool());
+          classified = false;
+          shuffled = shuffle(allImages);
           index = 0;
+
           if (!started) {
             started = true;
+            // Show first slide immediately (don't wait for classification)
             showNext();
             startTimer();
           }
+
+          // Classify in background using tiny thumbnails
+          classifyImagesInBackground(allImages);
         },
         pause: function() {
           paused = true;
@@ -3127,21 +3164,30 @@
     }
 
     function setHeroBgLandscape(heroBgEl, imgSrcs) {
-      const promises = imgSrcs.map(src => new Promise(resolve => {
+      if (imgSrcs.length === 0) return;
+      // Use tiny thumbnails (w50) just to detect orientation quickly
+      const detectLimit = Math.min(imgSrcs.length, 8); // Only check a few
+      const candidates = imgSrcs.slice(0, detectLimit);
+      let found = false;
+
+      candidates.forEach(src => {
         const img = new Image();
-        img.onload = () => resolve({ src, landscape: img.naturalWidth > img.naturalHeight });
-        img.onerror = () => resolve(null);
-        img.src = src;
-      }));
-      Promise.all(promises).then(results => {
-        const landscapes = results.filter(r => r && r.landscape);
-        if (landscapes.length > 0) {
-          const pick = landscapes[Math.floor(Math.random() * landscapes.length)];
-          heroBgEl.style.backgroundImage = "url('" + pick.src + "')";
-        } else if (imgSrcs.length > 0) {
-          heroBgEl.style.backgroundImage = "url('" + imgSrcs[Math.floor(Math.random() * imgSrcs.length)] + "')";
-        }
+        const detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
+        img.onload = () => {
+          if (!found && img.naturalWidth > img.naturalHeight) {
+            found = true;
+            heroBgEl.style.backgroundImage = "url('" + src + "')";
+          }
+        };
+        img.src = detectUrl;
       });
+
+      // Fallback: if no landscape found after a short delay, use first image
+      setTimeout(() => {
+        if (!found && imgSrcs.length > 0) {
+          heroBgEl.style.backgroundImage = "url('" + imgSrcs[0] + "')";
+        }
+      }, 2000);
     }
 
     // 填充相簿格子
@@ -3153,9 +3199,11 @@
         files[i] = files[j];
         files[j] = temp;
       }
+      // Use smaller thumbnails for gallery grid (400px mobile, 600px desktop)
+      var thumbWidth = window.innerWidth <= 768 ? 400 : 600;
       var srcs = [];
       files.forEach(function(file) {
-        const thumbUrl = file.driveId ? driveThumb(file.driveId, 800) : file.src;
+        const thumbUrl = file.driveId ? driveThumb(file.driveId, thumbWidth) : file.src;
         const fullUrl  = file.driveId ? driveThumb(file.driveId, 2000) : file.src;
         srcs.push(thumbUrl);
         const div = document.createElement('div');
