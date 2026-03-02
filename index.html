@@ -154,7 +154,6 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(8px);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -176,12 +175,12 @@
       width: 90%;
       max-width: 480px;
       max-height: 85vh;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
       transform: translateY(30px) scale(0.95);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
+      position: relative;
     }
 
     .seat-modal-overlay.active .seat-modal {
@@ -245,6 +244,8 @@
       padding: 0 1.2rem;
       transition: border-color 0.3s, box-shadow 0.3s;
       background: var(--cream);
+      cursor: text;
+      touch-action: manipulation;
     }
 
     .seat-search-input-wrap:focus-within {
@@ -258,6 +259,7 @@
       stroke-width: 2;
       fill: none;
       flex-shrink: 0;
+      pointer-events: none;
     }
 
     .seat-search-input {
@@ -272,6 +274,9 @@
       letter-spacing: 1px;
       -webkit-appearance: none;
       appearance: none;
+      touch-action: manipulation;
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .seat-search-input::placeholder {
@@ -1193,7 +1198,7 @@
       overflow: hidden;
     }
 
-    .loader.hidden { opacity: 0; pointer-events: none; }
+    .loader.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
 
     /* Ambient glow behind content */
     .loader::before {
@@ -2422,11 +2427,11 @@
   <nav class="nav" id="nav">
     <a data-page="home" class="active">首頁</a>
     <a data-page="invitation">婚宴資訊</a>
-    <a class="seat-search-btn" id="seatSearchBtnDesktop" onclick="openSeatSearch()">
+    <a class="seat-search-btn" id="seatSearchBtnDesktop" role="button" tabindex="0">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       座位查詢
     </a>
-    <a class="seat-search-fab" id="seatSearchBtnMobile" onclick="openSeatSearch()">
+    <a class="seat-search-fab" id="seatSearchBtnMobile" role="button" tabindex="0">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </a>
     <a data-page="paris">棚拍婚紗</a>
@@ -2596,19 +2601,19 @@
 
   <!-- Seat Search Modal -->
   <div class="seat-modal-overlay" id="seatModalOverlay">
-    <div class="seat-modal" onclick="event.stopPropagation()">
+    <div class="seat-modal">
       <div class="seat-modal-header">
-        <div class="seat-modal-close" onclick="closeSeatSearch()">
+        <div class="seat-modal-close" id="seatModalClose" role="button" tabindex="0">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </div>
         <div class="seat-modal-subtitle">Find Your Seat</div>
         <div class="seat-modal-title">賓客座位查詢</div>
       </div>
       <div class="seat-search-box">
-        <div class="seat-search-input-wrap">
+        <div class="seat-search-input-wrap" id="seatSearchInputWrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="seat-search-input" id="seatSearchInput" type="text" placeholder="請輸入賓客姓名..." autocomplete="off">
-          <div class="seat-search-clear" id="seatSearchClear" onclick="clearSeatSearch()">
+          <input class="seat-search-input" id="seatSearchInput" type="text" inputmode="search" placeholder="請輸入賓客姓名..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <div class="seat-search-clear" id="seatSearchClear" role="button" tabindex="0">
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </div>
         </div>
@@ -2692,7 +2697,10 @@
         const elapsed = performance.now();
         const minDisplay = 5200;
         const delay = Math.max(600, minDisplay - elapsed);
-        setTimeout(() => { loader.classList.add('hidden'); }, delay);
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          setTimeout(() => { loader.style.display = 'none'; }, 1300);
+        }, delay);
       });
     })();
 
@@ -2846,6 +2854,8 @@
 
     document.addEventListener('keydown', (e) => {
       if (document.getElementById('lightbox').classList.contains('active')) return;
+      if (document.getElementById('seatModalOverlay').classList.contains('active')) return;
+      if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
       const idx = pages.indexOf(currentPage);
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (idx < pages.length - 1) goToPage(pages[idx + 1]);
@@ -3243,178 +3253,343 @@
 
     loadAllGalleries();
 
-    // ===== 座位查詢系統 =====
-    const seatModalOverlay = document.getElementById('seatModalOverlay');
-    const seatSearchInput = document.getElementById('seatSearchInput');
-    const seatSearchClear = document.getElementById('seatSearchClear');
-    const seatResults = document.getElementById('seatResults');
-    let seatData = null;       // 快取座位資料 { tableName: [guestName, ...], ... }
-    let seatDataLoading = false;
-    let seatDataError = false;
+    // ===== 座位查詢系統（全新重寫） =====
+    ;(function SeatSearchModule() {
+      'use strict';
 
-    function openSeatSearch() {
-      seatModalOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => seatSearchInput.focus(), 400);
-      // 預載座位資料
-      if (!seatData && !seatDataLoading) loadSeatData();
-    }
+      // ── DOM 元素 ──
+      const $overlay   = document.getElementById('seatModalOverlay');
+      const $modal     = $overlay ? $overlay.querySelector('.seat-modal') : null;
+      const $closeBtn  = document.getElementById('seatModalClose');
+      const $inputWrap = document.getElementById('seatSearchInputWrap');
+      const $input     = document.getElementById('seatSearchInput');
+      const $clearBtn  = document.getElementById('seatSearchClear');
+      const $results   = document.getElementById('seatResults');
+      const $btnDesktop = document.getElementById('seatSearchBtnDesktop');
+      const $btnMobile  = document.getElementById('seatSearchBtnMobile');
 
-    function closeSeatSearch() {
-      seatModalOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    function clearSeatSearch() {
-      seatSearchInput.value = '';
-      seatSearchClear.classList.remove('visible');
-      showSeatDefault();
-      seatSearchInput.focus();
-    }
-
-    // 點擊遮罩關閉
-    seatModalOverlay.addEventListener('click', (e) => {
-      if (e.target === seatModalOverlay) closeSeatSearch();
-    });
-
-    // 防止 modal 內的觸控事件穿透
-    document.querySelector('.seat-modal').addEventListener('touchstart', (e) => {
-      e.stopPropagation();
-    }, { passive: true });
-    document.querySelector('.seat-modal').addEventListener('touchmove', (e) => {
-      e.stopPropagation();
-    }, { passive: true });
-    document.querySelector('.seat-modal').addEventListener('touchend', (e) => {
-      e.stopPropagation();
-    }, { passive: true });
-
-    // ESC 關閉
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && seatModalOverlay.classList.contains('active')) closeSeatSearch();
-    });
-
-    // 輸入即時搜尋（含 IME 中文輸入法支援）
-    let seatSearchTimer = null;
-    let isComposing = false;
-
-    seatSearchInput.addEventListener('compositionstart', () => {
-      isComposing = true;
-    });
-
-    seatSearchInput.addEventListener('compositionend', () => {
-      isComposing = false;
-      // 組字結束後立即觸發搜尋
-      const val = seatSearchInput.value.trim();
-      seatSearchClear.classList.toggle('visible', val.length > 0);
-      clearTimeout(seatSearchTimer);
-      if (!val) { showSeatDefault(); return; }
-      seatSearchTimer = setTimeout(() => searchSeat(val), 100);
-    });
-
-    seatSearchInput.addEventListener('input', () => {
-      if (isComposing) return; // IME 組字中不搜尋
-      const val = seatSearchInput.value.trim();
-      seatSearchClear.classList.toggle('visible', val.length > 0);
-      clearTimeout(seatSearchTimer);
-      if (!val) { showSeatDefault(); return; }
-      seatSearchTimer = setTimeout(() => searchSeat(val), 200);
-    });
-
-    function showSeatDefault() {
-      seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">🔍</span>輸入姓名即可查詢您的座位<br><span style="font-size:0.8rem;color:var(--gold);">例如：王小明</span></div>';
-    }
-
-    function showSeatLoading() {
-      seatResults.innerHTML = '<div class="seat-loading"><div class="seat-loading-spinner"></div><br>正在載入座位資料...</div>';
-    }
-
-    function showSeatError(msg) {
-      seatResults.innerHTML = '<div class="seat-error">⚠️ ' + (msg || '載入座位資料失敗，請稍後再試') + '</div>';
-    }
-
-    async function loadSeatData() {
-      if (!SEAT_SCRIPT_URL) {
-        seatDataError = true;
-        showSeatError('座位查詢功能尚未設定，請聯繫新人');
-        return;
-      }
-      seatDataLoading = true;
-      showSeatLoading();
-      try {
-        console.log('座位查詢 URL:', SEAT_SCRIPT_URL);
-        const res = await fetch(SEAT_SCRIPT_URL);
-        const text = await res.text();
-        console.log('座位查詢回應狀態:', res.status);
-        console.log('座位查詢回應內容:', text.substring(0, 500));
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch (parseErr) {
-          throw new Error('回應非 JSON 格式，可能 Apps Script 尚未正確部署');
-        }
-        if (data.error) throw new Error(data.error);
-        // 檢查是否回傳的是圖片資料而非座位資料
-        const keys = Object.keys(data);
-        const looksLikeImages = keys.length > 0 && Array.isArray(data[keys[0]]) && data[keys[0]].length > 0 && data[keys[0]][0].id;
-        if (looksLikeImages) {
-          throw new Error('回傳的是圖片資料，?action=seats 參數未被處理。請確認 Apps Script 已更新並重新部署「新版本」');
-        }
-        seatData = data;
-        seatDataError = false;
-        const val = seatSearchInput.value.trim();
-        if (val) searchSeat(val);
-        else showSeatDefault();
-      } catch (e) {
-        console.error('座位資料載入失敗:', e);
-        seatDataError = true;
-        showSeatError(e.message);
-      } finally {
-        seatDataLoading = false;
-      }
-    }
-
-    function searchSeat(query) {
-      if (!seatData) {
-        if (seatDataError) showSeatError();
-        else showSeatLoading();
+      // ── 安全檢查 ──
+      if (!$overlay || !$input || !$results) {
+        console.warn('座位查詢：缺少必要 DOM 元素，模組未載入');
         return;
       }
 
-      const results = [];
-      for (const [tableName, guests] of Object.entries(seatData)) {
-        for (const guest of guests) {
-          if (guest.includes(query)) {
-            results.push({ name: guest, table: tableName });
+      // ── 狀態 ──
+      let seatData       = null;   // { tableName: [guestName, ...], ... }
+      let isLoading      = false;
+      let hasError       = false;
+      let isOpen         = false;
+      let isComposing    = false;
+      let debounceTimer  = null;
+      let focusTimer     = null;
+      const DEBOUNCE_MS  = 200;
+
+      // ── 工具函式 ──
+      function escHtml(s) {
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(s));
+        return d.innerHTML;
+      }
+      function escRegex(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      // ── 開啟 Modal ──
+      function open() {
+        if (isOpen) return;
+        isOpen = true;
+        $overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // 延遲 focus 等動畫完成
+        clearTimeout(focusTimer);
+        focusTimer = setTimeout(function() {
+          if ($input && isOpen) {
+            $input.focus({ preventScroll: true });
+          }
+        }, 450);
+        // 預載座位資料
+        if (!seatData && !isLoading && !hasError) loadData();
+      }
+
+      // ── 關閉 Modal ──
+      function close() {
+        if (!isOpen) return;
+        isOpen = false;
+        clearTimeout(focusTimer);
+        $overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        try { $input.blur(); } catch(e) {}
+      }
+
+      // ── 清除輸入 ──
+      function clearInput() {
+        $input.value = '';
+        $clearBtn.classList.remove('visible');
+        renderDefault();
+        // 在下一個 tick focus 避免 iOS 鍵盤閃動
+        setTimeout(function() {
+          if (isOpen) $input.focus({ preventScroll: true });
+        }, 10);
+      }
+
+      // ── 觸發搜尋（帶 debounce）──
+      function scheduleSearch() {
+        var val = ($input.value || '').trim();
+        $clearBtn.classList.toggle('visible', val.length > 0);
+        clearTimeout(debounceTimer);
+        if (!val) { renderDefault(); return; }
+        debounceTimer = setTimeout(function() { doSearch(val); }, DEBOUNCE_MS);
+      }
+
+      // ── 渲染：預設提示 ──
+      function renderDefault() {
+        $results.innerHTML =
+          '<div class="seat-results-empty">' +
+            '<span class="hint-icon">🔍</span>' +
+            '輸入姓名即可查詢您的座位<br>' +
+            '<span style="font-size:0.8rem;color:var(--gold);">例如：王小明</span>' +
+          '</div>';
+      }
+
+      // ── 渲染：載入中 ──
+      function renderLoading() {
+        $results.innerHTML =
+          '<div class="seat-loading">' +
+            '<div class="seat-loading-spinner"></div><br>' +
+            '正在載入座位資料...' +
+          '</div>';
+      }
+
+      // ── 渲染：錯誤 ──
+      function renderError(msg) {
+        $results.innerHTML =
+          '<div class="seat-error">⚠️ ' +
+          escHtml(msg || '載入座位資料失敗，請稍後再試') +
+          '</div>';
+      }
+
+      // ── 載入座位資料 ──
+      function loadData() {
+        if (!SEAT_SCRIPT_URL) {
+          hasError = true;
+          renderError('座位查詢功能尚未設定，請聯繫新人');
+          return;
+        }
+        isLoading = true;
+        renderLoading();
+
+        fetch(SEAT_SCRIPT_URL)
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+          })
+          .then(function(text) {
+            var data;
+            try { data = JSON.parse(text); }
+            catch(e) { throw new Error('回應非 JSON 格式，可能 Apps Script 尚未正確部署'); }
+
+            if (data.error) throw new Error(data.error);
+
+            // 檢查是否回傳的是圖片資料而非座位資料
+            var keys = Object.keys(data);
+            if (keys.length > 0 && Array.isArray(data[keys[0]]) &&
+                data[keys[0]].length > 0 && data[keys[0]][0].id) {
+              throw new Error('回傳的是圖片資料，?action=seats 參數未被處理。請確認 Apps Script 已更新並重新部署');
+            }
+
+            seatData = data;
+            hasError = false;
+            var val = ($input.value || '').trim();
+            if (val) doSearch(val); else renderDefault();
+          })
+          .catch(function(err) {
+            console.error('座位資料載入失敗:', err);
+            hasError = true;
+            renderError(err.message);
+          })
+          .finally(function() {
+            isLoading = false;
+          });
+      }
+
+      // ── 執行搜尋 ──
+      function doSearch(query) {
+        if (!seatData) {
+          if (hasError) renderError();
+          else if (isLoading) renderLoading();
+          return;
+        }
+
+        var results = [];
+        var entries = Object.entries(seatData);
+        for (var i = 0; i < entries.length; i++) {
+          var tableName = entries[i][0];
+          var guests    = entries[i][1];
+          for (var j = 0; j < guests.length; j++) {
+            if (guests[j].indexOf(query) !== -1) {
+              results.push({ name: guests[j], table: tableName });
+            }
           }
         }
+
+        if (results.length === 0) {
+          // 判斷查詢是否含中文字元（排除 IME 拼音輸入中的狀態）
+          var hasChinese = /[\u4e00-\u9fff]/.test(query);
+          if (hasChinese) {
+            $results.innerHTML =
+              '<div class="seat-results-empty">' +
+                '<span class="hint-icon">😔</span>' +
+                '找不到「' + escHtml(query) + '」的座位資訊<br>' +
+                '<span style="font-size:0.8rem;color:var(--text-light);">請確認姓名是否正確，或聯繫新人</span>' +
+              '</div>';
+          } else {
+            // IME 拼音輸入中，顯示預設提示
+            renderDefault();
+          }
+          return;
+        }
+
+        var html = '';
+        for (var k = 0; k < results.length; k++) {
+          var r = results[k];
+          var highlighted = r.name.replace(
+            new RegExp('(' + escRegex(query) + ')', 'g'),
+            '<mark>$1</mark>'
+          );
+          html +=
+            '<div class="seat-result-card">' +
+              '<div class="seat-result-name">' + highlighted + '</div>' +
+              '<div class="seat-result-table">' +
+                '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>' +
+                escHtml(r.table) +
+              '</div>' +
+            '</div>';
+        }
+        $results.innerHTML = html;
       }
 
-      if (results.length === 0) {
-        seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">😔</span>找不到「' + escapeHtml(query) + '」的座位資訊<br><span style="font-size:0.8rem;color:var(--text-light);">請輸入完整姓名，或聯繫新人</span></div>';
-        return;
+      // ══════════════════════════════════════════════
+      //  事件綁定（全部使用 addEventListener，無 inline handler）
+      // ══════════════════════════════════════════════
+
+      // ── 桌機按鈕 & 手機 FAB 開啟 Modal ──
+      function handleOpenClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        open();
+      }
+      if ($btnDesktop) {
+        $btnDesktop.addEventListener('click', handleOpenClick);
+        $btnDesktop.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          open();
+        }, { passive: false });
+      }
+      if ($btnMobile) {
+        $btnMobile.addEventListener('click', handleOpenClick);
+        $btnMobile.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          open();
+        }, { passive: false });
       }
 
-      let html = '';
-      results.forEach(r => {
-        const highlighted = r.name.replace(new RegExp('(' + escapeRegex(query) + ')', 'g'), '<mark>$1</mark>');
-        html += '<div class="seat-result-card">' +
-          '<div class="seat-result-name">' + highlighted + '</div>' +
-          '<div class="seat-result-table">' +
-            '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>' +
-            r.table +
-          '</div>' +
-        '</div>';
+      // ── 關閉按鈕 ──
+      if ($closeBtn) {
+        $closeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          close();
+        });
+        $closeBtn.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          close();
+        }, { passive: false });
+      }
+
+      // ── 點擊遮罩關閉（只有直接點擊 overlay 才關閉）──
+      $overlay.addEventListener('mousedown', function(e) {
+        if (e.target === $overlay) close();
       });
-      seatResults.innerHTML = html;
-    }
+      $overlay.addEventListener('touchstart', function(e) {
+        if (e.target === $overlay) close();
+      }, { passive: true });
 
-    function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
+      // ── 清除按鈕 ──
+      $clearBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        clearInput();
+      });
+      $clearBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        clearInput();
+      }, { passive: false });
 
-    function escapeRegex(str) {
-      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
+      // ── 點擊輸入框區域 → 聚焦 input ──
+      if ($inputWrap) {
+        // click（桌機用）：點擊 wrap 內非 input 區域時聚焦 input
+        $inputWrap.addEventListener('click', function(e) {
+          if (e.target.closest && e.target.closest('#seatSearchClear')) return;
+          $input.focus();
+        });
+
+        // touchend（手機用）：iOS/Android 必須在 user gesture 中呼叫 focus
+        // 不檢查 activeElement，因為 iOS 鍵盤收起後 activeElement 仍是 input 但游標已消失
+        $inputWrap.addEventListener('touchend', function(e) {
+          if (e.target.closest && e.target.closest('#seatSearchClear')) return;
+          e.preventDefault();
+          e.stopPropagation();
+          $input.focus();
+        }, { passive: false });
+      }
+
+      // ── 直接點擊 input 也確保 focus（iOS failsafe）──
+      $input.addEventListener('touchend', function(e) {
+        e.stopPropagation();
+        // 不呼叫 preventDefault，讓原生 focus 行為運作
+        // 但確保鍵盤在 iOS 上重新彈出
+        setTimeout(function() { $input.focus(); }, 0);
+      }, { passive: false });
+
+      // ── ESC 關閉 ──
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) close();
+      });
+
+      // ── IME 中文輸入法支援 ──
+      $input.addEventListener('compositionstart', function() {
+        isComposing = true;
+      });
+
+      $input.addEventListener('compositionend', function() {
+        isComposing = false;
+        // 組字結束後立即搜尋
+        scheduleSearch();
+      });
+
+      // ── input 即時搜尋 ──
+      $input.addEventListener('input', function() {
+        // 不再阻擋 IME 組字中的搜尋，讓部分姓名也能即時顯示結果
+        scheduleSearch();
+      });
+
+      // ── Enter 鍵也可觸發搜尋（防止表單提交 & 明確觸發）──
+      $input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          clearTimeout(debounceTimer);
+          var val = ($input.value || '').trim();
+          $clearBtn.classList.toggle('visible', val.length > 0);
+          if (val) doSearch(val); else renderDefault();
+        }
+      });
+
+      // ── 把 open / close 掛到 window 上，以防其他地方需要呼叫 ──
+      window.openSeatSearch  = open;
+      window.closeSeatSearch = close;
+
+    })(); // end SeatSearchModule
 
     // ===== 禁止儲存照片 =====
     // 禁止右鍵選單
