@@ -4475,23 +4475,40 @@
         }
       });
 
+      var musicAutoPlayed = false;
       homeScroll.addEventListener('scroll', function() {
         if (homeScroll.scrollTop > 60) {
           hint.classList.add('hidden');
         } else {
           hint.classList.remove('hidden');
         }
+
+        // 自動播放音樂：當滾動到音樂區塊時播放
+        if (!musicAutoPlayed && ytPlayerReady && ytPlayer) {
+          var musicSection = document.getElementById('heroMusicSection');
+          if (musicSection) {
+            var rect = musicSection.getBoundingClientRect();
+            // 當音樂區塊頂部進入可視範圍時觸發
+            if (rect.top < window.innerHeight * 0.85) {
+              musicAutoPlayed = true;
+              try {
+                ytPlayer.playVideo();
+              } catch(e) {}
+            }
+          }
+        }
       }, { passive: true });
     })();
 
     // ===== YouTube IFrame API Player =====
+    var ytPlayer;
+    var ytPlayerReady = false;
     (function () {
       var tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
       var firstScript = document.getElementsByTagName('script')[0];
       firstScript.parentNode.insertBefore(tag, firstScript);
 
-      var ytPlayer;
       window.onYouTubeIframeAPIReady = function () {
         ytPlayer = new YT.Player('ytPlayer', {
           videoId: 'SQ0DaB7D5AM',
@@ -4504,6 +4521,9 @@
             origin: window.location.origin || '*'
           },
           events: {
+            onReady: function () {
+              ytPlayerReady = true;
+            },
             onStateChange: function (e) {
               // 影片播放結束時重置到開頭，避免顯示推薦影片
               if (e.data === 0) {
