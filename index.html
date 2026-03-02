@@ -631,6 +631,8 @@
       flex-direction: column;
       -webkit-align-items: center;
       align-items: center;
+      flex: 1;
+      min-width: 0;
     }
 
     .name-groom {
@@ -935,7 +937,7 @@
     }
 
     .inv-names .names-row {
-      gap: clamp(1rem, 3vw, 2.5rem);
+      gap: 1.5rem;
     }
 
     .inv-names .name-groom {
@@ -959,6 +961,7 @@
       font-size: 1.5rem;
       color: var(--gold);
       flex-shrink: 0;
+      flex-grow: 0;
       display: inline-block;
       animation: heartBeat 1.2s ease-in-out infinite;
     }
@@ -984,6 +987,85 @@
       font-weight: 400;
       letter-spacing: 3px;
       color: var(--charcoal);
+    }
+
+    /* 醒目日期區塊 */
+    .inv-date-highlight {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-top: 2.2rem;
+      padding: 0;
+    }
+
+    .inv-date-highlight .date-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.2rem;
+    }
+
+    .inv-date-highlight .date-side .date-year {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--text-light);
+      line-height: 1;
+    }
+
+    .inv-date-highlight .date-side .date-month {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      letter-spacing: 2px;
+      line-height: 1.6;
+    }
+
+    .inv-date-highlight .date-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid var(--gold-light);
+      border-right: 1px solid var(--gold-light);
+      padding: 0.5rem 1.8rem;
+      margin: 0 0.5rem;
+    }
+
+    .inv-date-highlight .date-day {
+      font-family: var(--font-heading);
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      line-height: 1;
+    }
+
+    .inv-date-highlight .date-weekday {
+      font-family: var(--font-serif);
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      color: var(--text-light);
+      margin-top: 0.25rem;
+      line-height: 1;
+    }
+
+    .inv-date-highlight .date-side .date-label {
+      font-family: var(--font-script);
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+      line-height: 1;
+      margin-bottom: 0.15rem;
+    }
+
+    .inv-date-line {
+      width: 50px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1.2rem auto 0;
     }
 
     .inv-time-row {
@@ -1238,7 +1320,9 @@
       display: flex;
       -webkit-justify-content: center;
       justify-content: center;
-      gap: 3rem;
+      -webkit-align-items: stretch;
+      align-items: stretch;
+      gap: 1.5rem;
       margin-top: 2rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--gold-light);
@@ -1246,13 +1330,15 @@
 
     .inv-parents-group {
       text-align: center;
+      flex: 1;
+      min-width: 0;
     }
 
     .inv-parents-title {
       font-family: var(--font-script);
       font-size: 0.85rem;
       color: var(--gold);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
       letter-spacing: 2px;
     }
 
@@ -1260,7 +1346,33 @@
       font-size: 0.88rem;
       color: var(--text);
       letter-spacing: 1px;
-      line-height: 1.8;
+      line-height: 2;
+    }
+
+    .inv-parents-names .parent-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4em;
+    }
+
+    .inv-parents-names .parent-label {
+      color: var(--gold);
+      font-size: 0.82em;
+      min-width: 1.2em;
+      text-align: right;
+    }
+
+    .inv-parents-names .parent-name {
+      min-width: 3em;
+      text-align: left;
+    }
+
+    .inv-parents-divider {
+      width: 1px;
+      background: var(--gold-light);
+      align-self: stretch;
+      opacity: 0.5;
     }
 
     .parents-amp {
@@ -2274,7 +2386,7 @@
       }
 
       .inv-names .names-row {
-        gap: clamp(0.6rem, 2.5vw, 1.5rem);
+        gap: 1rem;
       }
 
       .inv-names .name-groom {
@@ -2294,7 +2406,7 @@
       }
 
       .inv-parents {
-        gap: 1.8rem;
+        gap: 1rem;
         margin-top: 1.5rem;
         padding-top: 1.2rem;
       }
@@ -2315,6 +2427,26 @@
       .inv-details .date {
         font-size: 1.15rem;
         letter-spacing: 2px;
+      }
+
+      .inv-date-highlight {
+        margin-top: 1.5rem;
+      }
+
+      .inv-date-highlight .date-side .date-year {
+        font-size: 0.68rem;
+      }
+
+      .inv-date-highlight .date-side .date-month {
+        font-size: 0.95rem;
+      }
+
+      .inv-date-highlight .date-day {
+        font-size: 2.6rem;
+      }
+
+      .inv-date-highlight .date-center {
+        padding: 0.4rem 1.2rem;
       }
 
       .inv-time-row {
@@ -2556,7 +2688,7 @@
       }
 
       .inv-names .names-row {
-        gap: clamp(0.4rem, 2vw, 0.8rem);
+        gap: 0.6rem;
       }
 
       .inv-names .name-groom {
@@ -2568,8 +2700,7 @@
       }
 
       .inv-parents {
-        flex-direction: column;
-        gap: 1.2rem;
+        gap: 0.6rem;
       }
 
       .inv-parents-names {
@@ -3262,25 +3393,44 @@
           </div>
           <div class="inv-parents page-anim">
             <div class="inv-parents-group">
-              <div class="inv-parents-title">新郎家長</div>
-              <div class="inv-parents-names">父 黃裕仁 <span class="parents-amp">＆</span> 母 黎氏翠</div>
+              <div class="inv-parents-title">男方家長</div>
+              <div class="inv-parents-names">
+                <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃裕仁</span></div>
+                <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">黎氏翠</span></div>
+              </div>
             </div>
+            <div class="inv-parents-divider"></div>
             <div class="inv-parents-group">
-              <div class="inv-parents-title">新娘家長</div>
-              <div class="inv-parents-names">父 黃山炎 <span class="parents-amp">＆</span> 母 王雪如</div>
+              <div class="inv-parents-title">女方家長</div>
+              <div class="inv-parents-names">
+                <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃山炎</span></div>
+                <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">王雪如</span></div>
+              </div>
             </div>
           </div>
-          <div class="inv-details page-anim">
-            <div class="date">2026 年 4 月 26 日（星期日）</div>
+          <div class="inv-date-highlight page-anim">
+            <div class="date-side">
+              <span class="date-label">Year</span>
+              <span class="date-year">2026</span>
+            </div>
+            <div class="date-center">
+              <span class="date-day">26</span>
+              <span class="date-weekday">星期日</span>
+            </div>
+            <div class="date-side">
+              <span class="date-label">Month</span>
+              <span class="date-month">04</span>
+            </div>
           </div>
+          <div class="inv-date-line page-anim"></div>
           <div class="inv-time-row page-anim">
             <div class="inv-time-block">
               <div class="time">12:00</div>
-              <div class="desc">入席</div>
+              <div class="desc">賓客入席</div>
             </div>
             <div class="inv-time-block">
               <div class="time">12:30</div>
-              <div class="desc">開席</div>
+              <div class="desc">準時開席</div>
             </div>
           </div>
           <div class="inv-details page-anim">
@@ -4713,8 +4863,7 @@
         $results.innerHTML =
           '<div class="seat-results-empty">' +
             '<span class="hint-icon">🔍</span>' +
-            '輸入姓名即可查詢您的座位<br>' +
-            '<span style="font-size:0.8rem;color:var(--gold);">例如：王小明</span>' +
+            '輸入姓名即可查詢您的座位' +
           '</div>';
       }
 
