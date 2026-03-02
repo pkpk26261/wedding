@@ -4187,29 +4187,45 @@
 
     function setHeroBgLandscape(heroBgEl, imgSrcs) {
       if (imgSrcs.length === 0) return;
-      // Use tiny thumbnails (w50) just to detect orientation quickly
-      const detectLimit = Math.min(imgSrcs.length, 8); // Only check a few
-      const candidates = imgSrcs.slice(0, detectLimit);
-      let found = false;
+      // Shuffle a copy so we don't always pick from the front (avoids duplicating the first visible gallery photo)
+      var shuffled = imgSrcs.slice();
+      for (var i = shuffled.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = t;
+      }
+      // Prefer images NOT in the first 3 visible gallery slots to avoid visual duplication on mobile
+      var preferLate = shuffled.filter(function(s) { return imgSrcs.indexOf(s) >= 3; });
+      var candidates = (preferLate.length >= 3 ? preferLate : shuffled).slice(0, 10);
+      var landscapeFound = [];
+      var checked = 0;
 
-      candidates.forEach(src => {
-        const img = new Image();
-        const detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
-        img.onload = () => {
-          if (!found && img.naturalWidth > img.naturalHeight) {
-            found = true;
-            heroBgEl.style.backgroundImage = "url('" + src + "')";
+      candidates.forEach(function(src) {
+        var img = new Image();
+        var detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
+        img.onload = function() {
+          checked++;
+          if (img.naturalWidth > img.naturalHeight) {
+            landscapeFound.push(src);
+          }
+          // Once all candidates checked, pick a random landscape one
+          if (checked === candidates.length && landscapeFound.length > 0) {
+            var pick = landscapeFound[Math.floor(Math.random() * landscapeFound.length)];
+            heroBgEl.style.backgroundImage = "url('" + pick + "')";
           }
         };
+        img.onerror = function() { checked++; };
         img.src = detectUrl;
       });
 
-      // Fallback: if no landscape found after a short delay, use first image
-      setTimeout(() => {
-        if (!found && imgSrcs.length > 0) {
-          heroBgEl.style.backgroundImage = "url('" + imgSrcs[0] + "')";
+      // Fallback: if no landscape found after a short delay, use a random image (not the first)
+      setTimeout(function() {
+        if (landscapeFound.length === 0 && imgSrcs.length > 0) {
+          var fallback = imgSrcs.length > 3
+            ? imgSrcs[3 + Math.floor(Math.random() * (imgSrcs.length - 3))]
+            : imgSrcs[Math.floor(Math.random() * imgSrcs.length)];
+          heroBgEl.style.backgroundImage = "url('" + fallback + "')";
         }
-      }, 2000);
+      }, 2500);
     }
 
     // 填充相簿格子
