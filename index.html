@@ -422,11 +422,10 @@
       height: -webkit-fill-available;
       opacity: 0;
       visibility: hidden;
-      -webkit-transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                  visibility 0s 0.8s;
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                  visibility 0s 0.8s;
+      transition: none;
       z-index: 1;
+      will-change: opacity;
+      contain: layout style;
     }
 
     @supports (height: 100dvh) {
@@ -436,8 +435,7 @@
     .page.active {
       opacity: 1;
       visibility: visible;
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                  visibility 0s 0s;
+      transition: none;
       z-index: 2;
     }
 
@@ -1583,36 +1581,41 @@
       width: 100%; height: 100%;
       z-index: 800;
       pointer-events: none;
-      display: -webkit-flex;
-      display: flex;
+      overflow: hidden;
     }
 
     .curtain-panel {
-      flex: 1;
-      background: var(--charcoal);
-      transform: scaleY(0);
-      transform-origin: bottom;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--charcoal) 0%, #2a1520 100%);
+      will-change: transform;
+      transform: translateY(100%);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
-    .curtain.animating .curtain-panel {
-      animation: curtainIn 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    .curtain-panel:nth-child(2),
+    .curtain-panel:nth-child(3) {
+      display: none;
     }
 
-    .curtain.animating-out .curtain-panel {
-      animation: curtainOut 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    .curtain.animating .curtain-panel:first-child {
+      animation: curtainIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
-    .curtain-panel:nth-child(2) { animation-delay: 0.05s !important; }
-    .curtain-panel:nth-child(3) { animation-delay: 0.10s !important; }
+    .curtain.animating-out .curtain-panel:first-child {
+      animation: curtainOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
 
     @keyframes curtainIn {
-      from { transform: scaleY(0); transform-origin: bottom; }
-      to { transform: scaleY(1); transform-origin: bottom; }
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
     @keyframes curtainOut {
-      from { transform: scaleY(1); transform-origin: top; }
-      to { transform: scaleY(0); transform-origin: top; }
+      from { transform: translateY(0); }
+      to { transform: translateY(-100%); }
     }
 
     /* ===== Responsive ===== */
@@ -2316,42 +2319,26 @@
 
     /* ===== Mobile Curtain Transition ===== */
     @media (max-width: 768px) {
-      .curtain {
-        -webkit-flex-direction: column;
-        flex-direction: column;
+      .curtain-panel:first-child {
+        transform: translateX(-100%);
       }
 
-      .curtain-panel {
-        -webkit-transform: scaleX(0);
-        transform: scaleX(0);
-        -webkit-transform-origin: left;
-        transform-origin: left;
+      .curtain.animating .curtain-panel:first-child {
+        animation: curtainInMobile 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
 
-      .curtain.animating .curtain-panel {
-        animation: curtainInMobile 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      .curtain.animating-out .curtain-panel:first-child {
+        animation: curtainOutMobile 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
 
-      .curtain.animating-out .curtain-panel {
-        animation: curtainOutMobile 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-      }
-
-      @-webkit-keyframes curtainInMobile {
-        from { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: left; transform-origin: left; }
-        to { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: left; transform-origin: left; }
-      }
       @keyframes curtainInMobile {
-        from { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: left; transform-origin: left; }
-        to { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: left; transform-origin: left; }
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
       }
 
-      @-webkit-keyframes curtainOutMobile {
-        from { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: right; transform-origin: right; }
-        to { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: right; transform-origin: right; }
-      }
       @keyframes curtainOutMobile {
-        from { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: right; transform-origin: right; }
-        to { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: right; transform-origin: right; }
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
       }
     }
 
@@ -2844,20 +2831,33 @@
     function goToPage(pageId) {
       if (pageId === currentPage || isTransitioning) return;
       isTransitioning = true;
+
+      // Phase 1: Slide curtain in
       curtain.className = 'curtain animating';
+
+      // Phase 2: After curtain covers screen, swap pages
       setTimeout(() => {
-        document.getElementById('page-' + currentPage).classList.remove('active');
-        document.getElementById('page-' + pageId).classList.add('active');
-        const scrollEl = document.querySelector('#page-' + pageId + ' .page-scroll');
-        if (scrollEl) scrollEl.scrollTop = 0;
-        currentPage = pageId;
-        updateNav(pageId);
-        // 離開首頁時暫停輪播，回到首頁時恢復
-        if (pageId === 'home') heroSlideshow.resume();
-        else heroSlideshow.pause();
-        curtain.className = 'curtain animating-out';
-        setTimeout(() => { curtain.className = 'curtain'; isTransitioning = false; }, 550);
-      }, 450);
+        requestAnimationFrame(() => {
+          document.getElementById('page-' + currentPage).classList.remove('active');
+          document.getElementById('page-' + pageId).classList.add('active');
+          const scrollEl = document.querySelector('#page-' + pageId + ' .page-scroll');
+          if (scrollEl) scrollEl.scrollTop = 0;
+          currentPage = pageId;
+          updateNav(pageId);
+
+          if (pageId === 'home') heroSlideshow.resume();
+          else heroSlideshow.pause();
+
+          // Phase 3: Slide curtain out (next frame to ensure DOM paint)
+          requestAnimationFrame(() => {
+            curtain.className = 'curtain animating-out';
+            setTimeout(() => {
+              curtain.className = 'curtain';
+              isTransitioning = false;
+            }, 350);
+          });
+        });
+      }, 350);
     }
 
     document.querySelectorAll('[data-page]').forEach(el => {
