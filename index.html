@@ -587,32 +587,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .hero-song-title {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-      margin-bottom: 1.8rem;
-    }
-
-    .hero-song-title .song-en {
-      font-family: var(--font-script);
-      font-size: 2.2rem;
-      color: var(--gold-light);
-      font-weight: 400;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
-      line-height: 1.2;
-    }
-
-    .hero-song-title .song-zh {
-      font-family: var(--font-serif);
-      font-size: 0.85rem;
-      letter-spacing: 5px;
-      color: var(--gold-light);
-      opacity: 0.85;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
-    }
-
     .hero-label {
       font-family: var(--font-script);
       font-size: 1.4rem;
@@ -2802,6 +2776,157 @@
       z-index: 999;
     }
 
+    /* ===== Hero Scroll Down Hint ===== */
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 0;
+      width: 100%;
+      z-index: 3;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      opacity: 0;
+      animation: heroFadeIn 1s ease-out 1.5s forwards;
+      transition: opacity 0.5s ease;
+    }
+
+    .hero-scroll-hint.hidden {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    .scroll-hint-text {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.55);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+    }
+
+    .swipe-down-anim {
+      position: relative;
+      width: 30px;
+      height: 55px;
+    }
+
+    .swipe-dot {
+      width: 10px;
+      height: 10px;
+      border: 2px solid rgba(255,255,255,0.55);
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: swipeDotMove 2s ease-in-out infinite;
+    }
+
+    .swipe-line {
+      width: 1px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: swipeLineMove 2s ease-in-out infinite;
+    }
+
+    @keyframes swipeDotMove {
+      0%   { top: 0; opacity: 0.8; }
+      60%  { top: 38px; opacity: 0.15; }
+      100% { top: 0; opacity: 0.8; }
+    }
+
+    @keyframes swipeLineMove {
+      0%   { top: 10px; height: 0; opacity: 0; }
+      25%  { height: 18px; opacity: 0.5; }
+      60%  { top: 32px; height: 12px; opacity: 0.1; }
+      100% { top: 10px; height: 0; opacity: 0; }
+    }
+
+    /* ===== Hero Music Section (Below Fold) ===== */
+    .hero-music-section {
+      min-height: 75vh;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      background: linear-gradient(180deg, var(--charcoal) 0%, #150a10 100%);
+      padding: 4rem 2rem;
+      position: relative;
+      gap: 1.8rem;
+    }
+
+    .hero-music-section .music-label {
+      font-family: var(--font-script);
+      font-size: 1.6rem;
+      color: var(--gold-light);
+      letter-spacing: 3px;
+      text-align: center;
+    }
+
+    .hero-music-section .music-line {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    .hero-music-section .hero-music-player {
+      max-width: 640px;
+    }
+
+    /* Gradient overlay to hide YouTube title/author bar */
+    .hero-music-player::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 55px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 12px 12px 0 0;
+    }
+
+    @media (max-width: 768px) {
+      .hero-scroll-hint {
+        bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .hero-music-section {
+        min-height: auto;
+        padding: 3rem 1rem calc(5.5rem + env(safe-area-inset-bottom, 0px));
+        gap: 1.2rem;
+      }
+
+      .hero-music-section .music-label {
+        font-size: 1.2rem;
+      }
+
+      .hero-music-section .hero-music-player {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-music-section {
+        padding: 2.5rem 0.8rem calc(5rem + env(safe-area-inset-bottom, 0px));
+        gap: 1rem;
+      }
+
+      .hero-music-section .music-label {
+        font-size: 1.05rem;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2874,46 +2999,48 @@
 
   <!-- ========== PAGE: HOME ========== -->
   <div class="page active" id="page-home">
-    <div class="hero">
-      <div class="hero-bg" id="heroBg"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <div class="hero-song-title fade-item">
-          <span class="song-en">Our Song</span>
-          <span class="song-zh">我們的歌</span>
+    <div class="page-scroll" id="homeScroll">
+      <div class="hero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-label fade-item">We are getting married</div>
+          <h1 class="hero-names fade-item">
+            <div class="names-row">
+              <div class="name-col">
+                <span class="role-label">新郎 Groom</span>
+                <span class="name-groom">黃永成</span>
+              </div>
+              <span class="amp">&</span>
+              <div class="name-col">
+                <span class="role-label">新娘 Bride</span>
+                <span class="name-bride">黃玉蕙</span>
+              </div>
+            </div>
+          </h1>
+          <div class="hero-date fade-item">2026 · 04 · 26</div>
+          <div class="hero-venue fade-item">臻悅美饌花園婚宴會館</div>
         </div>
-        <div class="hero-label fade-item">We are getting married</div>
-        <h1 class="hero-names fade-item">
-          <div class="names-row">
-            <div class="name-col">
-              <span class="role-label">新郎 Groom</span>
-              <span class="name-groom">黃永成</span>
-            </div>
-            <span class="amp">&</span>
-            <div class="name-col">
-              <span class="role-label">新娘 Bride</span>
-              <span class="name-bride">黃玉蕙</span>
-            </div>
+        <!-- Scroll down gesture hint -->
+        <div class="hero-scroll-hint" id="heroScrollHint">
+          <span class="scroll-hint-text">往下滑動聆聽我們的歌</span>
+          <div class="swipe-down-anim">
+            <div class="swipe-dot"></div>
+            <div class="swipe-line"></div>
           </div>
-        </h1>
-        <div class="hero-date fade-item">2026 · 04 · 26</div>
-        <div class="hero-venue fade-item">臻悅美饌花園婚宴會館</div>
+        </div>
       </div>
-      <div class="hero-cta" data-page="invitation">
-        <span>婚宴資訊</span>
-        <div class="arrow"></div>
-      </div>
-      <div class="hero-music">
-        <div class="hero-music-label">Our Song</div>
+      <!-- Hidden Music Section (revealed on scroll down) -->
+      <div class="hero-music-section" id="heroMusicSection">
+        <div class="music-label">Our Song</div>
+        <div class="music-line"></div>
         <div class="hero-music-player" id="ytPlayerWrap">
           <div id="ytPlayer"></div>
-          <!-- Fallback thumbnail (shown if video cannot be embedded) -->
-          <a class="hero-music-fallback" id="ytFallback" href="https://youtu.be/SQ0DaB7D5AM?si=lIsWtYLxDM9wg4QG" target="_blank" rel="noopener noreferrer" style="display:none;">
+          <a class="hero-music-fallback" id="ytFallback" href="https://youtu.be/SQ0DaB7D5AM?si=uFAPFQPalMNq7odb" target="_blank" rel="noopener noreferrer" style="display:none;">
             <img src="https://img.youtube.com/vi/SQ0DaB7D5AM/maxresdefault.jpg" alt="Our Wedding Song" onerror="this.src='https://img.youtube.com/vi/SQ0DaB7D5AM/hqdefault.jpg'">
             <div class="hero-music-play-btn">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
-            <div class="hero-music-open-hint">前往 YouTube 觀看</div>
           </a>
         </div>
       </div>
@@ -4262,6 +4389,28 @@
       }
     });
 
+    // ===== Hero Scroll Hint =====
+    (function() {
+      var hint = document.getElementById('heroScrollHint');
+      var homeScroll = document.getElementById('homeScroll');
+      if (!hint || !homeScroll) return;
+
+      hint.addEventListener('click', function() {
+        var musicSection = document.getElementById('heroMusicSection');
+        if (musicSection) {
+          musicSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+
+      homeScroll.addEventListener('scroll', function() {
+        if (homeScroll.scrollTop > 60) {
+          hint.classList.add('hidden');
+        } else {
+          hint.classList.remove('hidden');
+        }
+      }, { passive: true });
+    })();
+
     // ===== YouTube IFrame API Player =====
     (function () {
       var tag = document.createElement('script');
@@ -4277,12 +4426,21 @@
             rel: 0,
             playsinline: 1,
             modestbranding: 1,
+            showinfo: 0,
             iv_load_policy: 3,
             origin: window.location.origin || '*'
           },
           events: {
+            onStateChange: function (e) {
+              // 影片播放結束時重置到開頭，避免顯示推薦影片
+              if (e.data === 0) {
+                setTimeout(function() {
+                  ytPlayer.seekTo(0);
+                  ytPlayer.pauseVideo();
+                }, 200);
+              }
+            },
             onError: function (e) {
-              // 錯誤 100/101/150/153 → 無法嵌入，顯示縮圖備案
               var wrap = document.getElementById('ytPlayerWrap');
               var fallback = document.getElementById('ytFallback');
               var playerDiv = document.getElementById('ytPlayer');
