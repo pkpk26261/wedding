@@ -114,6 +114,299 @@
     .nav a.active::after { width: 100%; }
     .nav a:hover::after { width: 70%; }
 
+    /* ===== Seat Search Nav Button (Desktop) ===== */
+    .nav .seat-search-btn {
+      cursor: pointer;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 1.2rem;
+      border: 1px solid var(--gold-light);
+      border-radius: 20px;
+      transition: all 0.4s;
+    }
+
+    .nav .seat-search-btn:hover {
+      background: var(--gold);
+      color: var(--white) !important;
+      border-color: var(--gold);
+    }
+
+    .nav .seat-search-btn::after { display: none !important; }
+
+    .nav .seat-search-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* ===== Seat Search Nav Button (Mobile) ===== */
+    .nav .seat-search-fab {
+      display: none;
+    }
+
+    /* ===== Seat Search Modal ===== */
+    .seat-modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0s 0.4s;
+    }
+
+    .seat-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease, visibility 0s 0s;
+    }
+
+    .seat-modal {
+      background: var(--white);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow: hidden;
+      transform: translateY(30px) scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .seat-modal-overlay.active .seat-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .seat-modal-header {
+      padding: 2rem 2rem 1.2rem;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid rgba(184,151,126,0.15);
+    }
+
+    .seat-modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .seat-modal-close:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .seat-modal-close svg {
+      width: 18px; height: 18px;
+      stroke: var(--text-light);
+      stroke-width: 2;
+    }
+
+    .seat-modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--charcoal);
+      letter-spacing: 3px;
+      margin-bottom: 0.3rem;
+    }
+
+    .seat-modal-subtitle {
+      font-family: var(--font-script);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .seat-search-box {
+      padding: 1.2rem 2rem;
+      position: relative;
+    }
+
+    .seat-search-input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--gold-light);
+      border-radius: 30px;
+      padding: 0 1.2rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      background: var(--cream);
+    }
+
+    .seat-search-input-wrap:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,151,126,0.15);
+    }
+
+    .seat-search-input-wrap svg {
+      width: 18px; height: 18px;
+      stroke: var(--gold);
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .seat-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0.85rem 0.8rem;
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      color: var(--charcoal);
+      letter-spacing: 1px;
+    }
+
+    .seat-search-input::placeholder {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .seat-search-clear {
+      width: 24px; height: 24px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.08);
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .seat-search-clear.visible { display: flex; }
+    .seat-search-clear:hover { background: rgba(0,0,0,0.15); }
+
+    .seat-search-clear svg {
+      width: 12px; height: 12px;
+      stroke: var(--text);
+      stroke-width: 2.5;
+    }
+
+    .seat-results {
+      padding: 0.5rem 2rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 120px;
+      max-height: 45vh;
+    }
+
+    .seat-results-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+
+    .seat-results-empty .hint-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .seat-result-card {
+      background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+      border: 1px solid var(--gold-light);
+      border-radius: 12px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 0.8rem;
+      animation: seatCardIn 0.4s ease-out forwards;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .seat-result-card:nth-child(1) { animation-delay: 0.05s; }
+    .seat-result-card:nth-child(2) { animation-delay: 0.12s; }
+    .seat-result-card:nth-child(3) { animation-delay: 0.19s; }
+    .seat-result-card:nth-child(4) { animation-delay: 0.26s; }
+
+    @keyframes seatCardIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .seat-result-name {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+
+    .seat-result-name mark {
+      background: rgba(184,151,126,0.25);
+      color: var(--gold-dark);
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .seat-result-table {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--gold);
+      color: var(--white);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+
+    .seat-result-table svg {
+      width: 14px; height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .seat-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+    }
+
+    .seat-loading-spinner {
+      display: inline-block;
+      width: 24px; height: 24px;
+      border: 2px solid var(--gold-light);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spinSeat 0.8s linear infinite;
+      margin-bottom: 0.6rem;
+    }
+
+    @keyframes spinSeat {
+      to { transform: rotate(360deg); }
+    }
+
+    .seat-error {
+      text-align: center;
+      padding: 1.5rem;
+      color: #c0392b;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
     /* ===== Page System ===== */
     .page {
       position: fixed;
@@ -1378,6 +1671,55 @@
 
       .nav a::after { display: none; }
 
+      /* --- Hide desktop search btn, show mobile FAB --- */
+      .nav .seat-search-btn {
+        display: none !important;
+      }
+
+      .nav .seat-search-fab {
+        display: flex !important;
+        position: relative;
+        flex: 0 0 auto;
+        width: 52px;
+        height: 52px;
+        margin-top: -28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+        color: var(--white) !important;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(184,151,126,0.45);
+        border: 3px solid var(--white);
+        padding: 0 !important;
+        font-size: 0 !important;
+        order: 0;
+        z-index: 10;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .nav .seat-search-fab:active {
+        transform: scale(0.92);
+      }
+
+      .nav .seat-search-fab::before {
+        display: none !important;
+      }
+
+      .nav .seat-search-fab svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--white);
+        stroke-width: 2.5;
+        fill: none;
+      }
+
+      /* Reorder nav items for mobile: home, invitation, FAB, paris, studio */
+      .nav a[data-page="home"] { order: 1; }
+      .nav a[data-page="invitation"] { order: 2; }
+      .nav .seat-search-fab { order: 3; }
+      .nav a[data-page="paris"] { order: 4; }
+      .nav a[data-page="studio"] { order: 5; }
+
       .nav a.active {
         color: var(--gold-dark);
         font-weight: 500;
@@ -2078,6 +2420,13 @@
   <nav class="nav" id="nav">
     <a data-page="home" class="active">首頁</a>
     <a data-page="invitation">婚宴資訊</a>
+    <a class="seat-search-btn" id="seatSearchBtnDesktop" onclick="openSeatSearch()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      座位查詢
+    </a>
+    <a class="seat-search-fab" id="seatSearchBtnMobile" onclick="openSeatSearch()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </a>
     <a data-page="paris">棚拍婚紗</a>
     <a data-page="studio">戶外婚紗</a>
   </nav>
@@ -2243,12 +2592,42 @@
   <!-- Mobile Swipe Indicator -->
   <div class="swipe-indicator" id="swipeIndicator"></div>
 
+  <!-- Seat Search Modal -->
+  <div class="seat-modal-overlay" id="seatModalOverlay">
+    <div class="seat-modal">
+      <div class="seat-modal-header">
+        <div class="seat-modal-close" onclick="closeSeatSearch()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="seat-modal-subtitle">Find Your Seat</div>
+        <div class="seat-modal-title">賓客座位查詢</div>
+      </div>
+      <div class="seat-search-box">
+        <div class="seat-search-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="seat-search-input" id="seatSearchInput" type="text" placeholder="請輸入賓客姓名..." autocomplete="off">
+          <div class="seat-search-clear" id="seatSearchClear" onclick="clearSeatSearch()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="seat-results" id="seatResults">
+        <div class="seat-results-empty">
+          <span class="hint-icon">🔍</span>
+          輸入姓名即可查詢您的座位<br>
+          <span style="font-size:0.8rem;color:var(--gold);">例如：王小明</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ============================================================
     //  設定：請把你部署的 Google Apps Script 網址貼在這裡
     //  （參考 google-apps-script.js 檔案裡的部署步驟）
     // ============================================================
-    const DRIVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLM3hNXrM7R7_8eSv_FyGq8dc_wuhPh62aMC0XYmOO8cZGGHJnbiHkhwtlC3TIsyK8rg/exec';  // ← 貼上你的 Apps Script 網址
+    const DRIVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCQUiRHZHy3y_TvxZ7ilO0sfo-JsNss9HGwl5sxaGAlPAUM_EoesEDAkflTrDh_M2N_A/exec';  // ← 貼上你的 Apps Script 網址
+    const SEAT_SCRIPT_URL  = DRIVE_SCRIPT_URL + '?action=seats';  // 共用同一個部署，用 ?action=seats 區分
 
     // Google Drive 圖片 URL 產生器
     function driveThumb(fileId, width) {
@@ -2858,6 +3237,151 @@
     }
 
     loadAllGalleries();
+
+    // ===== 座位查詢系統 =====
+    const seatModalOverlay = document.getElementById('seatModalOverlay');
+    const seatSearchInput = document.getElementById('seatSearchInput');
+    const seatSearchClear = document.getElementById('seatSearchClear');
+    const seatResults = document.getElementById('seatResults');
+    let seatData = null;       // 快取座位資料 { tableName: [guestName, ...], ... }
+    let seatDataLoading = false;
+    let seatDataError = false;
+
+    function openSeatSearch() {
+      seatModalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => seatSearchInput.focus(), 400);
+      // 預載座位資料
+      if (!seatData && !seatDataLoading) loadSeatData();
+    }
+
+    function closeSeatSearch() {
+      seatModalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function clearSeatSearch() {
+      seatSearchInput.value = '';
+      seatSearchClear.classList.remove('visible');
+      showSeatDefault();
+      seatSearchInput.focus();
+    }
+
+    // 點擊遮罩關閉
+    seatModalOverlay.addEventListener('click', (e) => {
+      if (e.target === seatModalOverlay) closeSeatSearch();
+    });
+
+    // ESC 關閉
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && seatModalOverlay.classList.contains('active')) closeSeatSearch();
+    });
+
+    // 輸入即時搜尋
+    let seatSearchTimer = null;
+    seatSearchInput.addEventListener('input', () => {
+      const val = seatSearchInput.value.trim();
+      seatSearchClear.classList.toggle('visible', val.length > 0);
+      clearTimeout(seatSearchTimer);
+      if (!val) { showSeatDefault(); return; }
+      seatSearchTimer = setTimeout(() => searchSeat(val), 200);
+    });
+
+    function showSeatDefault() {
+      seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">🔍</span>輸入姓名即可查詢您的座位<br><span style="font-size:0.8rem;color:var(--gold);">例如：王小明</span></div>';
+    }
+
+    function showSeatLoading() {
+      seatResults.innerHTML = '<div class="seat-loading"><div class="seat-loading-spinner"></div><br>正在載入座位資料...</div>';
+    }
+
+    function showSeatError(msg) {
+      seatResults.innerHTML = '<div class="seat-error">⚠️ ' + (msg || '載入座位資料失敗，請稍後再試') + '</div>';
+    }
+
+    async function loadSeatData() {
+      if (!SEAT_SCRIPT_URL) {
+        seatDataError = true;
+        showSeatError('座位查詢功能尚未設定，請聯繫新人');
+        return;
+      }
+      seatDataLoading = true;
+      showSeatLoading();
+      try {
+        console.log('座位查詢 URL:', SEAT_SCRIPT_URL);
+        const res = await fetch(SEAT_SCRIPT_URL);
+        const text = await res.text();
+        console.log('座位查詢回應狀態:', res.status);
+        console.log('座位查詢回應內容:', text.substring(0, 500));
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          throw new Error('回應非 JSON 格式，可能 Apps Script 尚未正確部署');
+        }
+        if (data.error) throw new Error(data.error);
+        // 檢查是否回傳的是圖片資料而非座位資料
+        const keys = Object.keys(data);
+        const looksLikeImages = keys.length > 0 && Array.isArray(data[keys[0]]) && data[keys[0]].length > 0 && data[keys[0]][0].id;
+        if (looksLikeImages) {
+          throw new Error('回傳的是圖片資料，?action=seats 參數未被處理。請確認 Apps Script 已更新並重新部署「新版本」');
+        }
+        seatData = data;
+        seatDataError = false;
+        const val = seatSearchInput.value.trim();
+        if (val) searchSeat(val);
+        else showSeatDefault();
+      } catch (e) {
+        console.error('座位資料載入失敗:', e);
+        seatDataError = true;
+        showSeatError(e.message);
+      } finally {
+        seatDataLoading = false;
+      }
+    }
+
+    function searchSeat(query) {
+      if (!seatData) {
+        if (seatDataError) showSeatError();
+        else showSeatLoading();
+        return;
+      }
+
+      const results = [];
+      for (const [tableName, guests] of Object.entries(seatData)) {
+        for (const guest of guests) {
+          if (guest.includes(query)) {
+            results.push({ name: guest, table: tableName });
+          }
+        }
+      }
+
+      if (results.length === 0) {
+        seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">😔</span>找不到「' + escapeHtml(query) + '」的座位資訊<br><span style="font-size:0.8rem;color:var(--text-light);">請確認姓名是否正確，或聯繫新人</span></div>';
+        return;
+      }
+
+      let html = '';
+      results.forEach(r => {
+        const highlighted = r.name.replace(new RegExp('(' + escapeRegex(query) + ')', 'g'), '<mark>$1</mark>');
+        html += '<div class="seat-result-card">' +
+          '<div class="seat-result-name">' + highlighted + '</div>' +
+          '<div class="seat-result-table">' +
+            '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>' +
+            r.table +
+          '</div>' +
+        '</div>';
+      });
+      seatResults.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
 
     // ===== 禁止儲存照片 =====
     // 禁止右鍵選單
