@@ -760,11 +760,11 @@
     #ytPlayer,
     #ytPlayer iframe {
       width: 100% !important;
-      height: calc(100% + 50px) !important;
+      height: 100% !important;
       position: absolute;
-      top: -50px; left: 0;
+      top: 0; left: 0;
       border: none;
-      border-radius: 0;
+      border-radius: 12px;
     }
 
     .hero-music-fallback {
@@ -2955,7 +2955,19 @@
       max-width: 640px;
     }
 
-    /* Title bar is hidden via iframe offset — no overlay needed */
+    /* Gradient overlay to soften YouTube title/author bar */
+    .hero-music-player::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 12px 12px 0 0;
+    }
 
     @media (max-width: 768px) {
       .hero-scroll-hint {
