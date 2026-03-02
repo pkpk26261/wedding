@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
-  <meta name="theme-color" content="#2c2c2c">
+  <meta name="theme-color" content="#4a2639">
   <title>玉蕙 & 永成 — 我們的婚禮</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,15 +15,15 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --gold: #b8977e;
-      --gold-light: #d4c4b0;
-      --gold-dark: #8a6d57;
-      --blush: #f5ebe0;
-      --cream: #faf8f5;
+      --gold: #d4849f;
+      --gold-light: #f0b8cc;
+      --gold-dark: #a85775;
+      --blush: #fce4ec;
+      --cream: #fff5f8;
       --white: #ffffff;
-      --charcoal: #2c2c2c;
-      --text: #4a4a4a;
-      --text-light: #7a7a7a;
+      --charcoal: #3a1f2e;
+      --text: #4a3040;
+      --text-light: #8a6878;
       --font-serif: 'LXGW WenKai TC', 'Noto Serif TC', 'Cormorant Garamond', serif;
       --font-display: 'Cinzel Decorative', 'LXGW WenKai TC', serif;
       --font-script: 'Great Vibes', cursive;
@@ -74,7 +74,7 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(250, 248, 245, 0.95);
+      background: rgba(255, 245, 248, 0.95);
       backdrop-filter: blur(20px);
       opacity: 0;
       transition: opacity 0.6s ease;
@@ -191,7 +191,7 @@
       padding: 2rem 2rem 1.2rem;
       text-align: center;
       position: relative;
-      border-bottom: 1px solid rgba(184,151,126,0.15);
+      border-bottom: 1px solid rgba(212,132,159,0.2);
     }
 
     .seat-modal-close {
@@ -250,7 +250,7 @@
 
     .seat-search-input-wrap:focus-within {
       border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(184,151,126,0.15);
+      box-shadow: 0 0 0 3px rgba(212,132,159,0.2);
     }
 
     .seat-search-input-wrap svg {
@@ -358,7 +358,7 @@
     }
 
     .seat-result-name mark {
-      background: rgba(184,151,126,0.25);
+      background: rgba(212,132,159,0.25);
       color: var(--gold-dark);
       padding: 0 2px;
       border-radius: 2px;
@@ -477,7 +477,7 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center center;
-      filter: brightness(0.4);
+      filter: brightness(0.45) saturate(0.85);
       opacity: 0;
       transition: opacity 1.8s ease-in-out;
       will-change: opacity, transform;
@@ -549,7 +549,7 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: linear-gradient(180deg,
-        rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.35) 100%);
+        rgba(58,31,46,0.35) 0%, rgba(58,31,46,0.05) 40%, rgba(58,31,46,0.5) 100%);
     }
 
     .hero-content {
@@ -723,8 +723,8 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background:
-        radial-gradient(circle at 15% 20%, rgba(184,151,126,0.06) 0%, transparent 50%),
-        radial-gradient(circle at 85% 80%, rgba(184,151,126,0.06) 0%, transparent 50%);
+        radial-gradient(circle at 15% 20%, rgba(212,132,159,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(212,132,159,0.08) 0%, transparent 50%);
     }
 
     .invitation-wrapper {
@@ -940,7 +940,7 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center 25%;
-      filter: brightness(0.4);
+      filter: brightness(0.45) saturate(0.85);
       transform: scale(1.05);
       transition: transform 8s ease-out;
     }
@@ -952,7 +952,7 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: linear-gradient(180deg,
-        rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.0) 50%, rgba(0,0,0,0.4) 100%);
+        rgba(58,31,46,0.25) 0%, rgba(58,31,46,0.0) 50%, rgba(58,31,46,0.5) 100%);
     }
 
     .gallery-hero-content {
@@ -1206,7 +1206,7 @@
       position: absolute;
       width: 300px; height: 300px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(184,151,126,0.15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(212,132,159,0.2) 0%, transparent 70%);
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       animation: loaderGlow 4s ease-in-out infinite alternate;
@@ -1443,7 +1443,7 @@
     .loader-progress-track {
       width: min(200px, 50vw);
       height: 1px;
-      background: rgba(184, 151, 126, 0.2);
+      background: rgba(212, 132, 159, 0.2);
       border-radius: 1px;
       overflow: hidden;
       position: relative;
@@ -1460,7 +1460,7 @@
     .loader-progress-text {
       font-family: var(--font-heading);
       font-size: 0.6rem;
-      color: rgba(184, 151, 126, 0.5);
+      color: rgba(212, 132, 159, 0.5);
       letter-spacing: 4px;
       text-transform: uppercase;
     }
@@ -1633,11 +1633,11 @@
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        background: rgba(250, 248, 245, 0.97) !important;
+        background: rgba(255, 245, 248, 0.97) !important;
         -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
         box-shadow: 0 -1px 20px rgba(0,0,0,0.06);
-        border-top: 1px solid rgba(184,151,126,0.15);
+        border-top: 1px solid rgba(212,132,159,0.2);
         -webkit-justify-content: stretch;
         justify-content: stretch;
       }
@@ -1695,7 +1695,7 @@
         color: var(--white) !important;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 15px rgba(184,151,126,0.45);
+        box-shadow: 0 4px 15px rgba(212,132,159,0.45);
         border: 3px solid var(--white);
         padding: 0 !important;
         font-size: 0 !important;
@@ -2227,7 +2227,7 @@
         width: 5px;
         height: 5px;
         border-radius: 50%;
-        background: rgba(184, 151, 126, 0.3);
+        background: rgba(212, 132, 159, 0.3);
         transition: all 0.3s;
       }
 
@@ -2374,6 +2374,15 @@
         -webkit-overscroll-behavior-y: contain;
         overscroll-behavior-y: contain;
       }
+    }
+
+    /* ===== Romantic Particle Canvas ===== */
+    #romanticParticles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
     }
 
   </style>
@@ -2596,6 +2605,9 @@
     </div>
   </div>
 
+  <!-- Romantic Particle Effects -->
+  <canvas id="romanticParticles"></canvas>
+
   <!-- Mobile Swipe Indicator -->
   <div class="swipe-indicator" id="swipeIndicator"></div>
 
@@ -2663,7 +2675,7 @@
           p.style.fontSize = (0.5 + Math.random() * 0.8) + 'rem';
           p.style.animationDelay = (Math.random() * 2) + 's';
           p.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
-          p.style.color = 'rgba(184, 151, 126, ' + (0.2 + Math.random() * 0.4) + ')';
+          p.style.color = 'rgba(212, 132, 159, ' + (0.2 + Math.random() * 0.4) + ')';
           particlesContainer.appendChild(p);
         }
       }
@@ -3612,6 +3624,199 @@
         e.preventDefault();
       }
     });
+
+    // ===== Romantic Particle Effects =====
+    (function() {
+      const canvas = document.getElementById('romanticParticles');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [], animId;
+      const isMobile = () => window.innerWidth <= 768;
+      const PARTICLE_COUNT_DESKTOP = 45;
+      const PARTICLE_COUNT_MOBILE = 20;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+
+      // Heart shape path
+      function drawHeart(cx, cy, size) {
+        ctx.beginPath();
+        const s = size;
+        ctx.moveTo(cx, cy + s * 0.3);
+        ctx.bezierCurveTo(cx, cy, cx - s, cy, cx - s, cy + s * 0.3);
+        ctx.bezierCurveTo(cx - s, cy + s * 0.7, cx, cy + s, cx, cy + s * 1.15);
+        ctx.bezierCurveTo(cx, cy + s, cx + s, cy + s * 0.7, cx + s, cy + s * 0.3);
+        ctx.bezierCurveTo(cx + s, cy, cx, cy, cx, cy + s * 0.3);
+        ctx.closePath();
+      }
+
+      // Petal shape
+      function drawPetal(cx, cy, size, angle) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, size * 0.4, size, 0, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.restore();
+      }
+
+      // Sparkle / star
+      function drawSparkle(cx, cy, size) {
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++) {
+          const ang = (Math.PI / 2) * i;
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(ang) * size, cy + Math.sin(ang) * size);
+        }
+        ctx.closePath();
+      }
+
+      function createParticle() {
+        const types = ['heart', 'petal', 'sparkle', 'circle'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        // Romantic pink/rose color palette
+        const colors = [
+          'rgba(212,132,159,',  // rose
+          'rgba(240,184,204,',  // light pink
+          'rgba(168,87,117,',   // deep rose
+          'rgba(255,182,193,',  // light pink
+          'rgba(255,105,180,',  // hot pink (subtle)
+          'rgba(230,200,210,',  // blush
+          'rgba(200,160,180,',  // mauve
+        ];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h + h * 0.1,
+          size: 2 + Math.random() * (isMobile() ? 4 : 6),
+          speedX: (Math.random() - 0.5) * 0.4,
+          speedY: -(0.15 + Math.random() * 0.45),
+          opacity: 0,
+          maxOpacity: 0.15 + Math.random() * 0.3,
+          fadeIn: true,
+          fadeSpeed: 0.002 + Math.random() * 0.004,
+          life: 0,
+          maxLife: 400 + Math.random() * 600,
+          type: type,
+          color: color,
+          angle: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.015,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.01 + Math.random() * 0.02,
+          wobbleAmp: 0.3 + Math.random() * 0.5,
+        };
+      }
+
+      function initParticles() {
+        const count = isMobile() ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
+        particles = [];
+        for (let i = 0; i < count; i++) {
+          const p = createParticle();
+          p.life = Math.random() * p.maxLife; // stagger
+          p.opacity = p.maxOpacity * 0.5;
+          p.fadeIn = false;
+          particles.push(p);
+        }
+      }
+
+      function updateParticle(p) {
+        p.life++;
+        p.wobble += p.wobbleSpeed;
+        p.angle += p.rotSpeed;
+
+        // Wobble movement
+        p.x += p.speedX + Math.sin(p.wobble) * p.wobbleAmp;
+        p.y += p.speedY;
+
+        // Fade in/out
+        if (p.life < 60) {
+          p.opacity = p.maxOpacity * (p.life / 60);
+        } else if (p.life > p.maxLife - 80) {
+          p.opacity = p.maxOpacity * ((p.maxLife - p.life) / 80);
+        } else {
+          p.opacity = p.maxOpacity;
+        }
+
+        // Reset if off screen or life ended
+        if (p.life >= p.maxLife || p.y < -20 || p.x < -20 || p.x > w + 20) {
+          Object.assign(p, createParticle());
+          p.y = h + 10 + Math.random() * 30;
+        }
+      }
+
+      function drawParticle(p) {
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        const fillColor = p.color + p.opacity.toFixed(2) + ')';
+
+        switch (p.type) {
+          case 'heart':
+            drawHeart(p.x, p.y, p.size * 0.45);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            break;
+          case 'petal':
+            drawPetal(p.x, p.y, p.size, p.angle);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            break;
+          case 'sparkle':
+            ctx.strokeStyle = fillColor;
+            ctx.lineWidth = 0.8;
+            drawSparkle(p.x, p.y, p.size * 0.6);
+            ctx.stroke();
+            // Center dot
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.15, 0, Math.PI * 2);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            break;
+          case 'circle':
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.35, 0, Math.PI * 2);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            break;
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < particles.length; i++) {
+          updateParticle(particles[i]);
+          drawParticle(particles[i]);
+        }
+        animId = requestAnimationFrame(animate);
+      }
+
+      // Init
+      resize();
+      initParticles();
+      animate();
+
+      // Handle resize
+      let resizeDebounce;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeDebounce);
+        resizeDebounce = setTimeout(function() {
+          resize();
+          initParticles();
+        }, 300);
+      });
+
+      // Reduce particles when tab not visible
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          cancelAnimationFrame(animId);
+        } else {
+          animate();
+        }
+      });
+    })();
   </script>
 
 </body>
