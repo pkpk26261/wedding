@@ -38,10 +38,14 @@
       background: var(--charcoal);
       overflow: hidden;
       height: 100vh;
-      height: 100dvh;
+      height: -webkit-fill-available;
       -webkit-font-smoothing: antialiased;
       -webkit-tap-highlight-color: transparent;
       -webkit-text-size-adjust: 100%;
+    }
+
+    @supports (height: 100dvh) {
+      body { height: 100dvh; }
     }
 
     ::-webkit-scrollbar { width: 5px; }
@@ -115,12 +119,18 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      height: 100dvh;
+      height: -webkit-fill-available;
       opacity: 0;
       visibility: hidden;
+      -webkit-transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0s 0.8s;
       transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
                   visibility 0s 0.8s;
       z-index: 1;
+    }
+
+    @supports (height: 100dvh) {
+      .page { height: 100dvh; }
     }
 
     .page.active {
@@ -136,14 +146,19 @@
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      position: relative;
     }
 
     /* ===== Hero Page ===== */
     .hero {
       height: 100%;
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       text-align: center;
       overflow: hidden;
@@ -277,15 +292,21 @@
     }
 
     .names-row {
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       gap: clamp(1.5rem, 4vw, 3rem);
     }
 
     .name-col {
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
     }
 
@@ -351,8 +372,11 @@
       left: 0;
       width: 100%;
       z-index: 2;
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
       gap: 0.8rem;
       cursor: pointer;
@@ -381,8 +405,11 @@
     /* ===== Invitation Page ===== */
     .invitation-page {
       min-height: 100%;
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       background: var(--white);
       position: relative;
@@ -487,7 +514,9 @@
     }
 
     .inv-time-row {
+      display: -webkit-flex;
       display: flex;
+      -webkit-justify-content: center;
       justify-content: center;
       gap: 2.5rem;
       margin: 1.2rem 0;
@@ -540,7 +569,9 @@
 
     /* Parents section */
     .inv-parents {
+      display: -webkit-flex;
       display: flex;
+      -webkit-justify-content: center;
       justify-content: center;
       gap: 3rem;
       margin-top: 2rem;
@@ -593,8 +624,11 @@
       position: relative;
       height: 45vh;
       min-height: 320px;
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       text-align: center;
       overflow: hidden;
@@ -716,8 +750,11 @@
       width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.96);
       z-index: 9999;
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
@@ -745,8 +782,11 @@
       top: 2rem; right: 2rem;
       width: 44px; height: 44px;
       cursor: pointer;
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       z-index: 10;
     }
@@ -768,11 +808,15 @@
     .lightbox-nav {
       position: absolute;
       top: 50%;
+      -webkit-transform: translateY(-50%);
       transform: translateY(-50%);
       width: 50px; height: 50px;
       cursor: pointer;
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       z-index: 10;
     }
@@ -842,9 +886,13 @@
       width: 100%; height: 100%;
       background: var(--charcoal);
       z-index: 10000;
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -864,15 +912,21 @@
     }
 
     .loader-names-row {
+      display: -webkit-flex;
       display: flex;
+      -webkit-align-items: center;
       align-items: center;
+      -webkit-justify-content: center;
       justify-content: center;
       gap: clamp(1.5rem, 5vw, 3rem);
     }
 
     .loader-person {
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
     }
 
@@ -952,9 +1006,13 @@
     .loader-progress-wrap {
       margin-top: 2.5rem;
       opacity: 0;
+      -webkit-animation: loaderFadeUp 0.6s ease-out 2.6s forwards;
       animation: loaderFadeUp 0.6s ease-out 2.6s forwards;
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
+      -webkit-align-items: center;
       align-items: center;
       gap: 0.8rem;
     }
@@ -1024,9 +1082,12 @@
     .page-dots {
       position: fixed;
       right: 2rem; top: 50%;
+      -webkit-transform: translateY(-50%);
       transform: translateY(-50%);
       z-index: 500;
+      display: -webkit-flex;
       display: flex;
+      -webkit-flex-direction: column;
       flex-direction: column;
       gap: 1rem;
     }
@@ -1072,6 +1133,7 @@
       width: 100%; height: 100%;
       z-index: 800;
       pointer-events: none;
+      display: -webkit-flex;
       display: flex;
     }
 
@@ -1152,18 +1214,17 @@
       }
 
       .nav a::before {
-        content: '' !important;
         font-size: 1.1rem;
         display: block;
         font-style: normal;
-        font-family: serif;
+        font-family: initial;
         line-height: 1;
       }
 
-      .nav a[data-page="home"]::before { content: "🏠" !important; font-family: initial; }
-      .nav a[data-page="invitation"]::before { content: "💌" !important; font-family: initial; }
-      .nav a[data-page="paris"]::before { content: "📸" !important; font-family: initial; }
-      .nav a[data-page="studio"]::before { content: "🌿" !important; font-family: initial; }
+      .nav a[data-page="home"]::before { content: "🏠"; }
+      .nav a[data-page="invitation"]::before { content: "💌"; }
+      .nav a[data-page="paris"]::before { content: "📸"; }
+      .nav a[data-page="studio"]::before { content: "🌿"; }
 
       .nav a::after { display: none; }
 
@@ -1220,6 +1281,7 @@
       }
 
       .hero-cta {
+        bottom: calc(4.5rem + constant(safe-area-inset-bottom));
         bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
       }
 
@@ -1364,6 +1426,7 @@
       }
 
       .page-footer {
+        padding: 2.5rem 1.5rem calc(4rem + constant(safe-area-inset-bottom));
         padding: 2.5rem 1.5rem calc(4rem + env(safe-area-inset-bottom, 0px));
       }
 
@@ -1740,11 +1803,14 @@
     /* ===== Mobile Curtain Transition ===== */
     @media (max-width: 768px) {
       .curtain {
+        -webkit-flex-direction: column;
         flex-direction: column;
       }
 
       .curtain-panel {
+        -webkit-transform: scaleX(0);
         transform: scaleX(0);
+        -webkit-transform-origin: left;
         transform-origin: left;
       }
 
@@ -1756,14 +1822,22 @@
         animation: curtainOutMobile 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
       }
 
+      @-webkit-keyframes curtainInMobile {
+        from { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: left; transform-origin: left; }
+        to { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: left; transform-origin: left; }
+      }
       @keyframes curtainInMobile {
-        from { transform: scaleX(0); transform-origin: left; }
-        to { transform: scaleX(1); transform-origin: left; }
+        from { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: left; transform-origin: left; }
+        to { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: left; transform-origin: left; }
       }
 
+      @-webkit-keyframes curtainOutMobile {
+        from { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: right; transform-origin: right; }
+        to { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: right; transform-origin: right; }
+      }
       @keyframes curtainOutMobile {
-        from { transform: scaleX(1); transform-origin: right; }
-        to { transform: scaleX(0); transform-origin: right; }
+        from { -webkit-transform: scaleX(1); transform: scaleX(1); -webkit-transform-origin: right; transform-origin: right; }
+        to { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: right; transform-origin: right; }
       }
     }
 
@@ -1783,6 +1857,7 @@
     @media (max-width: 768px) {
       .page-scroll {
         scroll-behavior: smooth;
+        -webkit-overscroll-behavior-y: contain;
         overscroll-behavior-y: contain;
       }
     }
@@ -2242,7 +2317,7 @@
         const progress = Math.abs(deltaX) / window.innerWidth;
         const scale = 1 - progress * 0.15;
         const opacity = 1 - progress * 0.4;
-        lightboxImg.style.transform = `translateX(${deltaX}px) scale(${Math.max(scale, 0.85)})`;
+        lightboxImg.style.transform = 'translateX(' + deltaX + 'px) scale(' + Math.max(scale, 0.85) + ')';
         lightboxImg.style.opacity = Math.max(opacity, 0.6);
       }, { passive: false });
 
@@ -2253,13 +2328,13 @@
         if (Math.abs(deltaX) > 60) {
           // Complete the swipe with slide-out animation
           const direction = deltaX > 0 ? 1 : -1;
-          lightboxImg.style.transform = `translateX(${direction * window.innerWidth}px) scale(0.85)`;
+          lightboxImg.style.transform = 'translateX(' + (direction * window.innerWidth) + 'px) scale(0.85)';
           lightboxImg.style.opacity = '0';
           setTimeout(() => {
             if (deltaX > 0) prevImage(); else nextImage();
             // Slide in from opposite side
             lightboxImg.style.transition = 'none';
-            lightboxImg.style.transform = `translateX(${-direction * 80}px) scale(0.95)`;
+            lightboxImg.style.transform = 'translateX(' + (-direction * 80) + 'px) scale(0.95)';
             lightboxImg.style.opacity = '0.5';
             requestAnimationFrame(() => {
               lightboxImg.style.transition = 'transform 0.35s ease-out, opacity 0.35s ease-out';
@@ -2294,7 +2369,7 @@
         if (isSwipingDown) {
           deltaYClose = dy;
           const progress = Math.min(deltaYClose / 300, 1);
-          lightboxImg.style.transform = `translateY(${deltaYClose}px) scale(${1 - progress * 0.2})`;
+          lightboxImg.style.transform = 'translateY(' + deltaYClose + 'px) scale(' + (1 - progress * 0.2) + ')';
           lightboxImg.style.opacity = 1 - progress * 0.5;
         }
       }, { passive: true });
@@ -2302,7 +2377,7 @@
       lightbox.addEventListener('touchend', () => {
         if (isSwipingDown && deltaYClose > 120) {
           lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-          lightboxImg.style.transform = `translateY(${window.innerHeight}px) scale(0.7)`;
+          lightboxImg.style.transform = 'translateY(' + window.innerHeight + 'px) scale(0.7)';
           lightboxImg.style.opacity = '0';
           setTimeout(closeLightbox, 250);
           setTimeout(() => {
