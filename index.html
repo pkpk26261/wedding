@@ -3293,9 +3293,26 @@
       if (e.key === 'Escape' && seatModalOverlay.classList.contains('active')) closeSeatSearch();
     });
 
-    // 輸入即時搜尋
+    // 輸入即時搜尋（含 IME 中文輸入法支援）
     let seatSearchTimer = null;
+    let isComposing = false;
+
+    seatSearchInput.addEventListener('compositionstart', () => {
+      isComposing = true;
+    });
+
+    seatSearchInput.addEventListener('compositionend', () => {
+      isComposing = false;
+      // 組字結束後立即觸發搜尋
+      const val = seatSearchInput.value.trim();
+      seatSearchClear.classList.toggle('visible', val.length > 0);
+      clearTimeout(seatSearchTimer);
+      if (!val) { showSeatDefault(); return; }
+      seatSearchTimer = setTimeout(() => searchSeat(val), 100);
+    });
+
     seatSearchInput.addEventListener('input', () => {
+      if (isComposing) return; // IME 組字中不搜尋
       const val = seatSearchInput.value.trim();
       seatSearchClear.classList.toggle('visible', val.length > 0);
       clearTimeout(seatSearchTimer);
@@ -3366,7 +3383,7 @@
       const results = [];
       for (const [tableName, guests] of Object.entries(seatData)) {
         for (const guest of guests) {
-          if (guest === query) {
+          if (guest.includes(query)) {
             results.push({ name: guest, table: tableName });
           }
         }
