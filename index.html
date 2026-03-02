@@ -1427,19 +1427,77 @@
 
     .lightbox.active { opacity: 1; pointer-events: all; }
 
-    .lightbox img {
+    .lightbox-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .lightbox-slide {
+      position: absolute;
       max-width: 90vw;
       max-height: 90vh;
       object-fit: contain;
       border-radius: 2px;
-      transform: scale(0.92);
-      transition: transform 0.4s ease;
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
+      will-change: transform, opacity;
+      opacity: 0;
+      transform: scale(0.92);
+      pointer-events: none;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
 
-    .lightbox.active img { transform: scale(1); }
+    .lightbox-slide.current {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+      transition: transform 0.42s cubic-bezier(0.25, 0.1, 0.25, 1),
+                  opacity 0.38s ease;
+    }
+
+    .lightbox-slide.slide-out-left {
+      opacity: 0;
+      transform: translateX(-35%) scale(0.88);
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.6, 1),
+                  opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .lightbox-slide.slide-out-right {
+      opacity: 0;
+      transform: translateX(35%) scale(0.88);
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.6, 1),
+                  opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .lightbox-slide.enter-left {
+      opacity: 0;
+      transform: translateX(-35%) scale(0.88);
+      transition: none;
+    }
+
+    .lightbox-slide.enter-right {
+      opacity: 0;
+      transform: translateX(35%) scale(0.88);
+      transition: none;
+    }
+
+    .lightbox.active .lightbox-slide.current { transform: translateX(0) scale(1); }
+
+    /* Opening zoom-in animation */
+    .lightbox-slide.open-enter {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: none;
+    }
 
     .lightbox-close {
       position: absolute;
@@ -2395,7 +2453,7 @@
       }
 
       /* --- Lightbox Mobile --- */
-      .lightbox img {
+      .lightbox-slide {
         max-width: 96vw;
         max-height: 85vh;
       }
@@ -2601,15 +2659,13 @@
         background: rgba(0, 0, 0, 0.98);
       }
 
-      .lightbox img {
+      .lightbox-slide {
         max-width: 100vw;
         max-height: 80vh;
         border-radius: 0;
-        transition: transform 0.25s ease, opacity 0.25s ease;
-        will-change: transform;
       }
 
-      .lightbox.swiping img {
+      .lightbox.swiping .lightbox-slide.current {
         transition: none;
       }
 
@@ -3360,7 +3416,10 @@
     <div class="lightbox-close" id="lightboxClose"></div>
     <div class="lightbox-nav prev" id="lightboxPrev"></div>
     <div class="lightbox-nav next" id="lightboxNext"></div>
-    <img src="" alt="婚紗照" id="lightboxImg">
+    <div class="lightbox-track" id="lightboxTrack">
+      <img src="" alt="婚紗照" class="lightbox-slide" id="lightboxSlideA">
+      <img src="" alt="婚紗照" class="lightbox-slide" id="lightboxSlideB">
+    </div>
     <div class="lightbox-counter" id="lightboxCounter"></div>
     <div class="lightbox-swipe-hint">
       <span></span><span></span><span></span><span></span><span></span>
@@ -3747,41 +3806,115 @@
       }
     });
 
-    // ===== Lightbox =====
+    // ===== Lightbox (Dual-Slide + Preload) =====
     const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxSlideA = document.getElementById('lightboxSlideA');
+    const lightboxSlideB = document.getElementById('lightboxSlideB');
     const lightboxCounter = document.getElementById('lightboxCounter');
     let currentImages = [];
     let currentIndex = 0;
+    let activeSlide = lightboxSlideA;
+    let inactiveSlide = lightboxSlideB;
+    let isAnimating = false;
+    const preloadCache = {};
+
+    function preloadImage(src) {
+      if (!preloadCache[src]) {
+        const img = new Image();
+        img.src = src;
+        preloadCache[src] = img;
+      }
+    }
+
+    function preloadAdjacent() {
+      if (currentImages.length <= 1) return;
+      const prev = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      const next = (currentIndex + 1) % currentImages.length;
+      preloadImage(currentImages[prev]);
+      preloadImage(currentImages[next]);
+      // Also preload two ahead for fast navigators
+      const next2 = (currentIndex + 2) % currentImages.length;
+      const prev2 = (currentIndex - 2 + currentImages.length) % currentImages.length;
+      preloadImage(currentImages[next2]);
+      preloadImage(currentImages[prev2]);
+    }
 
     function openLightbox(images, index) {
       currentImages = images;
       currentIndex = index;
-      updateLightboxView();
-      lightbox.classList.add('active');
-    }
-
-    function closeLightbox() { lightbox.classList.remove('active'); }
-
-    function updateLightboxView() {
-      lightboxImg.src = currentImages[currentIndex];
+      isAnimating = false;
+      // Reset both slides
+      inactiveSlide.className = 'lightbox-slide';
+      inactiveSlide.removeAttribute('src');
+      // Set active slide with open animation
+      activeSlide.src = currentImages[currentIndex];
+      activeSlide.className = 'lightbox-slide open-enter';
       lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+      lightbox.classList.add('active');
+      // Trigger open animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          activeSlide.className = 'lightbox-slide current';
+        });
+      });
+      preloadAdjacent();
     }
 
-    function prevImage() {
-      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-      updateLightboxView();
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      isAnimating = false;
+      // Clean up inline styles from swipe
+      activeSlide.style.transition = '';
+      activeSlide.style.transform = '';
+      activeSlide.style.opacity = '';
     }
 
-    function nextImage() {
-      currentIndex = (currentIndex + 1) % currentImages.length;
-      updateLightboxView();
+    function navigateLightbox(direction) {
+      if (isAnimating || currentImages.length <= 1) return;
+      isAnimating = true;
+
+      const newIndex = direction === 'next'
+        ? (currentIndex + 1) % currentImages.length
+        : (currentIndex - 1 + currentImages.length) % currentImages.length;
+
+      // Prepare incoming slide off-screen
+      inactiveSlide.src = currentImages[newIndex];
+      inactiveSlide.className = 'lightbox-slide ' + (direction === 'next' ? 'enter-right' : 'enter-left');
+
+      // Force reflow so the initial position is applied before transition
+      void inactiveSlide.offsetWidth;
+
+      // Animate: current slides out, new slides in
+      activeSlide.className = 'lightbox-slide ' + (direction === 'next' ? 'slide-out-left' : 'slide-out-right');
+      inactiveSlide.className = 'lightbox-slide current';
+
+      // Update index and counter
+      currentIndex = newIndex;
+      lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+
+      // Swap roles
+      const temp = activeSlide;
+      activeSlide = inactiveSlide;
+      inactiveSlide = temp;
+
+      // Unlock after transition completes
+      setTimeout(() => {
+        isAnimating = false;
+        // Clean up old slide
+        inactiveSlide.className = 'lightbox-slide';
+        preloadAdjacent();
+      }, 420);
     }
+
+    function prevImage() { navigateLightbox('prev'); }
+    function nextImage() { navigateLightbox('next'); }
 
     document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
     document.getElementById('lightboxPrev').addEventListener('click', prevImage);
     document.getElementById('lightboxNext').addEventListener('click', nextImage);
-    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target.id === 'lightboxTrack') closeLightbox();
+    });
 
     document.addEventListener('keydown', (e) => {
       if (!lightbox.classList.contains('active')) return;
@@ -3796,16 +3929,17 @@
 
       lightbox.addEventListener('touchstart', (e) => {
         if (e.target === document.getElementById('lightboxClose')) return;
+        if (isAnimating) return;
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
         deltaX = 0;
         isSwiping = false;
         isVertical = false;
-        lightboxImg.style.transition = 'none';
+        activeSlide.style.transition = 'none';
       }, { passive: true });
 
       lightbox.addEventListener('touchmove', (e) => {
-        if (isVertical) return;
+        if (isVertical || isAnimating) return;
         const dx = e.touches[0].clientX - startX;
         const dy = e.touches[0].clientY - startY;
 
@@ -3822,35 +3956,73 @@
         const progress = Math.abs(deltaX) / window.innerWidth;
         const scale = 1 - progress * 0.15;
         const opacity = 1 - progress * 0.4;
-        lightboxImg.style.transform = 'translateX(' + deltaX + 'px) scale(' + Math.max(scale, 0.85) + ')';
-        lightboxImg.style.opacity = Math.max(opacity, 0.6);
+        activeSlide.style.transform = 'translateX(' + deltaX + 'px) scale(' + Math.max(scale, 0.85) + ')';
+        activeSlide.style.opacity = Math.max(opacity, 0.6);
       }, { passive: false });
 
       lightbox.addEventListener('touchend', () => {
+        if (isAnimating && !isSwiping) return;
         lightbox.classList.remove('swiping');
-        lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
 
-        if (Math.abs(deltaX) > 60) {
-          // Complete the swipe with slide-out animation
-          const direction = deltaX > 0 ? 1 : -1;
-          lightboxImg.style.transform = 'translateX(' + (direction * window.innerWidth) + 'px) scale(0.85)';
-          lightboxImg.style.opacity = '0';
+        if (isSwiping && Math.abs(deltaX) > 60) {
+          isAnimating = true;
+          const swipeDir = deltaX > 0 ? 1 : -1;
+          const navDir = deltaX > 0 ? 'prev' : 'next';
+
+          // Slide out current
+          activeSlide.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+          activeSlide.style.transform = 'translateX(' + (swipeDir * window.innerWidth * 0.6) + 'px) scale(0.85)';
+          activeSlide.style.opacity = '0';
+
           setTimeout(() => {
-            if (deltaX > 0) prevImage(); else nextImage();
-            // Slide in from opposite side
-            lightboxImg.style.transition = 'none';
-            lightboxImg.style.transform = 'translateX(' + (-direction * 80) + 'px) scale(0.95)';
-            lightboxImg.style.opacity = '0.5';
+            // Clean up old slide
+            activeSlide.style.transition = '';
+            activeSlide.style.transform = '';
+            activeSlide.style.opacity = '';
+            activeSlide.className = 'lightbox-slide';
+
+            // Update index
+            currentIndex = navDir === 'next'
+              ? (currentIndex + 1) % currentImages.length
+              : (currentIndex - 1 + currentImages.length) % currentImages.length;
+
+            // Set incoming slide
+            inactiveSlide.src = currentImages[currentIndex];
+            inactiveSlide.style.transition = 'none';
+            inactiveSlide.style.transform = 'translateX(' + (-swipeDir * 60) + 'px) scale(0.95)';
+            inactiveSlide.style.opacity = '0.3';
+            inactiveSlide.className = 'lightbox-slide current';
+
+            // Swap roles
+            const temp = activeSlide;
+            activeSlide = inactiveSlide;
+            inactiveSlide = temp;
+
+            lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+
             requestAnimationFrame(() => {
-              lightboxImg.style.transition = 'transform 0.35s ease-out, opacity 0.35s ease-out';
-              lightboxImg.style.transform = 'translateX(0) scale(1)';
-              lightboxImg.style.opacity = '1';
+              activeSlide.style.transition = 'transform 0.32s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.32s ease-out';
+              activeSlide.style.transform = 'translateX(0) scale(1)';
+              activeSlide.style.opacity = '1';
+              setTimeout(() => {
+                activeSlide.style.transition = '';
+                activeSlide.style.transform = '';
+                activeSlide.style.opacity = '';
+                isAnimating = false;
+                preloadAdjacent();
+              }, 340);
             });
-          }, 200);
-        } else {
+          }, 180);
+        } else if (isSwiping) {
           // Snap back
-          lightboxImg.style.transform = 'translateX(0) scale(1)';
-          lightboxImg.style.opacity = '1';
+          activeSlide.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s ease';
+          activeSlide.style.transform = 'translateX(0) scale(1)';
+          activeSlide.style.opacity = '1';
+          setTimeout(() => {
+            activeSlide.style.transition = '';
+            activeSlide.style.transform = '';
+            activeSlide.style.opacity = '';
+          }, 300);
         }
         deltaX = 0;
         isSwiping = false;
@@ -3874,26 +4046,31 @@
         if (isSwipingDown) {
           deltaYClose = dy;
           const progress = Math.min(deltaYClose / 300, 1);
-          lightboxImg.style.transform = 'translateY(' + deltaYClose + 'px) scale(' + (1 - progress * 0.2) + ')';
-          lightboxImg.style.opacity = 1 - progress * 0.5;
+          activeSlide.style.transform = 'translateY(' + deltaYClose + 'px) scale(' + (1 - progress * 0.2) + ')';
+          activeSlide.style.opacity = 1 - progress * 0.5;
         }
       }, { passive: true });
 
       lightbox.addEventListener('touchend', () => {
         if (isSwipingDown && deltaYClose > 120) {
-          lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-          lightboxImg.style.transform = 'translateY(' + window.innerHeight + 'px) scale(0.7)';
-          lightboxImg.style.opacity = '0';
+          activeSlide.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+          activeSlide.style.transform = 'translateY(' + window.innerHeight + 'px) scale(0.7)';
+          activeSlide.style.opacity = '0';
           setTimeout(closeLightbox, 250);
           setTimeout(() => {
-            lightboxImg.style.transition = '';
-            lightboxImg.style.transform = '';
-            lightboxImg.style.opacity = '';
+            activeSlide.style.transition = '';
+            activeSlide.style.transform = '';
+            activeSlide.style.opacity = '';
           }, 350);
         } else if (isSwipingDown) {
-          lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-          lightboxImg.style.transform = 'translateY(0) scale(1)';
-          lightboxImg.style.opacity = '1';
+          activeSlide.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+          activeSlide.style.transform = 'translateY(0) scale(1)';
+          activeSlide.style.opacity = '1';
+          setTimeout(() => {
+            activeSlide.style.transition = '';
+            activeSlide.style.transform = '';
+            activeSlide.style.opacity = '';
+          }, 300);
         }
         isSwipingDown = false;
         deltaYClose = 0;
@@ -4510,58 +4687,87 @@
       }
     });
 
-    // ===== Hero Scroll Hint =====
+    // ===== Hero Scroll Hint & Music Auto-Play =====
+    var _musicAutoPlayed = false;
+    var _playerPrimed = false;
+    var _scrolledToMusic = false;
     (function() {
       var hint = document.getElementById('heroScrollHint');
       var homeScroll = document.getElementById('homeScroll');
+      var playBtn = document.getElementById('ytPlayBtn');
       if (!hint || !homeScroll) return;
 
+      // --- 播放音樂 ---
+      function playMusic() {
+        if (_musicAutoPlayed || !ytPlayerReady || !ytPlayer) return;
+        _musicAutoPlayed = true;
+        try {
+          ytPlayer.unMute();
+          ytPlayer.setVolume(100);
+          ytPlayer.playVideo();
+        } catch(e) {}
+        if (playBtn) playBtn.classList.add('hidden');
+      }
+
+      // --- 預熱播放器：在用戶點擊/觸摸時靜音快速 play→pause 解鎖媒體播放權限 ---
+      function primePlayer() {
+        if (_playerPrimed || !ytPlayerReady || !ytPlayer) return;
+        _playerPrimed = true;
+        try {
+          ytPlayer.mute();
+          ytPlayer.playVideo();
+          setTimeout(function() {
+            if (!_musicAutoPlayed) {
+              try { ytPlayer.pauseVideo(); } catch(e) {}
+            }
+            try { ytPlayer.unMute(); } catch(e) {}
+          }, 300);
+        } catch(e) {}
+      }
+
+      // --- 用戶首次點擊/觸摸頁面：預熱播放器 + 如果已滾動到音樂區就直接播放 ---
+      function onFirstInteraction() {
+        if (_scrolledToMusic && !_musicAutoPlayed && ytPlayerReady && ytPlayer) {
+          // 已經滾到音樂區了，直接在用戶手勢中播放（保證成功）
+          playMusic();
+        } else {
+          // 還沒滾到，先預熱播放器
+          primePlayer();
+        }
+        document.removeEventListener('click', onFirstInteraction, true);
+        document.removeEventListener('touchstart', onFirstInteraction, true);
+      }
+      document.addEventListener('click', onFirstInteraction, true);
+      document.addEventListener('touchstart', onFirstInteraction, true);
+
+      // --- 點擊「往下滑動聆聽我們的歌」提示 ---
       hint.addEventListener('click', function() {
         var musicSection = document.getElementById('heroMusicSection');
         if (musicSection) {
           musicSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        // 點擊 = 用戶手勢，可直接播放
+        _scrolledToMusic = true;
+        if (ytPlayerReady && ytPlayer) {
+          playMusic();
+        } else {
+          window._ytPendingAutoPlay = true;
+        }
       });
 
-      var musicAutoPlayed = false;
-      window._ytPendingAutoPlay = false;
-      var playBtn = document.getElementById('ytPlayBtn');
-
-      function tryAutoPlay() {
-        if (musicAutoPlayed || !ytPlayerReady || !ytPlayer) return;
-        musicAutoPlayed = true;
-        try {
-          ytPlayer.unMute();
-          ytPlayer.setVolume(100);
-          ytPlayer.playVideo();
-          // 檢查是否成功播放，成功就隱藏播放按鈕
-          setTimeout(function() {
-            try {
-              var state = ytPlayer.getPlayerState();
-              if (state === 1 || state === 3) {
-                if (playBtn) playBtn.classList.add('hidden');
-              }
-              // 如果沒有自動播放成功，按鈕保持顯示讓用戶手動點擊
-            } catch(e) {}
-          }, 1000);
-        } catch(e) {}
-      }
-
-      // 播放按鈕點擊 — 手動播放（一定能成功因為有用戶互動）
+      // --- 播放按鈕點擊（最終保底）---
       if (playBtn) {
         playBtn.addEventListener('click', function() {
           if (ytPlayer && ytPlayerReady) {
-            try {
-              ytPlayer.unMute();
-              ytPlayer.setVolume(100);
-              ytPlayer.playVideo();
-            } catch(e) {}
+            playMusic();
+          } else {
+            window._ytPendingAutoPlay = true;
+            playBtn.classList.add('hidden');
           }
-          playBtn.classList.add('hidden');
-          musicAutoPlayed = true;
         });
       }
 
+      // --- 滾動偵測 ---
       homeScroll.addEventListener('scroll', function() {
         if (homeScroll.scrollTop > 60) {
           hint.classList.add('hidden');
@@ -4569,12 +4775,18 @@
           hint.classList.remove('hidden');
         }
 
-        // 自動播放音樂：當滾動超過 100px（音樂區塊出現）時觸發
-        if (!musicAutoPlayed && homeScroll.scrollTop > 100) {
-          if (ytPlayerReady && ytPlayer) {
-            tryAutoPlay();
-          } else {
-            window._ytPendingAutoPlay = true;
+        // 標記已滾動到音樂區
+        if (!_musicAutoPlayed && homeScroll.scrollTop > 100) {
+          _scrolledToMusic = true;
+          // 如果播放器已預熱過（用戶之前有點擊/觸摸），嘗試播放
+          if (_playerPrimed && ytPlayerReady && ytPlayer) {
+            try {
+              ytPlayer.unMute();
+              ytPlayer.setVolume(100);
+              ytPlayer.playVideo();
+              _musicAutoPlayed = true;
+              if (playBtn) playBtn.classList.add('hidden');
+            } catch(e) {}
           }
         }
       }, { passive: true });
@@ -4603,23 +4815,19 @@
           events: {
             onReady: function () {
               ytPlayerReady = true;
-              // 如果用戶已經滾動到音樂區但播放器才剛就緒，立即播放
+              // 如果有待播放旗標（用戶已點擊/觸摸 + 已滾動到音樂區）
               if (window._ytPendingAutoPlay) {
                 window._ytPendingAutoPlay = false;
-                try {
-                  ytPlayer.unMute();
-                  ytPlayer.setVolume(100);
-                  ytPlayer.playVideo();
-                  setTimeout(function() {
-                    try {
-                      var state = ytPlayer.getPlayerState();
-                      if (state === 1 || state === 3) {
-                        var pb = document.getElementById('ytPlayBtn');
-                        if (pb) pb.classList.add('hidden');
-                      }
-                    } catch(e) {}
-                  }, 1000);
-                } catch(e) {}
+                if (!_musicAutoPlayed) {
+                  _musicAutoPlayed = true;
+                  try {
+                    ytPlayer.unMute();
+                    ytPlayer.setVolume(100);
+                    ytPlayer.playVideo();
+                    var pb = document.getElementById('ytPlayBtn');
+                    if (pb) pb.classList.add('hidden');
+                  } catch(e) {}
+                }
               }
             },
             onStateChange: function (e) {
