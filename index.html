@@ -3870,11 +3870,18 @@
 
     function closeLightbox() {
       lightbox.classList.remove('active');
+      lightbox.classList.remove('swiping');
       isAnimating = false;
-      // Clean up inline styles from swipe
+      // Reset both slides to base state (removes pointer-events: auto from .current)
+      activeSlide.className = 'lightbox-slide';
+      inactiveSlide.className = 'lightbox-slide';
+      // Clean up any inline styles left by swipe gestures
       activeSlide.style.transition = '';
       activeSlide.style.transform = '';
       activeSlide.style.opacity = '';
+      inactiveSlide.style.transition = '';
+      inactiveSlide.style.transform = '';
+      inactiveSlide.style.opacity = '';
     }
 
     function navigateLightbox(direction) {
@@ -4064,12 +4071,9 @@
           activeSlide.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
           activeSlide.style.transform = 'translateY(' + window.innerHeight + 'px) scale(0.7)';
           activeSlide.style.opacity = '0';
-          setTimeout(closeLightbox, 250);
           setTimeout(() => {
-            activeSlide.style.transition = '';
-            activeSlide.style.transform = '';
-            activeSlide.style.opacity = '';
-          }, 350);
+            closeLightbox(); // closeLightbox now fully resets all slides & styles
+          }, 250);
         } else if (isSwipingDown) {
           activeSlide.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
           activeSlide.style.transform = 'translateY(0) scale(1)';
