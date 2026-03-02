@@ -267,9 +267,11 @@
       background: transparent;
       padding: 0.85rem 0.8rem;
       font-family: var(--font-serif);
-      font-size: 1rem;
+      font-size: 16px;
       color: var(--charcoal);
       letter-spacing: 1px;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .seat-search-input::placeholder {
@@ -2594,7 +2596,7 @@
 
   <!-- Seat Search Modal -->
   <div class="seat-modal-overlay" id="seatModalOverlay">
-    <div class="seat-modal">
+    <div class="seat-modal" onclick="event.stopPropagation()">
       <div class="seat-modal-header">
         <div class="seat-modal-close" onclick="closeSeatSearch()">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -2626,7 +2628,7 @@
     //  設定：請把你部署的 Google Apps Script 網址貼在這裡
     //  （參考 google-apps-script.js 檔案裡的部署步驟）
     // ============================================================
-    const DRIVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCQUiRHZHy3y_TvxZ7ilO0sfo-JsNss9HGwl5sxaGAlPAUM_EoesEDAkflTrDh_M2N_A/exec';  // ← 貼上你的 Apps Script 網址
+    const DRIVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw34RRclq1mcVvuc9aVl7sSFUfuHynSAvPb-4VGX_HSV-qnYv1Kc33kc3zhU9ILP1arKg/exec';  // ← 貼上你的 Apps Script 網址
     const SEAT_SCRIPT_URL  = DRIVE_SCRIPT_URL + '?action=seats';  // 共用同一個部署，用 ?action=seats 區分
 
     // Google Drive 圖片 URL 產生器
@@ -3030,6 +3032,7 @@
 
       document.addEventListener('touchstart', (e) => {
         if (lightbox.classList.contains('active')) return;
+        if (seatModalOverlay.classList.contains('active')) return;
         if (e.target.closest('.nav')) return;
         sx = e.touches[0].clientX;
         sy = e.touches[0].clientY;
@@ -3039,6 +3042,7 @@
 
       document.addEventListener('touchmove', (e) => {
         if (lightbox.classList.contains('active')) return;
+        if (seatModalOverlay.classList.contains('active')) return;
         if (verticalScroll) return;
         const dx = e.touches[0].clientX - sx;
         const dy = e.touches[0].clientY - sy;
@@ -3056,6 +3060,7 @@
 
       document.addEventListener('touchend', (e) => {
         if (!swiping || lightbox.classList.contains('active')) return;
+        if (seatModalOverlay.classList.contains('active')) return;
         const dx = e.changedTouches[0].clientX - sx;
         const idx = pages.indexOf(currentPage);
 
@@ -3272,6 +3277,17 @@
       if (e.target === seatModalOverlay) closeSeatSearch();
     });
 
+    // 防止 modal 內的觸控事件穿透
+    document.querySelector('.seat-modal').addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+    }, { passive: true });
+    document.querySelector('.seat-modal').addEventListener('touchmove', (e) => {
+      e.stopPropagation();
+    }, { passive: true });
+    document.querySelector('.seat-modal').addEventListener('touchend', (e) => {
+      e.stopPropagation();
+    }, { passive: true });
+
     // ESC 關閉
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && seatModalOverlay.classList.contains('active')) closeSeatSearch();
@@ -3350,14 +3366,14 @@
       const results = [];
       for (const [tableName, guests] of Object.entries(seatData)) {
         for (const guest of guests) {
-          if (guest.includes(query)) {
+          if (guest === query) {
             results.push({ name: guest, table: tableName });
           }
         }
       }
 
       if (results.length === 0) {
-        seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">😔</span>找不到「' + escapeHtml(query) + '」的座位資訊<br><span style="font-size:0.8rem;color:var(--text-light);">請確認姓名是否正確，或聯繫新人</span></div>';
+        seatResults.innerHTML = '<div class="seat-results-empty"><span class="hint-icon">😔</span>找不到「' + escapeHtml(query) + '」的座位資訊<br><span style="font-size:0.8rem;color:var(--text-light);">請輸入完整姓名，或聯繫新人</span></div>';
         return;
       }
 
