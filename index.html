@@ -8,14 +8,6 @@
   <meta name="format-detection" content="telephone=no">
   <meta name="theme-color" content="#2c2c2c">
   <title>玉蕙 & 永成 — 我們的婚禮</title>
-  <script>
-    // 偵測觸控裝置（不受 Safari「要求桌面版網站」影響）
-    (function(){
-      var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      var small = Math.min(screen.width, screen.height) <= 768;
-      if (touch && small) document.documentElement.classList.add('mobile-device');
-    })();
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=LXGW+WenKai+TC:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
@@ -1050,17 +1042,21 @@
       text-transform: uppercase;
     }
 
-    .loader-progress-text::after {
-      content: '';
-      animation: loadingDots 1.5s steps(4, end) infinite;
+    .loader-progress-text .dots {
+      display: inline;
     }
+    .loader-progress-text .dots span {
+      opacity: 0;
+      animation: dotFade 1.5s infinite;
+    }
+    .loader-progress-text .dots span:nth-child(1) { animation-delay: 0s; }
+    .loader-progress-text .dots span:nth-child(2) { animation-delay: 0.3s; }
+    .loader-progress-text .dots span:nth-child(3) { animation-delay: 0.6s; }
 
-    @keyframes loadingDots {
-      0%   { content: ''; }
-      25%  { content: '.'; }
-      50%  { content: '..'; }
-      75%  { content: '...'; }
-      100% { content: ''; }
+    @keyframes dotFade {
+      0%, 20% { opacity: 0; }
+      40%, 60% { opacity: 1; }
+      80%, 100% { opacity: 0; }
     }
 
     /* Shimmer effect on progress track */
@@ -1498,132 +1494,6 @@
       }
     }
 
-    /* === Fallback: 觸控裝置強制手機版佈局（Safari「桌面版」相容） === */
-    html.mobile-device .nav {
-      gap: 0 !important;
-      padding: 0 !important;
-      padding-bottom: env(safe-area-inset-bottom, 0) !important;
-      padding-bottom: constant(safe-area-inset-bottom) !important;
-      top: auto !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      background: rgba(250, 248, 245, 0.97) !important;
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 -1px 20px rgba(0,0,0,0.06);
-      border-top: 1px solid rgba(184,151,126,0.15);
-      -webkit-justify-content: stretch;
-      justify-content: stretch;
-    }
-    html.mobile-device .nav::before { opacity: 1; }
-    html.mobile-device .nav a {
-      color: var(--text-light) !important;
-      font-size: 0.6rem !important;
-      letter-spacing: 1px !important;
-      padding: 0.7rem 0.5rem 0.6rem !important;
-      -webkit-flex: 1;
-      flex: 1;
-      text-align: center;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-flex-direction: column;
-      flex-direction: column;
-      -webkit-align-items: center;
-      align-items: center;
-      gap: 0.3rem;
-      position: relative;
-      transition: color 0.3s;
-    }
-    html.mobile-device .nav a::before {
-      font-size: 1.1rem;
-      display: block;
-      font-style: normal;
-      font-family: initial;
-      line-height: 1;
-    }
-    html.mobile-device .nav a[data-page="home"]::before { content: "🏠"; }
-    html.mobile-device .nav a[data-page="invitation"]::before { content: "💌"; }
-    html.mobile-device .nav a[data-page="paris"]::before { content: "📸"; }
-    html.mobile-device .nav a[data-page="studio"]::before { content: "🌿"; }
-    html.mobile-device .nav a::after { display: none; }
-    html.mobile-device .nav a.active { color: var(--gold-dark) !important; font-weight: 500; }
-    html.mobile-device .nav.has-bg a { color: var(--text-light) !important; }
-    html.mobile-device .nav.has-bg a.active { color: var(--gold-dark) !important; }
-    html.mobile-device .page-dots { display: none !important; }
-
-    html.mobile-device .hero-label { font-size: 1.15rem; margin-bottom: 1.8rem; }
-    html.mobile-device .hero-names { font-size: clamp(1.8rem, 8vw, 2.8rem); margin-bottom: 1.5rem; }
-    html.mobile-device .names-row { gap: clamp(0.8rem, 3vw, 1.5rem); }
-    html.mobile-device .name-groom { letter-spacing: 4px; }
-    html.mobile-device .name-bride { letter-spacing: 4px; }
-    html.mobile-device .hero-names .amp { font-size: 0.45em; }
-    html.mobile-device .role-label { font-size: 0.7rem; letter-spacing: 1.5px; }
-    html.mobile-device .hero-date { font-size: 0.85rem; letter-spacing: 4px; }
-    html.mobile-device .hero-venue { font-size: 0.75rem; letter-spacing: 2px; }
-    html.mobile-device .hero-cta {
-      bottom: calc(4.5rem + constant(safe-area-inset-bottom));
-      bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
-    }
-    html.mobile-device .hero-cta span { font-size: 0.6rem; letter-spacing: 3px; }
-
-    html.mobile-device .invitation-page { padding: 1.5rem 0 calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
-    html.mobile-device .invitation-wrapper { padding: 1rem; }
-    html.mobile-device .invitation-card { padding: 2.5rem 1.5rem; }
-    html.mobile-device .invitation-card::before,
-    html.mobile-device .invitation-card::after { width: 22px; height: 22px; }
-    html.mobile-device .invitation-card::before { top: 8px; left: 8px; }
-    html.mobile-device .invitation-card::after { bottom: 8px; right: 8px; }
-    html.mobile-device .inv-label { font-size: 1.1rem; margin-bottom: 1.8rem; }
-    html.mobile-device .inv-names { font-size: 1.8rem; }
-    html.mobile-device .inv-names .names-row { gap: clamp(0.6rem, 2.5vw, 1.5rem); }
-    html.mobile-device .inv-names .name-groom { letter-spacing: 3px; }
-    html.mobile-device .inv-names .name-bride { letter-spacing: 3px; }
-    html.mobile-device .inv-names .role-label { font-size: 0.65rem; }
-    html.mobile-device .inv-amp { font-size: 1.2rem; }
-    html.mobile-device .inv-parents { gap: 1.8rem; margin-top: 1.5rem; padding-top: 1.2rem; }
-    html.mobile-device .inv-parents-title { font-size: 0.78rem; }
-    html.mobile-device .inv-parents-names { font-size: 0.78rem; }
-    html.mobile-device .inv-details { margin-top: 1.5rem; font-size: 0.85rem; }
-    html.mobile-device .inv-details .date { font-size: 1.15rem; letter-spacing: 2px; }
-    html.mobile-device .inv-time-row { gap: 1.5rem; margin: 1rem 0; }
-    html.mobile-device .inv-time-block .time { font-size: 1.3rem; }
-    html.mobile-device .inv-time-block .desc { font-size: 0.72rem; }
-    html.mobile-device .inv-details .venue { font-size: 0.95rem; }
-    html.mobile-device .inv-details .address { font-size: 0.78rem; }
-    html.mobile-device .inv-map-btn { margin-top: 1.5rem; padding: 0.75rem 2rem; font-size: 0.72rem; }
-
-    html.mobile-device .gallery-hero { height: 35vh; min-height: 240px; }
-    html.mobile-device .gallery-hero-label { font-size: 1.05rem; }
-    html.mobile-device .gallery-hero-sub { font-size: 0.82rem; padding: 0 1.5rem; }
-    html.mobile-device .gallery-body { padding: 1.5rem 0.8rem 2rem; }
-    html.mobile-device .gallery-grid { columns: 2; column-gap: 0.5rem; }
-    html.mobile-device .gallery-item { margin-bottom: 0.5rem; border-radius: 3px; }
-    html.mobile-device .gallery-item:hover img { transform: none; }
-    html.mobile-device .gallery-item:hover::after { background: transparent; }
-    html.mobile-device .gallery-empty { padding: 3rem 1.5rem; font-size: 0.9rem; }
-    html.mobile-device .page-footer {
-      padding: 2.5rem 1.5rem calc(4rem + constant(safe-area-inset-bottom));
-      padding: 2.5rem 1.5rem calc(4rem + env(safe-area-inset-bottom, 0px));
-    }
-    html.mobile-device .page-footer .names { font-size: 1.3rem; }
-
-    html.mobile-device .lightbox img { max-width: 96vw; max-height: 85vh; }
-    html.mobile-device .lightbox-close { top: 1rem; right: 1rem; width: 40px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 50%; }
-    html.mobile-device .lightbox-nav { width: 44px; height: 44px; }
-    html.mobile-device .lightbox-nav.prev { left: 0.4rem; }
-    html.mobile-device .lightbox-nav.next { right: 0.4rem; }
-    html.mobile-device .lightbox-nav::before { width: 11px; height: 11px; }
-    html.mobile-device .lightbox-counter { bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.72rem; }
-
-    html.mobile-device .loader-names-row { gap: clamp(1rem, 4vw, 2rem); }
-    html.mobile-device .loader-role { font-size: 0.75rem; }
-    html.mobile-device .loader-groom { letter-spacing: 4px; }
-    html.mobile-device .loader-bride { letter-spacing: 4px; }
-    html.mobile-device .loader-amp { font-size: 1.4rem; }
-    html.mobile-device .loader-date { font-size: 0.7rem; letter-spacing: 4px; }
-
     /* --- Extra small (< 480px) --- */
     @media (max-width: 480px) {
       .hero-names {
@@ -1996,66 +1866,6 @@
       }
     }
 
-    /* === Fallback: 其餘觸控裝置手機版樣式 === */
-    html.mobile-device .lightbox { background: rgba(0, 0, 0, 0.98); }
-    html.mobile-device .lightbox img {
-      max-width: 100vw; max-height: 80vh; border-radius: 0;
-      transition: transform 0.25s ease, opacity 0.25s ease; will-change: transform;
-    }
-    html.mobile-device .lightbox.swiping img { transition: none; }
-    html.mobile-device .lightbox-close {
-      top: 0.8rem; right: 0.8rem; width: 44px; height: 44px;
-      background: rgba(0,0,0,0.5); border-radius: 50%; z-index: 20;
-    }
-    html.mobile-device .lightbox-close::before,
-    html.mobile-device .lightbox-close::after { width: 18px; background: rgba(255,255,255,0.85); }
-    html.mobile-device .lightbox-nav { display: none; }
-    html.mobile-device .lightbox-counter {
-      bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); font-size: 0.72rem;
-      background: rgba(0,0,0,0.4); padding: 0.3rem 0.8rem; border-radius: 12px; backdrop-filter: blur(8px);
-    }
-    html.mobile-device .lightbox-swipe-hint {
-      position: absolute; bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
-      left: 50%; transform: translateX(-50%); display: flex; gap: 4px;
-      opacity: 0; transition: opacity 0.5s;
-    }
-    html.mobile-device .lightbox.active .lightbox-swipe-hint { opacity: 1; animation: swipeHintFade 3s ease-out 1.5s forwards; }
-    html.mobile-device .lightbox-swipe-hint span { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.3); }
-    html.mobile-device .lightbox-swipe-hint span:nth-child(2) { background: rgba(255,255,255,0.6); }
-
-    html.mobile-device .swipe-indicator {
-      display: flex; position: fixed;
-      bottom: calc(4.2rem + env(safe-area-inset-bottom, 0px));
-      left: 50%; transform: translateX(-50%); z-index: 600;
-      gap: 6px; opacity: 0; pointer-events: none; transition: opacity 0.5s;
-    }
-    html.mobile-device .swipe-indicator.visible { opacity: 1; animation: swipeIndicatorFade 4s ease-out 2s forwards; }
-    html.mobile-device .swipe-indicator .swipe-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(184, 151, 126, 0.3); transition: all 0.3s; }
-    html.mobile-device .swipe-indicator .swipe-dot.active { background: var(--gold); transform: scale(1.3); }
-
-    html.mobile-device .loader { padding: 0 1.5rem; }
-    html.mobile-device .loader-line,
-    html.mobile-device .loader-line-bottom { animation-name: lineExpandMobile; }
-    html.mobile-device .loader-groom,
-    html.mobile-device .loader-bride { font-size: clamp(1.3rem, 6vw, 2rem); letter-spacing: 5px; }
-    html.mobile-device .loader-amp { font-size: 1.2rem; }
-    html.mobile-device .loader-date { font-size: 0.68rem; letter-spacing: 3px; }
-    html.mobile-device .loader-progress-wrap { margin-top: 2rem; }
-    html.mobile-device .loader-progress-text { font-size: 0.55rem; letter-spacing: 3px; }
-
-    html.mobile-device .gallery-item { -webkit-tap-highlight-color: transparent; transition: transform 0.2s ease; }
-    html.mobile-device .gallery-item:active { transform: scale(0.97); }
-    html.mobile-device .gallery-item img { transition: none; }
-
-    html.mobile-device .curtain { -webkit-flex-direction: column; flex-direction: column; }
-    html.mobile-device .curtain-panel { -webkit-transform: scaleX(0); transform: scaleX(0); -webkit-transform-origin: left; transform-origin: left; }
-    html.mobile-device .curtain.animating .curtain-panel { animation: curtainInMobile 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
-    html.mobile-device .curtain.animating-out .curtain-panel { animation: curtainOutMobile 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
-
-    html.mobile-device .hero-cta .arrow { animation: bounceMobile 2.5s ease-in-out infinite; }
-
-    html.mobile-device .page-scroll { scroll-behavior: smooth; -webkit-overscroll-behavior-y: contain; overscroll-behavior-y: contain; }
-
   </style>
 </head>
 <body>
@@ -2080,7 +1890,7 @@
       <div class="loader-progress-track">
         <div class="loader-progress-bar" id="loaderProgressBar"></div>
       </div>
-      <div class="loader-progress-text">Loading</div>
+      <div class="loader-progress-text">Loading<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
   </div>
 
@@ -2314,8 +2124,10 @@
       let currentSlide = null;
       let prevSlide = null;
       let started = false;
+      let timerId = null;
+      let paused = false;
 
-      function isMobile() { return window.innerWidth <= 768 || document.documentElement.classList.contains('mobile-device'); }
+      function isMobile() { return window.innerWidth <= 768; }
 
       function shuffle(arr) {
         const a = arr.slice();
@@ -2362,11 +2174,20 @@
       }
 
       function showNext() {
-        if (allImages.length === 0) return;
+        if (allImages.length === 0 || paused) return;
         if (prevSlide) prevSlide.remove();
         if (currentSlide) { currentSlide.classList.remove('active'); prevSlide = currentSlide; }
         currentSlide = createSlide(getNextImage());
         requestAnimationFrame(() => { currentSlide.classList.add('active'); });
+      }
+
+      function startTimer() {
+        if (timerId) return;
+        timerId = setInterval(showNext, interval);
+      }
+
+      function stopTimer() {
+        if (timerId) { clearInterval(timerId); timerId = null; }
       }
 
       let resizeTimer;
@@ -2386,8 +2207,16 @@
           if (!started) {
             started = true;
             showNext();
-            setInterval(showNext, interval);
+            startTimer();
           }
+        },
+        pause: function() {
+          paused = true;
+          stopTimer();
+        },
+        resume: function() {
+          paused = false;
+          startTimer();
         }
       };
     })();
@@ -2418,6 +2247,9 @@
         if (scrollEl) scrollEl.scrollTop = 0;
         currentPage = pageId;
         updateNav(pageId);
+        // 離開首頁時暫停輪播，回到首頁時恢復
+        if (pageId === 'home') heroSlideshow.resume();
+        else heroSlideshow.pause();
         curtain.className = 'curtain animating-out';
         setTimeout(() => { curtain.className = 'curtain'; isTransitioning = false; }, 550);
       }, 450);
@@ -2592,7 +2424,7 @@
 
     // ===== Mobile Page Swipe Navigation =====
     (function() {
-      if (window.innerWidth > 768 && !document.documentElement.classList.contains('mobile-device')) return;
+      if (window.innerWidth > 768) return;
 
       const swipeIndicator = document.getElementById('swipeIndicator');
       // Build swipe indicator dots
