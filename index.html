@@ -475,7 +475,6 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center center;
-      filter: brightness(0.45) saturate(0.85);
       opacity: 0;
       transition: opacity 1.8s ease-in-out;
       will-change: opacity, transform;
@@ -493,23 +492,23 @@
     .hero-bg-slide.kb-5 { animation: kbDriftCenter 10s ease-in-out infinite alternate; }
 
     @keyframes kbDriftRight {
-      0%   { transform: scale(1.12) translateX(-1%); }
-      100% { transform: scale(1.03) translateX(1%); }
+      0%   { transform: scale(1.06) translateX(-1%); }
+      100% { transform: scale(1.01) translateX(1%); }
     }
     @keyframes kbDriftLeft {
-      0%   { transform: scale(1.12) translateX(1%); }
-      100% { transform: scale(1.03) translateX(-1%); }
+      0%   { transform: scale(1.06) translateX(1%); }
+      100% { transform: scale(1.01) translateX(-1%); }
     }
     @keyframes kbDriftUp {
-      0%   { transform: scale(1.14) translateY(1.5%); }
-      100% { transform: scale(1.03) translateY(-1%); }
+      0%   { transform: scale(1.07) translateY(1.5%); }
+      100% { transform: scale(1.01) translateY(-1%); }
     }
     @keyframes kbDriftDown {
-      0%   { transform: scale(1.12) translateY(-1%); }
-      100% { transform: scale(1.03) translateY(1%); }
+      0%   { transform: scale(1.06) translateY(-1%); }
+      100% { transform: scale(1.01) translateY(1%); }
     }
     @keyframes kbDriftCenter {
-      0%   { transform: scale(1.15); }
+      0%   { transform: scale(1.07); }
       100% { transform: scale(1.0); }
     }
 
@@ -546,14 +545,20 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: linear-gradient(180deg,
-        rgba(58,31,46,0.35) 0%, rgba(58,31,46,0.05) 40%, rgba(58,31,46,0.5) 100%);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(30,10,20,0.45) 0%, transparent 70%),
+        linear-gradient(180deg,
+          rgba(30,10,20,0.55) 0%,
+          rgba(30,10,20,0.15) 30%,
+          rgba(30,10,20,0.25) 55%,
+          rgba(30,10,20,0.65) 100%);
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
       color: var(--white);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.5);
     }
 
     .hero-content .fade-item {
@@ -579,6 +584,7 @@
       color: var(--gold-light);
       margin-bottom: 2.5rem;
       font-weight: 400;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
     }
 
     .hero-names {
@@ -653,8 +659,9 @@
       font-size: 1rem;
       letter-spacing: 6px;
       font-weight: 400;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255,255,255,0.9);
       margin-bottom: 0.6rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
     }
 
     .hero-venue {
@@ -662,6 +669,7 @@
       letter-spacing: 4px;
       color: var(--gold-light);
       font-weight: 300;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
     }
 
     .hero-cta {
@@ -698,6 +706,144 @@
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(8px); }
+    }
+
+    /* ===== Music Player ===== */
+    .hero-music {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      z-index: 1;
+      background: linear-gradient(180deg, transparent 0%, rgba(58, 31, 46, 0.7) 100%);
+      padding: 3rem 2rem 2rem;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .hero-music-label {
+      font-family: var(--font-script);
+      font-size: 1.2rem;
+      color: var(--gold-light);
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-music-player {
+      width: 100%;
+      max-width: 560px;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      background: #000;
+      position: relative;
+    }
+
+    #ytPlayer,
+    #ytPlayer iframe {
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute;
+      top: 0; left: 0;
+      border: none;
+      border-radius: 12px;
+    }
+
+    .hero-music-fallback {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .hero-music-fallback img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: brightness(0.75);
+    }
+
+    .hero-music-fallback:hover img {
+      transform: scale(1.04);
+      filter: brightness(0.55);
+    }
+
+    .hero-music-play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .hero-music-play-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--gold-dark);
+      margin-left: 4px;
+    }
+
+    .hero-music-fallback:hover .hero-music-play-btn {
+      transform: translate(-50%, -50%) scale(1.12);
+      background: #fff;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.5);
+    }
+
+    .hero-music-open-hint {
+      position: absolute;
+      bottom: 0.9rem;
+      right: 1rem;
+      font-family: var(--font-serif);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+    }
+
+    /* Responsive Music Player */
+    @media (max-width: 768px) {
+      .hero-music {
+        padding: 2rem 1rem 1.5rem;
+        gap: 1rem;
+      }
+
+      .hero-music-player {
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+      }
+
+      .hero-music-label {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-music {
+        padding: 1.5rem 1rem 1rem;
+        gap: 0.8rem;
+      }
+
+      .hero-music-label {
+        font-size: 0.95rem;
+      }
     }
 
     /* ===== Invitation Page ===== */
@@ -956,8 +1102,7 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center 25%;
-      filter: brightness(0.45) saturate(0.85);
-      transform: scale(1.05);
+      transform: scale(1.03);
       transition: transform 8s ease-out;
     }
 
@@ -2512,6 +2657,20 @@
         <span>婚宴資訊</span>
         <div class="arrow"></div>
       </div>
+      <div class="hero-music">
+        <div class="hero-music-label">Our Song</div>
+        <div class="hero-music-player" id="ytPlayerWrap">
+          <div id="ytPlayer"></div>
+          <!-- Fallback thumbnail (shown if video cannot be embedded) -->
+          <a class="hero-music-fallback" id="ytFallback" href="https://youtu.be/SQ0DaB7D5AM?si=lIsWtYLxDM9wg4QG" target="_blank" rel="noopener noreferrer" style="display:none;">
+            <img src="https://img.youtube.com/vi/SQ0DaB7D5AM/maxresdefault.jpg" alt="Our Wedding Song" onerror="this.src='https://img.youtube.com/vi/SQ0DaB7D5AM/hqdefault.jpg'">
+            <div class="hero-music-play-btn">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <div class="hero-music-open-hint">前往 YouTube 觀看</div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2790,8 +2949,26 @@
           // Use a tiny thumbnail just for dimension detection
           const detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
           img.onload = () => {
-            if (img.naturalWidth > img.naturalHeight) landscapeImages.push(src);
+            const isLandscape = img.naturalWidth > img.naturalHeight;
+            if (isLandscape) landscapeImages.push(src);
             else portraitImages.push(src);
+            // 當第一張符合裝置方向的圖分類完成，立刻開始播放
+            if (!started) {
+              const needLandscape = !isMobile();
+              if (needLandscape && landscapeImages.length === 1) {
+                started = true;
+                shuffled = shuffle(landscapeImages);
+                index = 0;
+                showNext();
+                startTimer();
+              } else if (!needLandscape && portraitImages.length === 1) {
+                started = true;
+                shuffled = shuffle(portraitImages);
+                index = 0;
+                showNext();
+                startTimer();
+              }
+            }
             // Process next in idle time to avoid blocking
             if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
             else setTimeout(next, 10);
@@ -2806,9 +2983,11 @@
       }
 
       function getPool() {
-        if (!classified) return allImages;
-        const pool = isMobile() ? portraitImages : landscapeImages;
-        return pool.length > 0 ? pool : allImages;
+        if (isMobile()) {
+          return portraitImages.length > 0 ? portraitImages : allImages;
+        } else {
+          return landscapeImages.length > 0 ? landscapeImages : allImages;
+        }
       }
 
       function getNextImage() {
@@ -2869,15 +3048,21 @@
           landscapeImages = [];
           portraitImages = [];
           classified = false;
-          shuffled = shuffle(allImages);
+          started = false;
+          shuffled = [];
           index = 0;
 
-          if (!started) {
-            started = true;
-            // Show first slide immediately (don't wait for classification)
-            showNext();
-            startTimer();
-          }
+          // 先分類，分類到第一張符合方向的圖就立刻播放
+          // 若 5 秒後仍未開始（沒有符合方向的圖），退回播放全部
+          const fallbackTimer = setTimeout(() => {
+            if (!started) {
+              started = true;
+              shuffled = shuffle(allImages);
+              index = 0;
+              showNext();
+              startTimer();
+            }
+          }, 5000);
 
           // Classify in background using tiny thumbnails
           classifyImagesInBackground(allImages);
@@ -3248,7 +3433,10 @@
       files.forEach(function(file) {
         const thumbUrl = file.driveId ? driveThumb(file.driveId, thumbWidth) : file.src;
         const fullUrl  = file.driveId ? driveThumb(file.driveId, 2000) : file.src;
-        srcs.push(thumbUrl);
+        // 首頁輪播用高解析度圖片（螢幕寬度 × 裝置像素比，最高 2560px）
+        var heroWidth = Math.min(Math.round((window.innerWidth || 1920) * (window.devicePixelRatio || 1)), 2560);
+        const heroUrl = file.driveId ? driveThumb(file.driveId, heroWidth) : file.src;
+        srcs.push(heroUrl);
         const div = document.createElement('div');
         div.className = 'gallery-item';
         div.innerHTML = '<img src="' + thumbUrl + '" data-full="' + fullUrl + '" alt="' + altText + '" loading="lazy">';
@@ -3715,6 +3903,36 @@
         e.preventDefault();
       }
     });
+
+    // ===== YouTube IFrame API Player =====
+    (function () {
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      var firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode.insertBefore(tag, firstScript);
+
+      var ytPlayer;
+      window.onYouTubeIframeAPIReady = function () {
+        ytPlayer = new YT.Player('ytPlayer', {
+          videoId: 'SQ0DaB7D5AM',
+          playerVars: {
+            rel: 0,
+            playsinline: 1,
+            origin: window.location.origin || '*'
+          },
+          events: {
+            onError: function (e) {
+              // 錯誤 100/101/150/153 → 無法嵌入，顯示縮圖備案
+              var wrap = document.getElementById('ytPlayerWrap');
+              var fallback = document.getElementById('ytFallback');
+              var playerDiv = document.getElementById('ytPlayer');
+              if (playerDiv) playerDiv.style.display = 'none';
+              if (fallback) fallback.style.display = 'block';
+            }
+          }
+        });
+      };
+    })();
 
     // ===== Romantic Particle Effects =====
     (function() {
