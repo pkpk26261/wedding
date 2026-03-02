@@ -3561,6 +3561,20 @@
 
     const orientCache = loadOrientCache();
 
+    // ===== 首圖就緒信號 =====
+    let _firstHeroReady = false;
+    let _firstHeroCallbacks = [];
+    function signalFirstHeroReady() {
+      if (_firstHeroReady) return;
+      _firstHeroReady = true;
+      _firstHeroCallbacks.forEach(fn => fn());
+      _firstHeroCallbacks = [];
+    }
+    function onFirstHeroReady(fn) {
+      if (_firstHeroReady) fn();
+      else _firstHeroCallbacks.push(fn);
+    }
+
     // ===== Opening Animation with Loading Progress =====
     (function() {
       const progressBar = document.getElementById('loaderProgressBar');
@@ -3600,9 +3614,12 @@
 
       function animateProgress() {
         if (loaded) return;
-        const remaining = 85 - progress;
+        // 進度條緩慢前進到 95%，等首圖就緒後才跳到 100%
+        const target = _firstHeroReady ? 98 : 85;
+        const remaining = target - progress;
+        if (remaining <= 0) { requestAnimationFrame(animateProgress); return; }
         const increment = remaining * 0.03 + Math.random() * 0.5;
-        progress = Math.min(progress + increment, 85);
+        progress = Math.min(progress + increment, target);
         progressBar.style.width = progress + '%';
         requestAnimationFrame(animateProgress);
       }
@@ -3610,18 +3627,52 @@
       // Start progress bar after phase 2 appears
       setTimeout(() => { animateProgress(); }, 2800);
 
-      window.addEventListener('load', () => {
+      // 需要同時滿足三個條件才關閉 loader：
+      // 1. window.load 完成
+      // 2. 首張 hero 背景圖已載入就緒
+      // 3. 最低顯示時間已到
+      let windowLoaded = false;
+      let heroReady = false;
+      let minTimeReached = false;
+      const minDisplay = 3800;
+
+      function tryDismissLoader() {
+        if (!windowLoaded || !heroReady || !minTimeReached) return;
+        // 進度條補滿
         loaded = true;
         progress = 100;
         progressBar.style.width = '100%';
-        const elapsed = performance.now();
-        const minDisplay = 3800;
-        const delay = Math.max(600, minDisplay - elapsed);
         setTimeout(() => {
           loader.classList.add('hidden');
           setTimeout(() => { loader.style.display = 'none'; }, 1300);
-        }, delay);
+        }, 400);
+      }
+
+      window.addEventListener('load', () => {
+        windowLoaded = true;
+        tryDismissLoader();
       });
+
+      onFirstHeroReady(() => {
+        heroReady = true;
+        tryDismissLoader();
+      });
+
+      setTimeout(() => {
+        minTimeReached = true;
+        tryDismissLoader();
+      }, minDisplay);
+
+      // 安全閥：若 12 秒後仍未就緒（網路極慢），強制關閉 loader
+      setTimeout(() => {
+        if (!heroReady || !windowLoaded) {
+          loaded = true;
+          progress = 100;
+          progressBar.style.width = '100%';
+          loader.classList.add('hidden');
+          setTimeout(() => { loader.style.display = 'none'; }, 1300);
+        }
+      }, 12000);
     })();
 
     // ===== Hero Slideshow =====
@@ -3788,6 +3839,8 @@
           currentSlide = createSlide(nextSrc);
           requestAnimationFrame(() => {
             currentSlide.classList.add('active');
+            // 首張圖就緒 → 通知 loader 可以關閉
+            signalFirstHeroReady();
             // 顯示後立即預載下一張
             prefetchNext();
           });
