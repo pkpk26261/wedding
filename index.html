@@ -3522,6 +3522,45 @@
       return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w' + (width || 1200);
     }
 
+    // ===== 圖片快取系統 =====
+    const IMG_CACHE_KEY = 'wedding_img_cache_v2';
+    const IMG_CACHE_TTL = 30 * 60 * 1000; // 30 分鐘
+
+    function saveImageCache(data) {
+      try {
+        localStorage.setItem(IMG_CACHE_KEY, JSON.stringify({
+          ts: Date.now(),
+          data: data
+        }));
+      } catch(e) {}
+    }
+
+    function loadImageCache() {
+      try {
+        const raw = localStorage.getItem(IMG_CACHE_KEY);
+        if (!raw) return null;
+        const cache = JSON.parse(raw);
+        if (Date.now() - cache.ts > IMG_CACHE_TTL) return null;
+        return cache.data;
+      } catch(e) { return null; }
+    }
+
+    // ===== 方向快取（避免每次都用 w50 小圖偵測）=====
+    const ORIENT_CACHE_KEY = 'wedding_orient_v1';
+
+    function loadOrientCache() {
+      try {
+        const raw = localStorage.getItem(ORIENT_CACHE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch(e) { return {}; }
+    }
+
+    function saveOrientCache(cache) {
+      try { localStorage.setItem(ORIENT_CACHE_KEY, JSON.stringify(cache)); } catch(e) {}
+    }
+
+    const orientCache = loadOrientCache();
+
     // ===== Opening Animation with Loading Progress =====
     (function() {
       const progressBar = document.getElementById('loaderProgressBar');
@@ -3614,25 +3653,56 @@
       }
 
       // Use tiny thumbnails (w50) just to detect orientation — very fast
+      // 優先使用快取的方向資料，跳過 w50 偵測
       function classifyImagesInBackground(srcs) {
+        // 先從快取分類已知方向的圖片
+        let unknownSrcs = [];
+        srcs.forEach(src => {
+          var key = src.replace(/.*id=([^&]+).*/, '$1') || src;
+          if (orientCache[key] === 'l') landscapeImages.push(src);
+          else if (orientCache[key] === 'p') portraitImages.push(src);
+          else unknownSrcs.push(src);
+        });
+
+        // 如果快取已足夠，立刻開始播放
+        if (!started) {
+          const needLandscape = !isMobile();
+          const pool = needLandscape ? landscapeImages : portraitImages;
+          if (pool.length > 0) {
+            started = true;
+            shuffled = shuffle(pool);
+            index = 0;
+            showNext();
+            startTimer();
+          }
+        }
+
+        // 若全都已有快取，直接完成
+        if (unknownSrcs.length === 0) {
+          classified = true;
+          if (started) { shuffled = shuffle(getPool()); index = 0; }
+          return;
+        }
+
+        // 偵測剩餘未知方向的圖片
         let i = 0;
         function next() {
-          if (i >= srcs.length) {
+          if (i >= unknownSrcs.length) {
             classified = true;
-            // Re-shuffle with proper pool once classification done
             shuffled = shuffle(getPool());
             index = 0;
+            saveOrientCache(orientCache);
             return;
           }
-          const src = srcs[i++];
+          const src = unknownSrcs[i++];
           const img = new Image();
-          // Use a tiny thumbnail just for dimension detection
           const detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
+          const key = src.replace(/.*id=([^&]+).*/, '$1') || src;
           img.onload = () => {
             const isLandscape = img.naturalWidth > img.naturalHeight;
+            orientCache[key] = isLandscape ? 'l' : 'p';
             if (isLandscape) landscapeImages.push(src);
             else portraitImages.push(src);
-            // 當第一張符合裝置方向的圖分類完成，立刻開始播放
             if (!started) {
               const needLandscape = !isMobile();
               if (needLandscape && landscapeImages.length === 1) {
@@ -3649,7 +3719,6 @@
                 startTimer();
               }
             }
-            // Process next in idle time to avoid blocking
             if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
             else setTimeout(next, 10);
           };
@@ -3765,7 +3834,7 @@
           index = 0;
 
           // 先分類，分類到第一張符合方向的圖就立刻播放
-          // 若 2.5 秒後仍未開始（沒有符合方向的圖），退回播放全部
+          // 若 1.5 秒後仍未開始（沒有符合方向的圖），退回播放全部
           const fallbackTimer = setTimeout(() => {
             if (!started) {
               started = true;
@@ -3774,7 +3843,7 @@
               showNext();
               startTimer();
             }
-          }, 2500);
+          }, 1500);
 
           // Classify in background using tiny thumbnails
           classifyImagesInBackground(allImages);
@@ -4296,45 +4365,50 @@
 
     function setHeroBgLandscape(heroBgEl, imgSrcs) {
       if (imgSrcs.length === 0) return;
-      // Shuffle a copy so we don't always pick from the front (avoids duplicating the first visible gallery photo)
+
+      // 立即顯示一張圖片（先用快取的橫向圖，沒有就隨機選一張）
+      var cachedLandscape = imgSrcs.filter(function(s) {
+        // 用 driveId 或完整 URL 作為 key
+        var key = s.replace(/.*id=([^&]+).*/, '$1') || s;
+        return orientCache[key] === 'l';
+      });
+      if (cachedLandscape.length > 0) {
+        var pick = cachedLandscape[Math.floor(Math.random() * cachedLandscape.length)];
+        heroBgEl.style.backgroundImage = "url('" + pick + "')";
+        return; // 已有快取的橫向圖，不需再偵測
+      }
+
+      // 沒有快取 → 先立即顯示隨機一張，再背景偵測替換為橫向圖
+      var quickPick = imgSrcs.length > 3
+        ? imgSrcs[3 + Math.floor(Math.random() * (imgSrcs.length - 3))]
+        : imgSrcs[Math.floor(Math.random() * imgSrcs.length)];
+      heroBgEl.style.backgroundImage = "url('" + quickPick + "')";
+
+      // 背景偵測方向
       var shuffled = imgSrcs.slice();
       for (var i = shuffled.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var t = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = t;
       }
-      // Prefer images NOT in the first 3 visible gallery slots to avoid visual duplication on mobile
-      var preferLate = shuffled.filter(function(s) { return imgSrcs.indexOf(s) >= 3; });
-      var candidates = (preferLate.length >= 3 ? preferLate : shuffled).slice(0, 10);
-      var landscapeFound = [];
-      var checked = 0;
+      var candidates = shuffled.slice(0, 10);
+      var found = false;
 
       candidates.forEach(function(src) {
         var img = new Image();
         var detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
+        var key = src.replace(/.*id=([^&]+).*/, '$1') || src;
         img.onload = function() {
-          checked++;
-          if (img.naturalWidth > img.naturalHeight) {
-            landscapeFound.push(src);
-          }
-          // Once all candidates checked, pick a random landscape one
-          if (checked === candidates.length && landscapeFound.length > 0) {
-            var pick = landscapeFound[Math.floor(Math.random() * landscapeFound.length)];
-            heroBgEl.style.backgroundImage = "url('" + pick + "')";
+          var isL = img.naturalWidth > img.naturalHeight;
+          orientCache[key] = isL ? 'l' : 'p';
+          saveOrientCache(orientCache);
+          if (isL && !found) {
+            found = true;
+            heroBgEl.style.backgroundImage = "url('" + src + "')";
           }
         };
-        img.onerror = function() { checked++; };
+        img.onerror = function() {};
         img.src = detectUrl;
       });
-
-      // Fallback: if no landscape found after a short delay, use a random image (not the first)
-      setTimeout(function() {
-        if (landscapeFound.length === 0 && imgSrcs.length > 0) {
-          var fallback = imgSrcs.length > 3
-            ? imgSrcs[3 + Math.floor(Math.random() * (imgSrcs.length - 3))]
-            : imgSrcs[Math.floor(Math.random() * imgSrcs.length)];
-          heroBgEl.style.backgroundImage = "url('" + fallback + "')";
-        }
-      }, 1500);
     }
 
     // 填充相簿格子
@@ -4376,14 +4450,33 @@
       let folder1Files = []; // 棚拍 (資料夾 1)
       let folder2Files = []; // 戶外 (資料夾 2)
       let useDrive = false;
+      let usedCache = false;
 
-      // 嘗試從 Google Drive（透過 Apps Script）載入
-      if (DRIVE_SCRIPT_URL) {
+      // === 優先使用快取，立即顯示 ===
+      const cached = loadImageCache();
+      if (cached && DRIVE_SCRIPT_URL) {
+        if (cached['1'] && cached['1'].length > 0) {
+          folder1Files = cached['1'].map(f => ({ driveId: f.id, name: f.name }));
+        }
+        if (cached['2'] && cached['2'].length > 0) {
+          folder2Files = cached['2'].map(f => ({ driveId: f.id, name: f.name }));
+        }
+        if (folder1Files.length > 0 || folder2Files.length > 0) {
+          useDrive = true;
+          usedCache = true;
+        }
+      }
+
+      // === 快取沒命中 → 即時載入 ===
+      if (!usedCache && DRIVE_SCRIPT_URL) {
         try {
           parisEmpty.style.display = '';
           parisEmpty.textContent = '照片載入中 ✦';
           const res = await fetch(DRIVE_SCRIPT_URL);
           const data = await res.json();
+
+          // 存入快取供下次使用
+          saveImageCache(data);
 
           if (data['1'] && data['1'].length > 0) {
             folder1Files = data['1'].map(f => ({ driveId: f.id, name: f.name }));
@@ -4396,6 +4489,13 @@
           console.warn('無法從 Google Drive 載入圖片，嘗試本地載入:', e);
           useDrive = false;
         }
+      }
+
+      // === 背景更新快取（不阻塞顯示）===
+      if (usedCache && DRIVE_SCRIPT_URL) {
+        fetch(DRIVE_SCRIPT_URL).then(r => r.json()).then(data => {
+          saveImageCache(data);
+        }).catch(() => {});
       }
 
       // 如果 Drive 沒設定或失敗 → 嘗試載入本地圖片
