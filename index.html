@@ -32,6 +32,17 @@
 
     html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 
+    /* ===== Desktop Display Scale Compensation =====
+       以 viewport 寬度等比縮放根字體，讓 rem 單位在
+       100% / 125% / 150% / 200% 顯示比例下呈現相同視覺大小。
+       clamp() 確保極端螢幕尺寸不會讓字體過小或過大。
+    ===================================================== */
+    @media (min-width: 769px) {
+      html {
+        font-size: clamp(15px, 1.1vw, 19px);
+      }
+    }
+
     body {
       font-family: var(--font-serif);
       color: var(--text);
@@ -576,6 +587,32 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .hero-song-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-song-title .song-en {
+      font-family: var(--font-script);
+      font-size: 2.2rem;
+      color: var(--gold-light);
+      font-weight: 400;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+      line-height: 1.2;
+    }
+
+    .hero-song-title .song-zh {
+      font-family: var(--font-serif);
+      font-size: 0.85rem;
+      letter-spacing: 5px;
+      color: var(--gold-light);
+      opacity: 0.85;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+    }
+
     .hero-label {
       font-family: var(--font-script);
       font-size: 1.4rem;
@@ -1020,6 +1057,198 @@
     }
 
     .inv-map-btn:hover { background: var(--gold); color: var(--white); }
+
+    .inv-btn-row {
+      display: -webkit-flex;
+      display: flex;
+      -webkit-justify-content: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .inv-btn-row .inv-map-btn {
+      margin-top: 0;
+    }
+
+    .inv-transport-btn {
+      display: inline-block;
+      padding: 0.8rem 2.5rem;
+      border: 1px solid var(--gold);
+      color: var(--gold-dark);
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transition: all 0.4s;
+      font-family: var(--font-serif);
+      outline: none;
+    }
+
+    .inv-transport-btn:hover { background: var(--gold); color: var(--white); }
+
+    /* Transport Modal */
+    .transport-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(58, 31, 46, 0.72);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .transport-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .transport-modal {
+      background: var(--cream);
+      border: 1px solid var(--gold-light);
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2.5rem 2.8rem;
+      position: relative;
+      transform: translateY(24px);
+      transition: transform 0.35s ease;
+      border-radius: 2px;
+    }
+
+    .transport-modal-overlay.active .transport-modal {
+      transform: translateY(0);
+    }
+
+    .transport-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-light);
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+      padding: 0.2rem 0.4rem;
+    }
+
+    .transport-modal-close:hover { color: var(--gold-dark); }
+
+    .transport-modal-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      letter-spacing: 4px;
+      color: var(--gold-dark);
+      text-align: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .transport-modal-subtitle {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-light);
+      letter-spacing: 2px;
+      margin-bottom: 1.8rem;
+    }
+
+    .transport-divider {
+      border: none;
+      border-top: 1px solid var(--gold-light);
+      margin: 1.4rem 0;
+    }
+
+    .transport-section-title {
+      display: -webkit-flex;
+      display: flex;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-serif);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+
+    .transport-section-icon {
+      font-size: 1.1rem;
+    }
+
+    .transport-stop {
+      margin-bottom: 1.1rem;
+    }
+
+    .transport-stop-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.35rem;
+      letter-spacing: 1px;
+    }
+
+    .transport-stop-note {
+      font-size: 0.76rem;
+      color: var(--text-light);
+      margin-bottom: 0.4rem;
+    }
+
+    .transport-route {
+      font-size: 0.76rem;
+      color: var(--text);
+      line-height: 1.75;
+      padding-left: 0.8rem;
+      border-left: 2px solid var(--gold-light);
+    }
+
+    .transport-route li {
+      list-style: none;
+      margin-bottom: 0.15rem;
+    }
+
+    .transport-route li::before {
+      content: '✦  ';
+      color: var(--gold);
+      font-size: 0.6rem;
+    }
+
+    .transport-car-item {
+      font-size: 0.76rem;
+      color: var(--text);
+      line-height: 1.75;
+      padding-left: 0.8rem;
+      border-left: 2px solid var(--gold-light);
+      margin-bottom: 0.75rem;
+    }
+
+    .transport-car-label {
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.2rem;
+    }
+
+    .transport-venue-info {
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-light);
+      margin-bottom: 1.6rem;
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
 
     /* Parents section */
     .inv-parents {
@@ -2070,9 +2299,22 @@
       }
 
       .inv-map-btn {
-        margin-top: 1.5rem;
         padding: 0.75rem 2rem;
         font-size: 0.72rem;
+      }
+
+      .inv-btn-row {
+        margin-top: 1.5rem;
+        gap: 0.75rem;
+      }
+
+      .inv-transport-btn {
+        padding: 0.75rem 2rem;
+        font-size: 0.72rem;
+      }
+
+      .transport-modal {
+        padding: 2rem 1.5rem;
       }
 
       /* --- Gallery Pages Mobile --- */
@@ -2636,6 +2878,10 @@
       <div class="hero-bg" id="heroBg"></div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
+        <div class="hero-song-title fade-item">
+          <span class="song-en">Our Song</span>
+          <span class="song-zh">我們的歌</span>
+        </div>
         <div class="hero-label fade-item">We are getting married</div>
         <h1 class="hero-names fade-item">
           <div class="names-row">
@@ -2721,12 +2967,91 @@
             <div class="venue">臻悅美饌花園婚宴會館</div>
             <div class="address">臺中市北屯區昌平東三路68號</div>
           </div>
-          <a class="inv-map-btn page-anim" href="https://www.google.com/maps/search/臺中市北屯區昌平東三路68號" target="_blank" rel="noopener">
-            查看地圖
-          </a>
+          <div class="inv-btn-row page-anim">
+            <a class="inv-map-btn" href="https://maps.app.goo.gl/D3H6oJTv8CMcLWLQ9" target="_blank" rel="noopener">
+              查看地圖
+            </a>
+            <button class="inv-transport-btn" onclick="openTransportModal()">
+              交通資訊
+            </button>
+          </div>
         </div>
       </div>
     </div>
+    </div>
+  </div>
+
+  <!-- ========== Transport Modal ========== -->
+  <div class="transport-modal-overlay" id="transportModalOverlay" onclick="closeTransportModal(event)">
+    <div class="transport-modal" role="dialog" aria-modal="true" aria-label="交通資訊">
+      <button class="transport-modal-close" onclick="closeTransportModal()" aria-label="關閉">✕</button>
+      <div class="transport-modal-title">交通資訊</div>
+      <div class="transport-modal-subtitle">臻悅美饌婚宴會館</div>
+
+      <!-- 公車 -->
+      <div class="transport-section-title">
+        <span class="transport-section-icon">🚌</span>搭乘公車
+      </div>
+
+      <div class="transport-stop">
+        <div class="transport-stop-name">崇德十路口</div>
+        <div class="transport-stop-note">下車後步行約 2 分鐘</div>
+        <ul class="transport-route">
+          <li>全航 58 〈潭子勝利運動公園〉，車程約 25 分</li>
+          <li>全航 65 〈潭雅神綠園道〉，車程約 35 分</li>
+        </ul>
+      </div>
+
+      <div class="transport-stop">
+        <div class="transport-stop-name">南四張犁站</div>
+        <div class="transport-stop-note">下車後步行約 4 分鐘</div>
+        <ul class="transport-route">
+          <li>台中客運 14 〈舊庄．南清宮〉，車程約 40 分</li>
+          <li>台中客運 28 〈四張犁圖書館〉，車程約 30 分</li>
+          <li>中鹿客運 105 〈四張犁〉，車程約 40 分</li>
+        </ul>
+      </div>
+
+      <div class="transport-stop">
+        <div class="transport-stop-name">崇德豐樂路口</div>
+        <div class="transport-stop-note">下車後步行約 4 分鐘</div>
+        <ul class="transport-route">
+          <li>豐原客運 12 〈豐原高中〉，請於火車站 B 月台搭乘，車程約 30 分</li>
+        </ul>
+      </div>
+
+      <hr class="transport-divider">
+
+      <!-- 高鐵 -->
+      <div class="transport-section-title">
+        <span class="transport-section-icon">🚄</span>搭乘高鐵
+      </div>
+      <div class="transport-stop">
+        <div class="transport-stop-name">台中站（高鐵）</div>
+        <ul class="transport-route">
+          <li>1B 號出口離站，步行 1 分鐘至新烏日火車站</li>
+          <li>搭乘火車至台中火車站，再轉乘公車前往</li>
+          <li>或搭計程車直達，車程約 40 分鐘</li>
+        </ul>
+      </div>
+
+      <hr class="transport-divider">
+
+      <!-- 開車 -->
+      <div class="transport-section-title">
+        <span class="transport-section-icon">🚗</span>自行開車
+        <span style="font-size:0.7rem;color:var(--text-light);font-weight:400;letter-spacing:1px;">（備有免費停車場）</span>
+      </div>
+
+      <div class="transport-car-label">國道三號（北上）</div>
+      <div class="transport-car-item">
+        國道3號 → 下大雅交流道 → 環中路一段 → 崇德路三段右轉 → 崇德十二路左轉
+      </div>
+
+      <div class="transport-car-label">國道三號（南上）</div>
+      <div class="transport-car-item">
+        國道3號 → 下崇德交流道 → 環中路左轉 → 崇德路三段右轉 → 崇德十二路左轉
+      </div>
     </div>
   </div>
 
@@ -2830,6 +3155,39 @@
   </div>
 
   <script>
+    // ===== 桌面版顯示比例字體補償 =====
+    // 依 viewport 寬度（已包含 DPR 換算）動態設定根字體大小，
+    // 確保在 100% / 125% / 150% 等 Windows 顯示比例下字體視覺大小一致。
+    // 同時監聽 DPR 變化，當使用者將視窗移到不同螢幕時自動重新套用。
+    (function () {
+      function calcFontPx() {
+        var vw = window.innerWidth;
+        return Math.max(15, Math.min(19, vw * 0.011)); // 1.1vw，上限 19px，下限 15px
+      }
+
+      function applyDesktopFontScale() {
+        if (window.innerWidth <= 768) {
+          // 手機版：移除 JS 強制值，交由 CSS 控制
+          document.documentElement.style.removeProperty('font-size');
+          return;
+        }
+        document.documentElement.style.fontSize = calcFontPx() + 'px';
+      }
+
+      // 監聽 DPR 變化（例如將視窗拖到不同解析度的顯示器）
+      var _mq = null;
+      function watchDPR() {
+        if (_mq) { try { _mq.removeEventListener('change', _onDPR); } catch (e) {} }
+        _mq = window.matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)');
+        try { _mq.addEventListener('change', _onDPR); } catch (e) {}
+      }
+      function _onDPR() { applyDesktopFontScale(); watchDPR(); }
+
+      applyDesktopFontScale();
+      watchDPR();
+      window.addEventListener('resize', applyDesktopFontScale);
+    })();
+
     // ============================================================
     //  設定：請把你部署的 Google Apps Script 網址貼在這裡
     //  （參考 google-apps-script.js 檔案裡的部署步驟）
@@ -3918,6 +4276,8 @@
           playerVars: {
             rel: 0,
             playsinline: 1,
+            modestbranding: 1,
+            iv_load_policy: 3,
             origin: window.location.origin || '*'
           },
           events: {
@@ -4126,6 +4486,25 @@
         }
       });
     })();
+  </script>
+
+  <script>
+    function openTransportModal() {
+      var overlay = document.getElementById('transportModalOverlay');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeTransportModal(e) {
+      if (e && e.target !== document.getElementById('transportModalOverlay')) return;
+      var overlay = document.getElementById('transportModalOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeTransportModal();
+    });
   </script>
 
 </body>
