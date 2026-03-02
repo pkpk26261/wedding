@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>玉蕙 & 永成 — 我們的婚禮</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=LXGW+WenKai+TC:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #b8977e;
+      --gold-light: #d4c4b0;
+      --gold-dark: #8a6d57;
+      --blush: #f5ebe0;
+      --cream: #faf8f5;
+      --white: #ffffff;
+      --charcoal: #2c2c2c;
+      --text: #4a4a4a;
+      --text-light: #7a7a7a;
+      --font-serif: 'LXGW WenKai TC', 'Noto Serif TC', 'Cormorant Garamond', serif;
+      --font-display: 'Cinzel Decorative', 'LXGW WenKai TC', serif;
+      --font-script: 'Great Vibes', cursive;
+      --font-heading: 'Cinzel', 'LXGW WenKai TC', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-serif);
+      color: var(--text);
+      background: var(--charcoal);
+      overflow: hidden;
+      height: 100vh;
+      height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 3px; }
+
+    /* ===== Navigation ===== */
+    .nav {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3rem;
+      transition: all 0.6s ease;
+    }
+
+    .nav::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(250, 248, 245, 0.95);
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      z-index: -1;
+    }
+
+    .nav.has-bg::before { opacity: 1; }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--white);
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 400;
+      transition: all 0.3s;
+      position: relative;
+      cursor: pointer;
+      padding: 0.3rem 0;
+    }
+
+    .nav.has-bg a { color: var(--text-light); }
+    .nav a.active { color: var(--gold); font-weight: 500; }
+    .nav.has-bg a.active { color: var(--gold-dark); }
+
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 50%;
+      width: 0; height: 1.5px;
+      background: var(--gold);
+      transition: all 0.35s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav a.active::after { width: 100%; }
+    .nav a:hover::after { width: 70%; }
+
+    /* ===== Page System ===== */
+    .page {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      height: 100dvh;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0s 0.8s;
+      z-index: 1;
+    }
+
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0s 0s;
+      z-index: 2;
+    }
+
+    .page-scroll {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ===== Hero Page ===== */
+    .hero {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    .hero-bg-slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center center;
+      filter: brightness(0.4);
+      opacity: 0;
+      transition: opacity 1.8s ease-in-out;
+      will-change: opacity, transform;
+    }
+
+    .hero-bg-slide.active {
+      opacity: 1;
+    }
+
+    /* Ken Burns — continuous per-slide animation, only plays while active */
+    .hero-bg-slide.kb-1 { animation: kbDriftRight 10s ease-in-out infinite alternate; }
+    .hero-bg-slide.kb-2 { animation: kbDriftLeft 10s ease-in-out infinite alternate; }
+    .hero-bg-slide.kb-3 { animation: kbDriftUp 10s ease-in-out infinite alternate; }
+    .hero-bg-slide.kb-4 { animation: kbDriftDown 10s ease-in-out infinite alternate; }
+    .hero-bg-slide.kb-5 { animation: kbDriftCenter 10s ease-in-out infinite alternate; }
+
+    @keyframes kbDriftRight {
+      0%   { transform: scale(1.12) translateX(-1%); }
+      100% { transform: scale(1.03) translateX(1%); }
+    }
+    @keyframes kbDriftLeft {
+      0%   { transform: scale(1.12) translateX(1%); }
+      100% { transform: scale(1.03) translateX(-1%); }
+    }
+    @keyframes kbDriftUp {
+      0%   { transform: scale(1.14) translateY(1.5%); }
+      100% { transform: scale(1.03) translateY(-1%); }
+    }
+    @keyframes kbDriftDown {
+      0%   { transform: scale(1.12) translateY(-1%); }
+      100% { transform: scale(1.03) translateY(1%); }
+    }
+    @keyframes kbDriftCenter {
+      0%   { transform: scale(1.15); }
+      100% { transform: scale(1.0); }
+    }
+
+    /* Shimmer light sweep overlay */
+    .hero-bg-slide::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -60%;
+      width: 60%; height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255,255,255,0.03) 45%,
+        rgba(255,255,255,0.06) 50%,
+        rgba(255,255,255,0.03) 55%,
+        transparent 60%
+      );
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .hero-bg-slide.active::after {
+      animation: shimmerSweep 10s ease-in-out 0.5s forwards;
+    }
+
+    @keyframes shimmerSweep {
+      0%   { left: -60%; opacity: 0; }
+      10%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { left: 160%; opacity: 0; }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg,
+        rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.35) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      color: var(--white);
+    }
+
+    .hero-content .fade-item {
+      opacity: 0;
+      transform: translateY(25px);
+      animation: heroFadeIn 1s ease-out forwards;
+    }
+
+    .hero-content .fade-item:nth-child(1) { animation-delay: 0.3s; }
+    .hero-content .fade-item:nth-child(2) { animation-delay: 0.6s; }
+    .hero-content .fade-item:nth-child(3) { animation-delay: 0.9s; }
+    .hero-content .fade-item:nth-child(4) { animation-delay: 1.1s; }
+
+    @keyframes heroFadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-label {
+      font-family: var(--font-script);
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      text-transform: none;
+      color: var(--gold-light);
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    .hero-names {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 300;
+      line-height: 1.3;
+      margin-bottom: 2rem;
+    }
+
+    .names-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .name-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .name-groom {
+      display: block;
+      font-family: 'LXGW WenKai TC', serif;
+      letter-spacing: 8px;
+      font-weight: 700;
+    }
+
+    .name-bride {
+      display: block;
+      font-family: 'LXGW WenKai TC', serif;
+      font-size: 1em;
+      letter-spacing: 8px;
+      font-weight: 700;
+    }
+
+    .hero-names .amp {
+      font-family: var(--font-script);
+      font-style: normal;
+      font-size: 0.5em;
+      color: var(--gold-light);
+      flex-shrink: 0;
+    }
+
+    .role-label {
+      display: block;
+      font-family: var(--font-script);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: var(--gold-light);
+      margin-bottom: 0.2rem;
+      font-style: normal;
+    }
+
+    .inv-names .role-label {
+      font-size: 0.75rem;
+      color: var(--gold);
+      margin-bottom: 0.15rem;
+    }
+
+    .hero-date {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      letter-spacing: 6px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-venue {
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      color: var(--gold-light);
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 0;
+      width: 100%;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      opacity: 0;
+      animation: heroFadeIn 1s ease-out 1.5s forwards;
+    }
+
+    .hero-cta span {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+    }
+
+    .hero-cta .arrow {
+      width: 1px; height: 35px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* ===== Invitation Page ===== */
+    .invitation-page {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      position: relative;
+      padding: 5rem 0 2rem;
+      box-sizing: border-box;
+    }
+
+    .invitation-page::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(184,151,126,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(184,151,126,0.06) 0%, transparent 50%);
+    }
+
+    .invitation-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 700px;
+      padding: 2rem;
+    }
+
+    .invitation-card {
+      padding: 4rem 3rem;
+      border: 1px solid var(--gold-light);
+      position: relative;
+      text-align: center;
+      background: var(--white);
+    }
+
+    .invitation-card::before,
+    .invitation-card::after {
+      content: '';
+      position: absolute;
+      width: 30px; height: 30px;
+      border-color: var(--gold);
+      border-style: solid;
+    }
+
+    .invitation-card::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+    .invitation-card::after { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+    .inv-label {
+      font-family: var(--font-script);
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+      text-transform: none;
+    }
+
+    .inv-names {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--charcoal);
+      font-weight: 400;
+    }
+
+    .inv-names .names-row {
+      gap: clamp(1rem, 3vw, 2.5rem);
+    }
+
+    .inv-names .name-groom {
+      display: block;
+      font-family: 'LXGW WenKai TC', serif;
+      letter-spacing: 6px;
+      font-weight: 700;
+    }
+
+    .inv-names .name-bride {
+      display: block;
+      font-family: 'LXGW WenKai TC', serif;
+      font-size: 1em;
+      letter-spacing: 6px;
+      font-weight: 700;
+    }
+
+    .inv-amp {
+      font-family: var(--font-script);
+      font-style: normal;
+      font-size: 1.5rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .inv-details {
+      margin-top: 2rem;
+      line-height: 2.2;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .inv-details .date {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      color: var(--charcoal);
+    }
+
+    .inv-time-row {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin: 1.2rem 0;
+    }
+
+    .inv-time-block { text-align: center; }
+
+    .inv-time-block .time {
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--gold-dark);
+      letter-spacing: 2px;
+    }
+
+    .inv-time-block .desc {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      letter-spacing: 2px;
+      margin-top: 0.2rem;
+    }
+
+    .inv-details .venue {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--gold-dark);
+      margin-top: 0.5rem;
+    }
+
+    .inv-details .address {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+
+    .inv-map-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.8rem 2.5rem;
+      border: 1px solid var(--gold);
+      color: var(--gold-dark);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transition: all 0.4s;
+      font-family: var(--font-serif);
+    }
+
+    .inv-map-btn:hover { background: var(--gold); color: var(--white); }
+
+    /* Parents section */
+    .inv-parents {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gold-light);
+    }
+
+    .inv-parents-group {
+      text-align: center;
+    }
+
+    .inv-parents-title {
+      font-family: var(--font-script);
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+      letter-spacing: 2px;
+    }
+
+    .inv-parents-names {
+      font-size: 0.88rem;
+      color: var(--text);
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+
+    /* Page transition item animations */
+    .page.active .page-anim {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: pageItemIn 0.65s ease-out forwards;
+    }
+
+    .page.active .page-anim:nth-child(1) { animation-delay: 0.15s; }
+    .page.active .page-anim:nth-child(2) { animation-delay: 0.28s; }
+    .page.active .page-anim:nth-child(3) { animation-delay: 0.41s; }
+    .page.active .page-anim:nth-child(4) { animation-delay: 0.54s; }
+    .page.active .page-anim:nth-child(5) { animation-delay: 0.67s; }
+    .page.active .page-anim:nth-child(6) { animation-delay: 0.80s; }
+
+    @keyframes pageItemIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Gallery Pages ===== */
+    .gallery-page { background: var(--cream); }
+    .gallery-page.alt { background: var(--white); }
+
+    .gallery-hero {
+      position: relative;
+      height: 45vh;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .gallery-hero-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center 25%;
+      filter: brightness(0.4);
+      transform: scale(1.05);
+      transition: transform 8s ease-out;
+    }
+
+    .page.active .gallery-hero-bg { transform: scale(1.0); }
+
+    .gallery-hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg,
+        rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.0) 50%, rgba(0,0,0,0.4) 100%);
+    }
+
+    .gallery-hero-content {
+      position: relative;
+      z-index: 2;
+      color: var(--white);
+    }
+
+    .gallery-hero-label {
+      font-family: var(--font-script);
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      text-transform: none;
+      color: var(--gold-light);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .gallery-hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 400;
+      margin-bottom: 1rem;
+      letter-spacing: 3px;
+    }
+
+    .gallery-hero-sub {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .gallery-body { padding: 3rem 2rem 4rem; }
+
+    .gallery-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      columns: 3;
+      column-gap: 1rem;
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      pointer-events: none;
+    }
+
+    .gallery-item:hover img { transform: scale(1.05); }
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0);
+      transition: background 0.5s;
+      pointer-events: none;
+    }
+
+    .gallery-item:hover::after { background: rgba(0,0,0,0.08); }
+
+    .page.active .gallery-item {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: galleryIn 0.6s ease-out forwards;
+    }
+
+    .page.active .gallery-item:nth-child(3n+1) { animation-delay: 0.2s; }
+    .page.active .gallery-item:nth-child(3n+2) { animation-delay: 0.35s; }
+    .page.active .gallery-item:nth-child(3n+3) { animation-delay: 0.5s; }
+
+    @keyframes galleryIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Lightbox ===== */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .lightbox.active { opacity: 1; pointer-events: all; }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 2px;
+      transform: scale(0.92);
+      transition: transform 0.4s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .lightbox.active img { transform: scale(1); }
+
+    .lightbox-close {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .lightbox-close::before,
+    .lightbox-close::after {
+      content: '';
+      position: absolute;
+      width: 24px; height: 1px;
+      background: rgba(255,255,255,0.7);
+      transition: background 0.3s;
+    }
+
+    .lightbox-close::before { transform: rotate(45deg); }
+    .lightbox-close::after { transform: rotate(-45deg); }
+    .lightbox-close:hover::before,
+    .lightbox-close:hover::after { background: var(--gold-light); }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px; height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .lightbox-nav.prev { left: 1.5rem; }
+    .lightbox-nav.next { right: 1.5rem; }
+
+    .lightbox-nav::before {
+      content: '';
+      width: 14px; height: 14px;
+      border-top: 1px solid rgba(255,255,255,0.6);
+      border-right: 1px solid rgba(255,255,255,0.6);
+      transition: border-color 0.3s;
+    }
+
+    .lightbox-nav.prev::before { transform: rotate(-135deg); }
+    .lightbox-nav.next::before { transform: rotate(45deg); }
+    .lightbox-nav:hover::before { border-color: var(--gold-light); }
+
+    .lightbox-counter {
+      position: absolute;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.4);
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+    }
+
+    /* ===== Page Footer ===== */
+    .page-footer {
+      background: var(--charcoal);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 3.5rem 2rem;
+    }
+
+    .page-footer .names {
+      font-family: var(--font-script);
+      font-size: 1.6rem;
+      color: var(--gold-light);
+      margin-bottom: 0.3rem;
+      font-weight: 400;
+    }
+
+    .page-footer .date {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .page-footer .heart { color: var(--gold); font-size: 1rem; }
+
+    /* ===== Gallery Empty ===== */
+    .gallery-empty {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--text-light);
+      font-size: 1rem;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    /* ===== Opening Animation ===== */
+    .loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--charcoal);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .loader.hidden { opacity: 0; pointer-events: none; }
+
+    .loader-line {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin-bottom: 2rem;
+      animation: lineExpand 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+    }
+
+    @keyframes lineExpand {
+      to { width: min(280px, 60vw); }
+    }
+
+    .loader-names-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1.5rem, 5vw, 3rem);
+    }
+
+    .loader-person {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loader-person-groom {
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: loaderSlideRight 0.8s ease-out 0.4s forwards;
+    }
+
+    .loader-person-bride {
+      opacity: 0;
+      transform: translateX(20px);
+      animation: loaderSlideLeft 0.8s ease-out 1.2s forwards;
+    }
+
+    .loader-groom {
+      font-family: 'LXGW WenKai TC', serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 8px;
+    }
+
+    .loader-bride {
+      font-family: 'LXGW WenKai TC', serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 8px;
+    }
+
+    .loader-amp {
+      font-family: var(--font-script);
+      font-size: 1.8rem;
+      color: var(--gold);
+      opacity: 0;
+      transform: scale(0.5);
+      animation: loaderAmpIn 0.6s ease-out 1.0s forwards;
+      flex-shrink: 0;
+    }
+
+    @keyframes loaderSlideRight {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes loaderSlideLeft {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .loader-line-bottom {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin-top: 2rem;
+      animation: lineExpand 1s cubic-bezier(0.4, 0, 0.2, 1) 1.8s forwards;
+    }
+
+    .loader-date {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      color: var(--gold-light);
+      letter-spacing: 6px;
+      margin-top: 1.5rem;
+      opacity: 0;
+      animation: loaderFadeUp 0.7s ease-out 2.2s forwards;
+    }
+
+    .loader-role {
+      font-family: var(--font-script);
+      font-size: 0.85rem;
+      color: var(--gold-light);
+      letter-spacing: 2px;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Loading progress bar */
+    .loader-progress-wrap {
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: loaderFadeUp 0.6s ease-out 2.6s forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .loader-progress-track {
+      width: min(200px, 50vw);
+      height: 1px;
+      background: rgba(184, 151, 126, 0.2);
+      border-radius: 1px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loader-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+      border-radius: 1px;
+      transition: width 0.3s ease-out;
+    }
+
+    .loader-progress-text {
+      font-family: var(--font-heading);
+      font-size: 0.6rem;
+      color: rgba(184, 151, 126, 0.5);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .loader-progress-text::after {
+      content: '';
+      animation: loadingDots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes loadingDots {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+      100% { content: ''; }
+    }
+
+    /* Shimmer effect on progress track */
+    .loader-progress-track::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressShimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes progressShimmer {
+      0%   { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes loaderFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes loaderAmpIn {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ===== Side Page Dots ===== */
+    .page-dots {
+      position: fixed;
+      right: 2rem; top: 50%;
+      transform: translateY(-50%);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold-light);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .page-dot.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      transform: scale(1.3);
+    }
+
+    .page-dot .tooltip {
+      position: absolute;
+      right: 20px; top: 50%;
+      transform: translateY(-50%);
+      background: rgba(44,44,44,0.9);
+      color: var(--gold-light);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      padding: 0.3rem 0.8rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .page-dot:hover .tooltip { opacity: 1; }
+
+    /* ===== Transition Curtain ===== */
+    .curtain {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 800;
+      pointer-events: none;
+      display: flex;
+    }
+
+    .curtain-panel {
+      flex: 1;
+      background: var(--charcoal);
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+
+    .curtain.animating .curtain-panel {
+      animation: curtainIn 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    }
+
+    .curtain.animating-out .curtain-panel {
+      animation: curtainOut 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    }
+
+    .curtain-panel:nth-child(2) { animation-delay: 0.05s !important; }
+    .curtain-panel:nth-child(3) { animation-delay: 0.10s !important; }
+
+    @keyframes curtainIn {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to { transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    @keyframes curtainOut {
+      from { transform: scaleY(1); transform-origin: top; }
+      to { transform: scaleY(0); transform-origin: top; }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .gallery-grid { columns: 2; }
+    }
+
+    @media (max-width: 768px) {
+
+      /* --- Bottom Navigation Bar --- */
+      .nav {
+        gap: 0;
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+        bottom: 0; top: auto;
+        background: rgba(250, 248, 245, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 -1px 20px rgba(0,0,0,0.06);
+        border-top: 1px solid rgba(184,151,126,0.15);
+      }
+
+      .nav::before { opacity: 1; }
+
+      .nav a {
+        color: var(--text-light);
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+        padding: 0.7rem 0.5rem 0.6rem;
+        flex: 1;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        position: relative;
+        transition: color 0.3s;
+      }
+
+      .nav a::before {
+        font-size: 1.1rem;
+        display: block;
+        font-style: normal;
+        font-family: serif;
+        line-height: 1;
+      }
+
+      .nav a[data-page="home"]::before { content: "🏠"; font-family: initial; }
+      .nav a[data-page="invitation"]::before { content: "💌"; font-family: initial; }
+      .nav a[data-page="paris"]::before { content: "📸"; font-family: initial; }
+      .nav a[data-page="studio"]::before { content: "🌿"; font-family: initial; }
+
+      .nav a::after { display: none; }
+
+      .nav a.active {
+        color: var(--gold-dark);
+        font-weight: 500;
+      }
+
+      .nav.has-bg a { color: var(--text-light); }
+      .nav.has-bg a.active { color: var(--gold-dark); }
+
+      .page-dots { display: none; }
+
+      /* --- Hero Page Mobile --- */
+      .hero-label {
+        font-size: 1.15rem;
+        margin-bottom: 1.8rem;
+      }
+
+      .hero-names {
+        font-size: clamp(1.8rem, 8vw, 2.8rem);
+        margin-bottom: 1.5rem;
+      }
+
+      .names-row {
+        gap: clamp(0.8rem, 3vw, 1.5rem);
+      }
+
+      .name-groom {
+        letter-spacing: 4px;
+      }
+
+      .name-bride {
+        letter-spacing: 4px;
+      }
+
+      .hero-names .amp {
+        font-size: 0.45em;
+      }
+
+      .role-label {
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+      }
+
+      .hero-date {
+        font-size: 0.85rem;
+        letter-spacing: 4px;
+      }
+
+      .hero-venue {
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+      }
+
+      .hero-cta {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .hero-cta span {
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+      }
+
+      /* --- Invitation Page Mobile --- */
+      .invitation-page {
+        padding: 1.5rem 0 calc(4.5rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .invitation-wrapper {
+        padding: 1rem;
+      }
+
+      .invitation-card {
+        padding: 2.5rem 1.5rem;
+      }
+
+      .invitation-card::before,
+      .invitation-card::after {
+        width: 22px; height: 22px;
+      }
+
+      .invitation-card::before { top: 8px; left: 8px; }
+      .invitation-card::after { bottom: 8px; right: 8px; }
+
+      .inv-label {
+        font-size: 1.1rem;
+        margin-bottom: 1.8rem;
+      }
+
+      .inv-names {
+        font-size: 1.8rem;
+      }
+
+      .inv-names .names-row {
+        gap: clamp(0.6rem, 2.5vw, 1.5rem);
+      }
+
+      .inv-names .name-groom {
+        letter-spacing: 3px;
+      }
+
+      .inv-names .name-bride {
+        letter-spacing: 3px;
+      }
+
+      .inv-names .role-label {
+        font-size: 0.65rem;
+      }
+
+      .inv-amp {
+        font-size: 1.2rem;
+      }
+
+      .inv-parents {
+        gap: 1.8rem;
+        margin-top: 1.5rem;
+        padding-top: 1.2rem;
+      }
+
+      .inv-parents-title {
+        font-size: 0.78rem;
+      }
+
+      .inv-parents-names {
+        font-size: 0.78rem;
+      }
+
+      .inv-details {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+      }
+
+      .inv-details .date {
+        font-size: 1.15rem;
+        letter-spacing: 2px;
+      }
+
+      .inv-time-row {
+        gap: 1.5rem;
+        margin: 1rem 0;
+      }
+
+      .inv-time-block .time {
+        font-size: 1.3rem;
+      }
+
+      .inv-time-block .desc {
+        font-size: 0.72rem;
+      }
+
+      .inv-details .venue {
+        font-size: 0.95rem;
+      }
+
+      .inv-details .address {
+        font-size: 0.78rem;
+      }
+
+      .inv-map-btn {
+        margin-top: 1.5rem;
+        padding: 0.75rem 2rem;
+        font-size: 0.72rem;
+      }
+
+      /* --- Gallery Pages Mobile --- */
+      .gallery-hero { height: 35vh; min-height: 240px; }
+
+      .gallery-hero-label {
+        font-size: 1.05rem;
+      }
+
+      .gallery-hero-sub {
+        font-size: 0.82rem;
+        padding: 0 1.5rem;
+      }
+
+      .gallery-body {
+        padding: 1.5rem 0.8rem 2rem;
+      }
+
+      .gallery-grid {
+        columns: 2;
+        column-gap: 0.5rem;
+      }
+
+      .gallery-item {
+        margin-bottom: 0.5rem;
+        border-radius: 3px;
+      }
+
+      .gallery-item:hover img { transform: none; }
+      .gallery-item:hover::after { background: transparent; }
+
+      .gallery-empty {
+        padding: 3rem 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      .page-footer {
+        padding: 2.5rem 1.5rem calc(4rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .page-footer .names {
+        font-size: 1.3rem;
+      }
+
+      /* --- Lightbox Mobile --- */
+      .lightbox img {
+        max-width: 96vw;
+        max-height: 85vh;
+      }
+
+      .lightbox-close {
+        top: 1rem; right: 1rem;
+        width: 40px; height: 40px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 50%;
+      }
+
+      .lightbox-nav {
+        width: 44px; height: 44px;
+      }
+
+      .lightbox-nav.prev { left: 0.4rem; }
+      .lightbox-nav.next { right: 0.4rem; }
+
+      .lightbox-nav::before {
+        width: 11px; height: 11px;
+      }
+
+      .lightbox-counter {
+        bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px));
+        font-size: 0.72rem;
+      }
+
+      /* --- Loader Mobile --- */
+      .loader-names-row {
+        gap: clamp(1rem, 4vw, 2rem);
+      }
+
+      .loader-role {
+        font-size: 0.75rem;
+      }
+
+      .loader-groom {
+        letter-spacing: 4px;
+      }
+
+      .loader-bride {
+        letter-spacing: 4px;
+      }
+
+      .loader-amp {
+        font-size: 1.4rem;
+      }
+
+      .loader-date {
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+      }
+    }
+
+    /* --- Extra small (< 480px) --- */
+    @media (max-width: 480px) {
+      .hero-names {
+        font-size: clamp(1.6rem, 9vw, 2.4rem);
+      }
+
+      .names-row {
+        gap: clamp(0.5rem, 2.5vw, 1rem);
+      }
+
+      .name-groom {
+        letter-spacing: 3px;
+      }
+
+      .name-bride {
+        letter-spacing: 3px;
+      }
+
+      .hero-names .amp {
+        font-size: 0.4em;
+      }
+
+      .role-label {
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+      }
+
+      .inv-names {
+        font-size: 1.5rem;
+      }
+
+      .inv-names .names-row {
+        gap: clamp(0.4rem, 2vw, 0.8rem);
+      }
+
+      .inv-names .name-groom {
+        letter-spacing: 2px;
+      }
+
+      .inv-names .name-bride {
+        letter-spacing: 2px;
+      }
+
+      .inv-parents {
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .inv-parents-names {
+        font-size: 0.75rem;
+      }
+
+      .inv-time-row {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .inv-time-block {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .inv-time-block .time {
+        font-size: 1.2rem;
+      }
+
+      .gallery-grid {
+        columns: 1;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .gallery-item {
+        border-radius: 4px;
+      }
+    }
+
+    /* --- Very small screens (< 360px) --- */
+    @media (max-width: 360px) {
+      .hero-names {
+        font-size: 1.5rem;
+      }
+
+      .inv-names {
+        font-size: 1.3rem;
+      }
+
+      .inv-label {
+        font-size: 0.95rem;
+      }
+
+      .invitation-card {
+        padding: 2rem 1rem;
+      }
+
+      .nav a {
+        font-size: 0.52rem;
+        letter-spacing: 0.5px;
+        padding: 0.6rem 0.3rem 0.5rem;
+      }
+
+      .nav a::before {
+        font-size: 0.95rem;
+      }
+    }
+
+    /* --- Landscape phone --- */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .hero-label { margin-bottom: 1rem; font-size: 1rem; }
+      .hero-names { font-size: 1.8rem; margin-bottom: 1rem; }
+      .hero-cta { bottom: 1rem; }
+      .hero-cta .arrow { height: 20px; }
+
+      .loader-line { margin-bottom: 1rem; }
+      .loader-line-bottom { margin-top: 1rem; }
+      .loader-date { margin-top: 0.8rem; }
+
+      .invitation-page { padding: 1rem 0 4rem; }
+
+      .gallery-hero { height: 50vh; min-height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Opening Animation -->
+  <div class="loader" id="loader">
+    <div class="loader-line"></div>
+    <div class="loader-names-row">
+      <div class="loader-person loader-person-groom">
+        <div class="loader-role groom-role">新郎 Groom</div>
+        <div class="loader-groom">黃永成</div>
+      </div>
+      <div class="loader-amp">&</div>
+      <div class="loader-person loader-person-bride">
+        <div class="loader-role bride-role">新娘 Bride</div>
+        <div class="loader-bride">黃玉蕙</div>
+      </div>
+    </div>
+    <div class="loader-line-bottom"></div>
+    <div class="loader-date">2026 · 04 · 26</div>
+    <div class="loader-progress-wrap">
+      <div class="loader-progress-track">
+        <div class="loader-progress-bar" id="loaderProgressBar"></div>
+      </div>
+      <div class="loader-progress-text">Loading</div>
+    </div>
+  </div>
+
+  <!-- Transition Curtain -->
+  <div class="curtain" id="curtain">
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <a data-page="home" class="active">首頁</a>
+    <a data-page="invitation">婚宴資訊</a>
+    <a data-page="paris">棚拍婚紗</a>
+    <a data-page="studio">戶外婚紗</a>
+  </nav>
+
+  <!-- Side Dots -->
+  <div class="page-dots" id="pageDots">
+    <div class="page-dot active" data-page="home"><span class="tooltip">首頁</span></div>
+    <div class="page-dot" data-page="invitation"><span class="tooltip">婚宴資訊</span></div>
+    <div class="page-dot" data-page="paris"><span class="tooltip">棚拍婚紗</span></div>
+    <div class="page-dot" data-page="studio"><span class="tooltip">戶外婚紗</span></div>
+  </div>
+
+  <!-- ========== PAGE: HOME ========== -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-label fade-item">We are getting married</div>
+        <h1 class="hero-names fade-item">
+          <div class="names-row">
+            <div class="name-col">
+              <span class="role-label">新郎 Groom</span>
+              <span class="name-groom">黃永成</span>
+            </div>
+            <span class="amp">&</span>
+            <div class="name-col">
+              <span class="role-label">新娘 Bride</span>
+              <span class="name-bride">黃玉蕙</span>
+            </div>
+          </div>
+        </h1>
+        <div class="hero-date fade-item">2026 · 04 · 26</div>
+        <div class="hero-venue fade-item">臻悅美饌花園婚宴會館</div>
+      </div>
+      <div class="hero-cta" data-page="invitation">
+        <span>婚宴資訊</span>
+        <div class="arrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PAGE: INVITATION ========== -->
+  <div class="page" id="page-invitation">
+    <div class="page-scroll">
+    <div class="invitation-page">
+      <div class="invitation-wrapper">
+        <div class="invitation-card">
+          <div class="inv-label page-anim">Wedding Invitation</div>
+          <div class="inv-names page-anim">
+            <div class="names-row">
+              <div class="name-col">
+                <span class="role-label">新郎 Groom</span>
+                <span class="name-groom">黃永成</span>
+              </div>
+              <span class="inv-amp">♥</span>
+              <div class="name-col">
+                <span class="role-label">新娘 Bride</span>
+                <span class="name-bride">黃玉蕙</span>
+              </div>
+            </div>
+          </div>
+          <div class="inv-parents page-anim">
+            <div class="inv-parents-group">
+              <div class="inv-parents-title">新郎家長</div>
+              <div class="inv-parents-names">父 黃裕仁　·　母 黎氏翠</div>
+            </div>
+            <div class="inv-parents-group">
+              <div class="inv-parents-title">新娘家長</div>
+              <div class="inv-parents-names">父 黃山炎　·　母 王雪如</div>
+            </div>
+          </div>
+          <div class="inv-details page-anim">
+            <div class="date">2026 年 4 月 26 日（星期日）</div>
+          </div>
+          <div class="inv-time-row page-anim">
+            <div class="inv-time-block">
+              <div class="time">12:00</div>
+              <div class="desc">入席</div>
+            </div>
+            <div class="inv-time-block">
+              <div class="time">12:30</div>
+              <div class="desc">開席</div>
+            </div>
+          </div>
+          <div class="inv-details page-anim">
+            <div class="venue">臻悅美饌花園婚宴會館</div>
+            <div class="address">臺中市北屯區昌平東三路68號</div>
+          </div>
+          <a class="inv-map-btn page-anim" href="https://www.google.com/maps/search/臺中市北屯區昌平東三路68號" target="_blank" rel="noopener">
+            查看地圖
+          </a>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- ========== PAGE: PARIS GALLERY ========== -->
+  <div class="page" id="page-paris">
+    <div class="page-scroll">
+      <div class="gallery-page">
+        <div class="gallery-hero">
+          <div class="gallery-hero-bg" id="parisHeroBg"></div>
+          <div class="gallery-hero-overlay"></div>
+          <div class="gallery-hero-content">
+            <div class="gallery-hero-label">Studio Session</div>
+            <h2 class="gallery-hero-title">棚拍婚紗攝影</h2>
+            <p class="gallery-hero-sub">在光影之間，定格屬於我們最美的瞬間</p>
+          </div>
+        </div>
+        <div class="gallery-body">
+          <div class="gallery-grid" id="parisGallery"></div>
+          <div class="gallery-empty" id="parisEmpty" style="display:none;">照片載入中 ✦</div>
+        </div>
+        <div class="page-footer">
+          <div class="names">永成 & 玉蕙</div>
+          <div class="date">2026.04.26</div>
+          <div class="heart">♥</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PAGE: STUDIO GALLERY ========== -->
+  <div class="page" id="page-studio">
+    <div class="page-scroll">
+      <div class="gallery-page alt">
+        <div class="gallery-hero">
+          <div class="gallery-hero-bg" id="studioHeroBg"></div>
+          <div class="gallery-hero-overlay"></div>
+          <div class="gallery-hero-content">
+            <div class="gallery-hero-label">Outdoor Shooting</div>
+            <h2 class="gallery-hero-title">戶外拍攝</h2>
+            <p class="gallery-hero-sub">每一張照片，都是愛的見證</p>
+          </div>
+        </div>
+        <div class="gallery-body">
+          <div class="gallery-grid" id="studioGallery"></div>
+          <div class="gallery-empty" id="studioEmpty">照片即將上傳，敬請期待 ✦</div>
+        </div>
+        <div class="page-footer">
+          <div class="names">永成 & 玉蕙</div>
+          <div class="date">2026.04.26</div>
+          <div class="heart">♥</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-close" id="lightboxClose"></div>
+    <div class="lightbox-nav prev" id="lightboxPrev"></div>
+    <div class="lightbox-nav next" id="lightboxNext"></div>
+    <img src="" alt="婚紗照" id="lightboxImg">
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+
+  <script>
+    // ============================================================
+    //  設定：請把你部署的 Google Apps Script 網址貼在這裡
+    //  （參考 google-apps-script.js 檔案裡的部署步驟）
+    // ============================================================
+    const DRIVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLM3hNXrM7R7_8eSv_FyGq8dc_wuhPh62aMC0XYmOO8cZGGHJnbiHkhwtlC3TIsyK8rg/exec';  // ← 貼上你的 Apps Script 網址
+
+    // Google Drive 圖片 URL 產生器
+    function driveThumb(fileId, width) {
+      return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w' + (width || 1200);
+    }
+
+    // ===== Opening Animation with Loading Progress =====
+    (function() {
+      const progressBar = document.getElementById('loaderProgressBar');
+      const loader = document.getElementById('loader');
+      let progress = 0;
+      let loaded = false;
+
+      function animateProgress() {
+        if (loaded) return;
+        const remaining = 85 - progress;
+        const increment = remaining * 0.03 + Math.random() * 0.5;
+        progress = Math.min(progress + increment, 85);
+        progressBar.style.width = progress + '%';
+        requestAnimationFrame(animateProgress);
+      }
+
+      setTimeout(() => { animateProgress(); }, 2800);
+
+      window.addEventListener('load', () => {
+        loaded = true;
+        progress = 100;
+        progressBar.style.width = '100%';
+        const elapsed = performance.now();
+        const minDisplay = 3800;
+        const delay = Math.max(600, minDisplay - elapsed);
+        setTimeout(() => { loader.classList.add('hidden'); }, delay);
+      });
+    })();
+
+    // ===== Hero Slideshow =====
+    const heroSlideshow = (function() {
+      const kbClasses = ['kb-1', 'kb-2', 'kb-3', 'kb-4', 'kb-5'];
+      const heroBg = document.getElementById('heroBg');
+      const interval = 8000;
+      let allImages = [];
+      let landscapeImages = [];
+      let portraitImages = [];
+      let shuffled = [];
+      let index = 0;
+      let currentSlide = null;
+      let prevSlide = null;
+      let started = false;
+
+      function isMobile() { return window.innerWidth <= 768; }
+
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function classifyImages(srcs) {
+        return Promise.all(srcs.map(src => new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => {
+            if (img.naturalWidth > img.naturalHeight) landscapeImages.push(src);
+            else portraitImages.push(src);
+            resolve();
+          };
+          img.onerror = () => resolve();
+          img.src = src;
+        })));
+      }
+
+      function getPool() {
+        const pool = isMobile() ? portraitImages : landscapeImages;
+        return pool.length > 0 ? pool : allImages;
+      }
+
+      function getNextImage() {
+        const pool = getPool();
+        if (index >= shuffled.length || shuffled.length === 0) {
+          shuffled = shuffle(pool);
+          index = 0;
+        }
+        return shuffled[index++];
+      }
+
+      function createSlide(src) {
+        const div = document.createElement('div');
+        div.className = 'hero-bg-slide ' + kbClasses[Math.floor(Math.random() * kbClasses.length)];
+        div.style.backgroundImage = "url('" + src + "')";
+        heroBg.appendChild(div);
+        return div;
+      }
+
+      function showNext() {
+        if (allImages.length === 0) return;
+        if (prevSlide) prevSlide.remove();
+        if (currentSlide) { currentSlide.classList.remove('active'); prevSlide = currentSlide; }
+        currentSlide = createSlide(getNextImage());
+        requestAnimationFrame(() => { currentSlide.classList.add('active'); });
+      }
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => { shuffled = shuffle(getPool()); index = 0; }, 500);
+      });
+
+      return {
+        setImages: async function(images) {
+          allImages = images;
+          landscapeImages = [];
+          portraitImages = [];
+          await classifyImages(allImages);
+          shuffled = shuffle(getPool());
+          index = 0;
+          if (!started) {
+            started = true;
+            showNext();
+            setInterval(showNext, interval);
+          }
+        }
+      };
+    })();
+
+    // ===== Page Navigation =====
+    const pages = ['home', 'invitation', 'paris', 'studio'];
+    let currentPage = 'home';
+    let isTransitioning = false;
+    const curtain = document.getElementById('curtain');
+    const navEl = document.getElementById('nav');
+
+    function updateNav(pageId) {
+      document.querySelectorAll('.nav a').forEach(a =>
+        a.classList.toggle('active', a.dataset.page === pageId));
+      document.querySelectorAll('.page-dot').forEach(d =>
+        d.classList.toggle('active', d.dataset.page === pageId));
+      navEl.classList.toggle('has-bg', pageId !== 'home');
+    }
+
+    function goToPage(pageId) {
+      if (pageId === currentPage || isTransitioning) return;
+      isTransitioning = true;
+      curtain.className = 'curtain animating';
+      setTimeout(() => {
+        document.getElementById('page-' + currentPage).classList.remove('active');
+        document.getElementById('page-' + pageId).classList.add('active');
+        const scrollEl = document.querySelector('#page-' + pageId + ' .page-scroll');
+        if (scrollEl) scrollEl.scrollTop = 0;
+        currentPage = pageId;
+        updateNav(pageId);
+        curtain.className = 'curtain animating-out';
+        setTimeout(() => { curtain.className = 'curtain'; isTransitioning = false; }, 550);
+      }, 450);
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', (e) => { e.preventDefault(); goToPage(el.dataset.page); });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('lightbox').classList.contains('active')) return;
+      const idx = pages.indexOf(currentPage);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (idx < pages.length - 1) goToPage(pages[idx + 1]);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        if (idx > 0) goToPage(pages[idx - 1]);
+      }
+    });
+
+    // ===== Lightbox =====
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    let currentImages = [];
+    let currentIndex = 0;
+
+    function openLightbox(images, index) {
+      currentImages = images;
+      currentIndex = index;
+      updateLightboxView();
+      lightbox.classList.add('active');
+    }
+
+    function closeLightbox() { lightbox.classList.remove('active'); }
+
+    function updateLightboxView() {
+      lightboxImg.src = currentImages[currentIndex];
+      lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      updateLightboxView();
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      updateLightboxView();
+    }
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightboxPrev').addEventListener('click', prevImage);
+    document.getElementById('lightboxNext').addEventListener('click', nextImage);
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+    });
+
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+    lightbox.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) diff > 0 ? prevImage() : nextImage();
+    });
+
+    // ===== Gallery Helpers =====
+    function detectLandscape(containerEl) {
+      const imgs = containerEl.querySelectorAll('.gallery-item img');
+      imgs.forEach(img => {
+        const check = () => {
+          if (img.naturalWidth > img.naturalHeight) img.parentElement.classList.add('landscape');
+        };
+        if (img.complete && img.naturalWidth) check();
+        else img.addEventListener('load', check);
+      });
+    }
+
+    function setupGallery(containerEl) {
+      const items = containerEl.querySelectorAll('.gallery-item img');
+      const images = Array.from(items).map(img => img.dataset.full || img.src);
+      items.forEach((img, i) => {
+        img.parentElement.addEventListener('click', () => openLightbox(images, i));
+      });
+      detectLandscape(containerEl);
+    }
+
+    function setHeroBgLandscape(heroBgEl, imgSrcs) {
+      const promises = imgSrcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve({ src, landscape: img.naturalWidth > img.naturalHeight });
+        img.onerror = () => resolve(null);
+        img.src = src;
+      }));
+      Promise.all(promises).then(results => {
+        const landscapes = results.filter(r => r && r.landscape);
+        if (landscapes.length > 0) {
+          const pick = landscapes[Math.floor(Math.random() * landscapes.length)];
+          heroBgEl.style.backgroundImage = "url('" + pick.src + "')";
+        } else if (imgSrcs.length > 0) {
+          heroBgEl.style.backgroundImage = "url('" + imgSrcs[Math.floor(Math.random() * imgSrcs.length)] + "')";
+        }
+      });
+    }
+
+    // 填充相簿格子
+    function populateGallery(containerEl, files, altText) {
+      const srcs = [];
+      files.forEach(file => {
+        const thumbUrl = file.driveId ? driveThumb(file.driveId, 800) : file.src;
+        const fullUrl  = file.driveId ? driveThumb(file.driveId, 2000) : file.src;
+        srcs.push(thumbUrl);
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = '<img src="' + thumbUrl + '" data-full="' + fullUrl + '" alt="' + altText + '" loading="lazy">';
+        containerEl.appendChild(div);
+      });
+      setupGallery(containerEl);
+      return srcs;
+    }
+
+    // ===== 從 Google Drive 或本地載入所有圖片 =====
+    async function loadAllGalleries() {
+      const parisGallery  = document.getElementById('parisGallery');
+      const parisEmpty    = document.getElementById('parisEmpty');
+      const studioGallery = document.getElementById('studioGallery');
+      const studioEmpty   = document.getElementById('studioEmpty');
+
+      let folder1Files = []; // 棚拍 (資料夾 1)
+      let folder2Files = []; // 戶外 (資料夾 2)
+      let useDrive = false;
+
+      // 嘗試從 Google Drive（透過 Apps Script）載入
+      if (DRIVE_SCRIPT_URL) {
+        try {
+          parisEmpty.style.display = '';
+          parisEmpty.textContent = '照片載入中 ✦';
+          const res = await fetch(DRIVE_SCRIPT_URL);
+          const data = await res.json();
+
+          if (data['1'] && data['1'].length > 0) {
+            folder1Files = data['1'].map(f => ({ driveId: f.id, name: f.name }));
+          }
+          if (data['2'] && data['2'].length > 0) {
+            folder2Files = data['2'].map(f => ({ driveId: f.id, name: f.name }));
+          }
+          useDrive = true;
+        } catch (e) {
+          console.warn('無法從 Google Drive 載入圖片，嘗試本地載入:', e);
+          useDrive = false;
+        }
+      }
+
+      // 如果 Drive 沒設定或失敗 → 嘗試載入本地圖片
+      if (!useDrive || folder1Files.length === 0) {
+        try {
+          const response = await fetch('images/1/');
+          if (response.ok) {
+            const text = await response.text();
+            const regex = /href="([^"]+\.(jpg|jpeg|png|webp))"/gi;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+              const src = match[1].startsWith('images/') ? match[1] : 'images/1/' + match[1];
+              folder1Files.push({ src: src, name: match[1] });
+            }
+          }
+        } catch(e) {}
+      }
+
+      if (!useDrive || folder2Files.length === 0) {
+        try {
+          const response = await fetch('images/2/');
+          if (response.ok) {
+            const text = await response.text();
+            const regex = /href="([^"]+\.(jpg|jpeg|png|webp))"/gi;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+              const src = match[1].startsWith('images/') ? match[1] : 'images/2/' + match[1];
+              folder2Files.push({ src: src, name: match[1] });
+            }
+          }
+        } catch(e) {}
+      }
+
+      // ── 棚拍相簿（資料夾 1）──
+      let allSlideImages = [];
+      if (folder1Files.length > 0) {
+        parisEmpty.style.display = 'none';
+        const srcs = populateGallery(parisGallery, folder1Files, '棚拍婚紗');
+        allSlideImages = allSlideImages.concat(srcs);
+        setHeroBgLandscape(document.getElementById('parisHeroBg'), srcs);
+      } else {
+        parisEmpty.style.display = '';
+        parisEmpty.textContent = '照片即將上傳，敬請期待 ✦';
+      }
+
+      // ── 戶外相簿（資料夾 2）──
+      if (folder2Files.length > 0) {
+        studioEmpty.style.display = 'none';
+        const srcs = populateGallery(studioGallery, folder2Files, '戶外婚紗');
+        allSlideImages = allSlideImages.concat(srcs);
+        setHeroBgLandscape(document.getElementById('studioHeroBg'), srcs);
+      } else {
+        studioEmpty.style.display = '';
+        // 沒有戶外照片時用棚拍照片做 hero 背景
+        const parisSrcs = Array.from(parisGallery.querySelectorAll('img')).map(img => img.src);
+        if (parisSrcs.length > 0) {
+          setHeroBgLandscape(document.getElementById('studioHeroBg'), parisSrcs);
+        }
+      }
+
+      // ── 首頁輪播 ──
+      if (allSlideImages.length > 0) {
+        heroSlideshow.setImages(allSlideImages);
+      }
+    }
+
+    loadAllGalleries();
+
+    // ===== 禁止儲存照片 =====
+    // 禁止右鍵選單
+    document.addEventListener('contextmenu', function(e) {
+      if (e.target.tagName === 'IMG' || e.target.closest('.gallery-item') || e.target.closest('.lightbox') || e.target.closest('.hero-bg')) {
+        e.preventDefault();
+      }
+    });
+
+    // 禁止拖曳圖片
+    document.addEventListener('dragstart', function(e) {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+
+    // 禁止鍵盤快捷鍵儲存 (Ctrl+S / Cmd+S)
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+</body>
+</html>
