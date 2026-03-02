@@ -2,9 +2,11 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#2c2c2c">
   <title>玉蕙 & 永成 — 我們的婚禮</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,8 +55,11 @@
       width: 100%;
       z-index: 1000;
       padding: 1.5rem 3rem;
+      display: -webkit-flex;
       display: flex;
+      -webkit-justify-content: center;
       justify-content: center;
+      -webkit-align-items: center;
       align-items: center;
       gap: 3rem;
       transition: all 0.6s ease;
@@ -1107,28 +1112,39 @@
 
       /* --- Bottom Navigation Bar --- */
       .nav {
-        gap: 0;
-        padding: 0;
-        padding-bottom: env(safe-area-inset-bottom, 0);
-        bottom: 0; top: auto;
-        background: rgba(250, 248, 245, 0.97);
-        backdrop-filter: blur(20px);
+        gap: 0 !important;
+        padding: 0 !important;
+        padding-bottom: env(safe-area-inset-bottom, 0) !important;
+        padding-bottom: constant(safe-area-inset-bottom) !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        background: rgba(250, 248, 245, 0.97) !important;
         -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
         box-shadow: 0 -1px 20px rgba(0,0,0,0.06);
         border-top: 1px solid rgba(184,151,126,0.15);
+        -webkit-justify-content: stretch;
+        justify-content: stretch;
       }
 
       .nav::before { opacity: 1; }
 
       .nav a {
-        color: var(--text-light);
-        font-size: 0.6rem;
-        letter-spacing: 1px;
-        padding: 0.7rem 0.5rem 0.6rem;
+        color: var(--text-light) !important;
+        font-size: 0.6rem !important;
+        letter-spacing: 1px !important;
+        padding: 0.7rem 0.5rem 0.6rem !important;
+        -webkit-flex: 1;
         flex: 1;
         text-align: center;
+        display: -webkit-flex;
         display: flex;
+        -webkit-flex-direction: column;
         flex-direction: column;
+        -webkit-align-items: center;
         align-items: center;
         gap: 0.3rem;
         position: relative;
@@ -1136,6 +1152,7 @@
       }
 
       .nav a::before {
+        content: '' !important;
         font-size: 1.1rem;
         display: block;
         font-style: normal;
@@ -1143,10 +1160,10 @@
         line-height: 1;
       }
 
-      .nav a[data-page="home"]::before { content: "🏠"; font-family: initial; }
-      .nav a[data-page="invitation"]::before { content: "💌"; font-family: initial; }
-      .nav a[data-page="paris"]::before { content: "📸"; font-family: initial; }
-      .nav a[data-page="studio"]::before { content: "🌿"; font-family: initial; }
+      .nav a[data-page="home"]::before { content: "🏠" !important; font-family: initial; }
+      .nav a[data-page="invitation"]::before { content: "💌" !important; font-family: initial; }
+      .nav a[data-page="paris"]::before { content: "📸" !important; font-family: initial; }
+      .nav a[data-page="studio"]::before { content: "🌿" !important; font-family: initial; }
 
       .nav a::after { display: none; }
 
