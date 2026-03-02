@@ -1663,7 +1663,7 @@
         align-items: center;
         gap: 0.3rem;
         position: relative;
-        transition: color 0.3s;
+        transition: color 0.3s, transform 0.3s;
       }
 
       .nav a::before {
@@ -1672,6 +1672,7 @@
         font-style: normal;
         font-family: initial;
         line-height: 1;
+        transition: transform 0.3s ease;
       }
 
       .nav a[data-page="home"]::before { content: "🏠"; }
@@ -1679,7 +1680,20 @@
       .nav a[data-page="paris"]::before { content: "📸"; }
       .nav a[data-page="studio"]::before { content: "🌿"; }
 
-      .nav a::after { display: none; }
+      /* Active indicator dot + highlight */
+      .nav a::after {
+        display: block !important;
+        content: '';
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: transparent;
+        position: absolute;
+        bottom: 0.35rem;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        transition: transform 0.3s ease, background 0.3s ease;
+      }
 
       /* --- Hide desktop search btn, show mobile FAB --- */
       .nav .seat-search-btn {
@@ -1731,12 +1745,23 @@
       .nav a[data-page="studio"] { order: 5; }
 
       .nav a.active {
-        color: var(--gold-dark);
-        font-weight: 500;
+        color: var(--gold-dark) !important;
+        font-weight: 600;
       }
 
-      .nav.has-bg a { color: var(--text-light); }
-      .nav.has-bg a.active { color: var(--gold-dark); }
+      .nav a.active::before {
+        transform: scale(1.2);
+      }
+
+      .nav a.active::after {
+        background: var(--gold-dark) !important;
+        transform: translateX(-50%) scale(1) !important;
+        width: 4px !important;
+        height: 4px !important;
+      }
+
+      .nav.has-bg a { color: var(--text-light) !important; }
+      .nav.has-bg a.active { color: var(--gold-dark) !important; }
 
       .page-dots { display: none; }
 
