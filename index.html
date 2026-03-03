@@ -6178,7 +6178,7 @@
 
       // --- 點擊提示：顯示音樂區 + 解鎖滾動 + 自動播放 ---
       hint.addEventListener('click', function() {
-        // 載入 YouTube API（延遲載入）
+        // 確保 YouTube API 已載入
         loadYouTubeAPI();
         // 顯示音樂區塊
         if (musicSection) {
@@ -6198,7 +6198,21 @@
         if (ytPlayerReady && ytPlayer) {
           playMusic();
         } else {
+          // 設定待播放旗標
           window._ytPendingAutoPlay = true;
+          // 在用戶手勢有效期內輪詢嘗試播放（瀏覽器通常允許約 1-5 秒）
+          var _retryCount = 0;
+          var _retryInterval = setInterval(function() {
+            _retryCount++;
+            if (ytPlayerReady && ytPlayer && !_musicAutoPlayed) {
+              clearInterval(_retryInterval);
+              window._ytPendingAutoPlay = false;
+              playMusic();
+            } else if (_retryCount > 50) {
+              // 超過 5 秒仍未就緒，停止輪詢，依賴 onReady 回調
+              clearInterval(_retryInterval);
+            }
+          }, 100);
         }
       });
 
@@ -6216,7 +6230,7 @@
       }
     })();
 
-    // ===== YouTube IFrame API Player (延遲載入) =====
+    // ===== YouTube IFrame API Player (提前載入) =====
     var ytPlayer;
     var ytPlayerReady = false;
     var _ytApiLoaded = false;
@@ -6228,6 +6242,8 @@
       var firstScript = document.getElementsByTagName('script')[0];
       firstScript.parentNode.insertBefore(tag, firstScript);
     }
+    // 頁面載入後立即預載 YouTube API，讓播放器在使用者點擊前就緒
+    setTimeout(loadYouTubeAPI, 800);
     (function () {
       window.onYouTubeIframeAPIReady = function () {
         ytPlayer = new YT.Player('ytPlayer', {
