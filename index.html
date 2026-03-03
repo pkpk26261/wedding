@@ -5223,6 +5223,9 @@
       document.addEventListener('touchend', (e) => {
         if (!swiping || lightbox.classList.contains('active')) return;
         if (seatModalOverlay.classList.contains('active')) return;
+        // If there's any text selection (user is selecting text), don't navigate
+        var sel = window.getSelection();
+        if (sel && sel.toString().length > 0) { swiping = false; return; }
         const dx = e.changedTouches[0].clientX - sx;
         const idx = pages.indexOf(currentPage);
 
