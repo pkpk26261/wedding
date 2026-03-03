@@ -2418,6 +2418,67 @@
       animation: announceTextIn 0.8s ease-out 1.1s forwards;
     }
 
+    /* 婚禮短語：際蕙天成 */
+    .loader-announce-motto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      margin-top: 0.6rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: announceTextIn 0.8s ease-out 1.5s forwards;
+    }
+
+    .loader-announce-motto .motto-char {
+      font-family: 'LXGW WenKai TC', 'Noto Serif TC', serif;
+      font-size: clamp(1.3rem, 4vw, 1.9rem);
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 10px;
+      opacity: 0;
+      display: inline-block;
+      animation: mottoCharIn 0.6s ease-out forwards;
+    }
+
+    .loader-announce-motto .motto-char:nth-child(1) { animation-delay: 1.6s; }
+    .loader-announce-motto .motto-char:nth-child(2) { animation-delay: 1.8s; color: var(--gold-light); }
+    .loader-announce-motto .motto-char:nth-child(3) { animation-delay: 2.0s; }
+    .loader-announce-motto .motto-char:nth-child(4) { animation-delay: 2.2s; color: var(--gold-light); }
+
+    .loader-announce-motto-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      opacity: 0;
+      animation: announceTextIn 0.6s ease-out 2.5s forwards;
+    }
+
+    .loader-announce-motto-line::before,
+    .loader-announce-motto-line::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    .loader-announce-motto-line .motto-diamond {
+      width: 5px;
+      height: 5px;
+      background: var(--gold-light);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    @keyframes mottoCharIn {
+      0%   { opacity: 0; transform: translateY(15px) scale(0.8); }
+      60%  { opacity: 1; transform: translateY(-3px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     /* Phase 1 fade out */
     .loader-announce.phase-out {
       animation: announceOut 0.8s ease-in forwards;
@@ -3944,6 +4005,11 @@
       <div class="loader-announce-icon">✨</div>
       <div class="loader-announce-text">我們要結婚了！</div>
       <div class="loader-announce-sub">We're Getting Married</div>
+      <div class="loader-announce-motto-line"><span class="motto-diamond"></span></div>
+      <div class="loader-announce-motto">
+        <span class="motto-char">際</span><span class="motto-char">蕙</span><span class="motto-char">天</span><span class="motto-char">成</span>
+      </div>
+      <div class="loader-announce-motto-line"><span class="motto-diamond"></span></div>
     </div>
 
     <!-- Phase 2: Names -->
@@ -4456,14 +4522,14 @@
       }
       spawnParticles();
 
-      // Phase transition: after 1.8s, fade out announcement and show names
+      // Phase transition: after 3.8s, fade out announcement and show names
       setTimeout(() => {
         announce.classList.add('phase-out');
         setTimeout(() => {
           announce.style.display = 'none';
           reveal.classList.add('show');
         }, 600);
-      }, 1800);
+      }, 3800);
 
       function animateProgress() {
         if (loaded) return;
@@ -4478,7 +4544,7 @@
       }
 
       // Start progress bar after phase 2 appears
-      setTimeout(() => { animateProgress(); }, 2800);
+      setTimeout(() => { animateProgress(); }, 4800);
 
       // 需要同時滿足三個條件才關閉 loader：
       // 1. window.load 完成
@@ -4487,7 +4553,7 @@
       let windowLoaded = false;
       let heroReady = false;
       let minTimeReached = false;
-      const minDisplay = 3800;
+      const minDisplay = 5800;
 
       function tryDismissLoader() {
         if (!windowLoaded || !heroReady || !minTimeReached) return;
