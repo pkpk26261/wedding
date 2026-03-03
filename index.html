@@ -938,6 +938,7 @@
 
     .inv-names .names-row {
       gap: 1.5rem;
+      align-items: flex-start;
     }
 
     .inv-names .name-groom {
@@ -963,6 +964,7 @@
       flex-shrink: 0;
       flex-grow: 0;
       display: inline-block;
+      margin-top: 1.6rem;
       animation: heartBeat 1.2s ease-in-out infinite;
     }
 
@@ -974,8 +976,34 @@
       56% { transform: scale(1); }
     }
 
+    /* 裝飾分隔線 */
+    .inv-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 2rem auto;
+      width: 80%;
+      max-width: 280px;
+    }
+
+    .inv-ornament::before,
+    .inv-ornament::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    .inv-ornament-icon {
+      color: var(--gold);
+      font-size: 0.6rem;
+      opacity: 0.7;
+      letter-spacing: 4px;
+    }
+
     .inv-details {
-      margin-top: 2rem;
+      margin-top: 0;
       line-height: 2.2;
       color: var(--text);
       font-size: 0.95rem;
@@ -995,8 +1023,8 @@
       align-items: center;
       justify-content: center;
       gap: 0;
-      margin-top: 2.2rem;
-      padding: 0;
+      margin-top: 0;
+      padding: 1.5rem 1rem;
     }
 
     .inv-date-highlight .date-side {
@@ -1062,10 +1090,10 @@
     }
 
     .inv-date-line {
-      width: 50px;
+      width: 40px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 1.2rem auto 0;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+      margin: 0.8rem auto;
     }
 
     .inv-time-row {
@@ -1074,7 +1102,8 @@
       -webkit-justify-content: center;
       justify-content: center;
       gap: 2.5rem;
-      margin: 1.2rem 0;
+      margin: 0;
+      padding: 0 1rem 1.5rem;
     }
 
     .inv-time-block { text-align: center; }
@@ -1097,7 +1126,7 @@
       font-size: 1.1rem;
       font-weight: 500;
       color: var(--gold-dark);
-      margin-top: 0.5rem;
+      margin-top: 0;
     }
 
     .inv-details .address {
@@ -1107,9 +1136,11 @@
     }
 
     .inv-map-btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       margin-top: 2rem;
-      padding: 0.8rem 2.5rem;
+      padding: 0.85rem 2.2rem;
       border: 1px solid var(--gold);
       color: var(--gold-dark);
       text-decoration: none;
@@ -1118,9 +1149,15 @@
       text-transform: uppercase;
       transition: all 0.4s;
       font-family: var(--font-serif);
+      border-radius: 2px;
     }
 
-    .inv-map-btn:hover { background: var(--gold); color: var(--white); }
+    .inv-map-btn:hover {
+      background: var(--gold);
+      color: var(--white);
+      box-shadow: 0 2px 12px rgba(183,110,67,0.25);
+      transform: translateY(-1px);
+    }
 
     .inv-btn-row {
       display: -webkit-flex;
@@ -1137,8 +1174,10 @@
     }
 
     .inv-transport-btn {
-      display: inline-block;
-      padding: 0.8rem 2.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2.2rem;
       border: 1px solid var(--gold);
       color: var(--gold-dark);
       background: transparent;
@@ -1149,9 +1188,15 @@
       transition: all 0.4s;
       font-family: var(--font-serif);
       outline: none;
+      border-radius: 2px;
     }
 
-    .inv-transport-btn:hover { background: var(--gold); color: var(--white); }
+    .inv-transport-btn:hover {
+      background: var(--gold);
+      color: var(--white);
+      box-shadow: 0 2px 12px rgba(183,110,67,0.25);
+      transform: translateY(-1px);
+    }
 
     /* Transport Modal */
     .transport-modal-overlay {
@@ -1314,64 +1359,47 @@
       line-height: 1.8;
     }
 
-    /* Parents section */
+    /* Parents section - inline under each name */
     .inv-parents {
-      display: -webkit-flex;
-      display: flex;
-      -webkit-justify-content: center;
-      justify-content: center;
-      -webkit-align-items: stretch;
-      align-items: stretch;
-      gap: 1.5rem;
-      margin-top: 2rem;
-      padding-top: 1.5rem;
+      display: none;
     }
 
-    .inv-parents-group {
+    .name-col .col-parents {
+      margin-top: 0.6rem;
       text-align: center;
-      flex: 1;
-      min-width: 0;
     }
 
-    .inv-parents-title {
+    .name-col .col-parents-title {
       font-family: var(--font-script);
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       color: var(--gold);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       letter-spacing: 2px;
     }
 
-    .inv-parents-names {
-      font-size: 0.88rem;
+    .name-col .col-parents-names {
+      font-size: 0.78rem;
       color: var(--text);
       letter-spacing: 1px;
-      line-height: 2;
+      line-height: 1.9;
     }
 
-    .inv-parents-names .parent-row {
+    .name-col .col-parents-names .parent-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.4em;
+      position: relative;
     }
 
-    .inv-parents-names .parent-label {
+    .name-col .col-parents-names .parent-label {
       color: var(--gold);
       font-size: 0.82em;
-      min-width: 1.2em;
-      text-align: right;
+      position: absolute;
+      right: calc(50% + 2.5em);
     }
 
-    .inv-parents-names .parent-name {
-      min-width: 3em;
-      text-align: left;
-    }
-
-    .inv-parents-divider {
-      width: 1px;
-      background: var(--gold-light);
-      align-self: stretch;
-      opacity: 0.5;
+    .name-col .col-parents-names .parent-name {
+      text-align: center;
     }
 
     .parents-amp {
@@ -1390,11 +1418,15 @@
     }
 
     .page.active .page-anim:nth-child(1) { animation-delay: 0.15s; }
-    .page.active .page-anim:nth-child(2) { animation-delay: 0.28s; }
-    .page.active .page-anim:nth-child(3) { animation-delay: 0.41s; }
-    .page.active .page-anim:nth-child(4) { animation-delay: 0.54s; }
-    .page.active .page-anim:nth-child(5) { animation-delay: 0.67s; }
-    .page.active .page-anim:nth-child(6) { animation-delay: 0.80s; }
+    .page.active .page-anim:nth-child(2) { animation-delay: 0.25s; }
+    .page.active .page-anim:nth-child(3) { animation-delay: 0.35s; }
+    .page.active .page-anim:nth-child(4) { animation-delay: 0.45s; }
+    .page.active .page-anim:nth-child(5) { animation-delay: 0.52s; }
+    .page.active .page-anim:nth-child(6) { animation-delay: 0.59s; }
+    .page.active .page-anim:nth-child(7) { animation-delay: 0.66s; }
+    .page.active .page-anim:nth-child(8) { animation-delay: 0.73s; }
+    .page.active .page-anim:nth-child(9) { animation-delay: 0.80s; }
+    .page.active .page-anim:nth-child(10) { animation-delay: 0.87s; }
 
     @keyframes pageItemIn {
       to { opacity: 1; transform: translateY(0); }
@@ -2404,22 +2436,16 @@
         font-size: 1.2rem;
       }
 
-      .inv-parents {
-        gap: 1rem;
-        margin-top: 1.5rem;
-        padding-top: 1.2rem;
+      .name-col .col-parents-title {
+        font-size: 0.62rem;
       }
 
-      .inv-parents-title {
-        font-size: 0.78rem;
-      }
-
-      .inv-parents-names {
-        font-size: 0.78rem;
+      .name-col .col-parents-names {
+        font-size: 0.7rem;
       }
 
       .inv-details {
-        margin-top: 1.5rem;
+        margin-top: 0;
         font-size: 0.85rem;
       }
 
@@ -2429,7 +2455,7 @@
       }
 
       .inv-date-highlight {
-        margin-top: 1.5rem;
+        margin-top: 0;
       }
 
       .inv-date-highlight .date-side .date-year {
@@ -3382,31 +3408,29 @@
               <div class="name-col">
                 <span class="role-label">新郎 Groom</span>
                 <span class="name-groom">黃永成</span>
+                <div class="col-parents">
+                  <div class="col-parents-title">家長</div>
+                  <div class="col-parents-names">
+                    <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃裕仁</span></div>
+                    <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">黎氏翠</span></div>
+                  </div>
+                </div>
               </div>
               <span class="inv-amp">♥</span>
               <div class="name-col">
                 <span class="role-label">新娘 Bride</span>
                 <span class="name-bride">黃玉蕙</span>
+                <div class="col-parents">
+                  <div class="col-parents-title">家長</div>
+                  <div class="col-parents-names">
+                    <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃山炎</span></div>
+                    <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">王雪如</span></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="inv-parents page-anim">
-            <div class="inv-parents-group">
-              <div class="inv-parents-title">男方家長</div>
-              <div class="inv-parents-names">
-                <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃裕仁</span></div>
-                <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">黎氏翠</span></div>
-              </div>
-            </div>
-            <div class="inv-parents-divider"></div>
-            <div class="inv-parents-group">
-              <div class="inv-parents-title">女方家長</div>
-              <div class="inv-parents-names">
-                <div class="parent-row"><span class="parent-label">父</span><span class="parent-name">黃山炎</span></div>
-                <div class="parent-row"><span class="parent-label">母</span><span class="parent-name">王雪如</span></div>
-              </div>
-            </div>
-          </div>
+          <div class="inv-ornament page-anim"><span class="inv-ornament-icon">✦ ✦ ✦</span></div>
           <div class="inv-date-highlight page-anim">
             <div class="date-side">
               <span class="date-label">Year</span>
@@ -3431,6 +3455,7 @@
               <div class="desc">準時開席</div>
             </div>
           </div>
+          <div class="inv-ornament page-anim"><span class="inv-ornament-icon">✦ ✦ ✦</span></div>
           <div class="inv-details page-anim">
             <div class="venue">臻悅美饌花園婚宴會館</div>
             <div class="address" style="margin-bottom:0.2rem;">
