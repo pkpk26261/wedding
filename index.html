@@ -3990,7 +3990,7 @@
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </a>
     <a data-page="paris">棚拍婚紗</a>
-    <a data-page="studio">戶外婚紗</a>
+    <a data-page="studio">外景婚紗</a>
   </nav>
 
   <!-- Side Dots -->
@@ -3998,7 +3998,7 @@
     <div class="page-dot active" data-page="home"><span class="tooltip">首頁</span></div>
     <div class="page-dot" data-page="invitation"><span class="tooltip">婚宴資訊</span></div>
     <div class="page-dot" data-page="paris"><span class="tooltip">棚拍婚紗</span></div>
-    <div class="page-dot" data-page="studio"><span class="tooltip">戶外婚紗</span></div>
+    <div class="page-dot" data-page="studio"><span class="tooltip">外景婚紗</span></div>
   </div>
 
   <!-- ========== PAGE: HOME ========== -->
@@ -4246,7 +4246,7 @@
           <div class="gallery-hero-overlay"></div>
           <div class="gallery-hero-content">
             <div class="gallery-hero-label">Outdoor Shooting</div>
-            <h2 class="gallery-hero-title">戶外拍攝</h2>
+            <h2 class="gallery-hero-title">外景拍攝</h2>
             <p class="gallery-hero-sub">每一張照片，都是愛的見證</p>
           </div>
         </div>
@@ -4410,6 +4410,9 @@
     }
 
     const orientCache = loadOrientCache();
+
+    // ===== 已使用的 Hero 背景圖追蹤（避免重複）=====
+    var usedHeroBgImages = [];
 
     // ===== 首圖就緒信號 =====
     let _firstHeroReady = false;
@@ -4646,7 +4649,12 @@
           shuffled = shuffle(pool);
           index = 0;
         }
-        return shuffled[index++];
+        var picked = shuffled[index++];
+        // 首頁輪播前幾張避免與棚拍/外景 hero 背景重複
+        if (usedHeroBgImages.length > 0 && usedHeroBgImages.indexOf(picked) !== -1 && index < shuffled.length) {
+          picked = shuffled[index++];
+        }
+        return picked;
       }
 
       function createSlide(src) {
@@ -5272,8 +5280,14 @@
     function setHeroBgLandscape(heroBgEl, imgSrcs) {
       if (imgSrcs.length === 0) return;
 
+      // 過濾掉已被其他 Hero 區塊使用的圖片，避免重複
+      var available = imgSrcs.filter(function(s) {
+        return usedHeroBgImages.indexOf(s) === -1;
+      });
+      if (available.length === 0) available = imgSrcs; // 全部用過則重置
+
       // 立即顯示一張圖片（先用快取的橫向圖，沒有就隨機選一張）
-      var cachedLandscape = imgSrcs.filter(function(s) {
+      var cachedLandscape = available.filter(function(s) {
         // 用 driveId 或完整 URL 作為 key
         var key = s.replace(/.*id=([^&]+).*/, '$1') || s;
         return orientCache[key] === 'l';
@@ -5281,17 +5295,19 @@
       if (cachedLandscape.length > 0) {
         var pick = cachedLandscape[Math.floor(Math.random() * cachedLandscape.length)];
         heroBgEl.style.backgroundImage = "url('" + pick + "')";
+        usedHeroBgImages.push(pick);
         return; // 已有快取的橫向圖，不需再偵測
       }
 
       // 沒有快取 → 先立即顯示隨機一張，再背景偵測替換為橫向圖
-      var quickPick = imgSrcs.length > 3
-        ? imgSrcs[3 + Math.floor(Math.random() * (imgSrcs.length - 3))]
-        : imgSrcs[Math.floor(Math.random() * imgSrcs.length)];
+      var quickPick = available.length > 3
+        ? available[3 + Math.floor(Math.random() * (available.length - 3))]
+        : available[Math.floor(Math.random() * available.length)];
       heroBgEl.style.backgroundImage = "url('" + quickPick + "')";
+      usedHeroBgImages.push(quickPick);
 
       // 背景偵測方向
-      var shuffled = imgSrcs.slice();
+      var shuffled = available.slice();
       for (var i = shuffled.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var t = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = t;
@@ -5309,6 +5325,10 @@
           saveOrientCache(orientCache);
           if (isL && !found) {
             found = true;
+            // 更新追蹤：移除舊的 quickPick，加入新的橫向圖
+            var idx = usedHeroBgImages.indexOf(quickPick);
+            if (idx !== -1) usedHeroBgImages.splice(idx, 1);
+            usedHeroBgImages.push(src);
             heroBgEl.style.backgroundImage = "url('" + src + "')";
           }
         };
@@ -5354,7 +5374,7 @@
       const studioEmpty   = document.getElementById('studioEmpty');
 
       let folder1Files = []; // 棚拍 (資料夾 1)
-      let folder2Files = []; // 戶外 (資料夾 2)
+      let folder2Files = []; // 外景 (資料夾 2)
       let useDrive = false;
       let usedCache = false;
 
@@ -5447,15 +5467,15 @@
         parisEmpty.textContent = '照片即將上傳，敬請期待 ✦';
       }
 
-      // ── 戶外相簿（資料夾 2）──
+      // ── 外景相簿（資料夾 2）──
       if (folder2Files.length > 0) {
         studioEmpty.style.display = 'none';
-        const srcs = populateGallery(studioGallery, folder2Files, '戶外婚紗');
+        const srcs = populateGallery(studioGallery, folder2Files, '外景婚紗');
         allSlideImages = allSlideImages.concat(srcs);
         setHeroBgLandscape(document.getElementById('studioHeroBg'), srcs);
       } else {
         studioEmpty.style.display = '';
-        // 沒有戶外照片時用棚拍照片做 hero 背景
+        // 沒有外景照片時用棚拍照片做 hero 背景
         const parisSrcs = Array.from(parisGallery.querySelectorAll('img')).map(img => img.src);
         if (parisSrcs.length > 0) {
           setHeroBgLandscape(document.getElementById('studioHeroBg'), parisSrcs);
