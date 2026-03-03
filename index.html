@@ -8,9 +8,43 @@
   <meta name="format-detection" content="telephone=no">
   <meta name="theme-color" content="#4a2639">
   <title>永成&玉蕙 — 我們的婚禮</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23f0b8cc'/><stop offset='100%25' stop-color='%23d4849f'/></linearGradient></defs><path d='M50 88 C25 65 5 50 5 32 C5 18 16 8 30 8 C38 8 45 12 50 20 C55 12 62 8 70 8 C84 8 95 18 95 32 C95 50 75 65 50 88Z' fill='url(%23g)'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23fff5f8'/><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23f0b8cc'/><stop offset='100%25' stop-color='%23d4849f'/></linearGradient></defs><path d='M90 148 C65 125 30 105 30 72 C30 55 42 45 55 45 C65 45 75 50 90 65 C105 50 115 45 125 45 C138 45 150 55 150 72 C150 105 115 125 90 148Z' fill='url(%23g)'/></svg>">
-  <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23fff5f8'/><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23f0b8cc'/><stop offset='100%25' stop-color='%23d4849f'/></linearGradient></defs><path d='M96 158 C69 133 32 112 32 77 C32 59 45 48 59 48 C69 48 80 53 96 69 C112 53 123 48 133 48 C147 48 160 59 160 77 C160 112 123 133 96 158Z' fill='url(%23g)'/></svg>">
+  <link rel="icon" id="favicon" type="image/png" href="">
+  <link rel="apple-touch-icon" id="apple-icon" href="">
+  <script>
+  (function(){
+    function drawHeart(size, hasBg) {
+      var c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      var ctx = c.getContext('2d');
+      if (hasBg) {
+        ctx.fillStyle = '#fff5f8';
+        ctx.beginPath();
+        ctx.roundRect(0, 0, size, size, size * 0.22);
+        ctx.fill();
+      }
+      var s = size / 100;
+      var grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#f0b8cc');
+      grad.addColorStop(1, '#d4849f');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(50*s, 88*s);
+      ctx.bezierCurveTo(25*s, 65*s, 5*s, 50*s, 5*s, 32*s);
+      ctx.bezierCurveTo(5*s, 18*s, 16*s, 8*s, 30*s, 8*s);
+      ctx.bezierCurveTo(38*s, 8*s, 45*s, 12*s, 50*s, 20*s);
+      ctx.bezierCurveTo(55*s, 12*s, 62*s, 8*s, 70*s, 8*s);
+      ctx.bezierCurveTo(84*s, 8*s, 95*s, 18*s, 95*s, 32*s);
+      ctx.bezierCurveTo(95*s, 50*s, 75*s, 65*s, 50*s, 88*s);
+      ctx.closePath();
+      ctx.fill();
+      return c.toDataURL('image/png');
+    }
+    var fav = document.getElementById('favicon');
+    var apple = document.getElementById('apple-icon');
+    if (fav) fav.href = drawHeart(32, false);
+    if (apple) apple.href = drawHeart(180, true);
+  })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://drive.google.com" crossorigin>
