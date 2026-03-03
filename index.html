@@ -4451,6 +4451,43 @@
       return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w' + (width || 1200);
     }
 
+    // ===== 圖片載入重試工具 =====
+    function loadImageWithRetry(src, onSuccess, onError, maxRetries, retryDelay) {
+      maxRetries = maxRetries || 3;
+      retryDelay = retryDelay || 1000;
+      var attempt = 0;
+      function tryLoad() {
+        attempt++;
+        var img = new Image();
+        img.onload = function() { onSuccess(img); };
+        img.onerror = function() {
+          if (attempt < maxRetries) {
+            setTimeout(tryLoad, retryDelay * attempt);
+          } else {
+            if (onError) onError();
+          }
+        };
+        // 加上時間戳避免瀏覽器快取住失敗的回應
+        img.src = attempt > 1 ? src + (src.indexOf('?') >= 0 ? '&' : '?') + '_r=' + Date.now() : src;
+      }
+      tryLoad();
+    }
+
+    // 為 <img> DOM 元素加上自動重試功能
+    function attachImgRetry(imgEl, maxRetries) {
+      maxRetries = maxRetries || 3;
+      var retryCount = 0;
+      var originalSrc = imgEl.src;
+      imgEl.addEventListener('error', function onErr() {
+        retryCount++;
+        if (retryCount <= maxRetries) {
+          setTimeout(function() {
+            imgEl.src = originalSrc + (originalSrc.indexOf('?') >= 0 ? '&' : '?') + '_r=' + Date.now();
+          }, 1000 * retryCount);
+        }
+      });
+    }
+
     // ===== 圖片快取系統 =====
     const IMG_CACHE_KEY = 'wedding_img_cache_v2';
     const IMG_CACHE_TTL = 30 * 60 * 1000; // 30 分鐘
@@ -4705,9 +4742,20 @@
             if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
             else setTimeout(next, 10);
           };
+          var detectRetries = 0;
           img.onerror = () => {
-            if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
-            else setTimeout(next, 10);
+            detectRetries++;
+            if (detectRetries < 2) {
+              // 重試一次方向偵測
+              setTimeout(() => {
+                img.src = detectUrl + (detectUrl.indexOf('?') >= 0 ? '&' : '?') + '_r=' + Date.now();
+              }, 800);
+            } else {
+              // 偵測失敗，仍然把圖片加入全部池（假設橫向）
+              allImages.indexOf(src) === -1 && landscapeImages.push(src);
+              if (typeof requestIdleCallback === 'function') requestIdleCallback(next);
+              else setTimeout(next, 10);
+            }
           };
           img.src = detectUrl;
         }
@@ -4786,13 +4834,12 @@
         if (imgToUse) {
           applySlide();
         } else {
-          const preload = new Image();
-          preload.onload = applySlide;
-          preload.onerror = () => {
-            // Skip failed image, try next
+          loadImageWithRetry(nextSrc, function() {
+            applySlide();
+          }, function() {
+            // 重試都失敗，跳過這張圖
             if (allImages.length > 1) showNext();
-          };
-          preload.src = nextSrc;
+          }, 2, 1200);
         }
       }
 
@@ -5375,6 +5422,15 @@
         var pick = cachedLandscape[Math.floor(Math.random() * cachedLandscape.length)];
         heroBgEl.style.backgroundImage = "url('" + pick + "')";
         usedHeroBgImages.push(pick);
+        // 預載確認圖片可用，失敗時嘗試其他圖片
+        loadImageWithRetry(pick, function() {}, function() {
+          // 載入失敗，嘗試換一張
+          var others = cachedLandscape.filter(function(s) { return s !== pick; });
+          if (others.length > 0) {
+            var alt = others[Math.floor(Math.random() * others.length)];
+            heroBgEl.style.backgroundImage = "url('" + alt + "')";
+          }
+        }, 2, 1500);
         return; // 已有快取的橫向圖，不需再偵測
       }
 
@@ -5395,10 +5451,9 @@
       var found = false;
 
       candidates.forEach(function(src) {
-        var img = new Image();
         var detectUrl = src.replace(/sz=w\d+/, 'sz=w50');
         var key = src.replace(/.*id=([^&]+).*/, '$1') || src;
-        img.onload = function() {
+        loadImageWithRetry(detectUrl, function(img) {
           var isL = img.naturalWidth > img.naturalHeight;
           orientCache[key] = isL ? 'l' : 'p';
           saveOrientCache(orientCache);
@@ -5410,9 +5465,7 @@
             usedHeroBgImages.push(src);
             heroBgEl.style.backgroundImage = "url('" + src + "')";
           }
-        };
-        img.onerror = function() {};
-        img.src = detectUrl;
+        }, function() {}, 2, 1000);
       });
     }
 
@@ -5439,6 +5492,7 @@
         const div = document.createElement('div');
         div.className = 'gallery-item';
         div.innerHTML = '<img src="' + thumbUrl + '" data-full="' + fullUrl + '" alt="' + altText + '" loading="lazy">';
+        attachImgRetry(div.querySelector('img'), 3);
         containerEl.appendChild(div);
       });
       setupGallery(containerEl);
