@@ -3236,6 +3236,41 @@
       .loader-announce-sub {
         font-size: clamp(0.85rem, 2.5vw, 1.1rem);
       }
+
+      /* --- Seat Modal Mobile Fix：鍵盤彈出時標題和關閉按鈕保持可見 --- */
+      .seat-modal-overlay {
+        align-items: flex-start;
+        padding: 0;
+      }
+
+      .seat-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        height: 100%;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .seat-modal-header {
+        flex-shrink: 0;
+        padding: 1.4rem 1.5rem 1rem;
+      }
+
+      .seat-search-box {
+        flex-shrink: 0;
+        padding: 0.8rem 1.2rem;
+      }
+
+      .seat-results {
+        flex: 1;
+        min-height: 0;
+        max-height: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.5rem 1.2rem 2rem;
+      }
     }
 
     /* --- Extra small (< 480px) --- */
@@ -5835,6 +5870,34 @@
           if (val) doSearch(val); else renderDefault();
         }
       });
+
+      // ── 手機鍵盤彈出時動態調整 Modal 高度 ──
+      if (window.visualViewport) {
+        var vpHandler = function() {
+          if (!isOpen) return;
+          var vv = window.visualViewport;
+          $overlay.style.height = vv.height + 'px';
+          $overlay.style.top = vv.offsetTop + 'px';
+        };
+        window.visualViewport.addEventListener('resize', vpHandler);
+        window.visualViewport.addEventListener('scroll', vpHandler);
+
+        // 在 open/close 時也套用
+        var _origOpen = open;
+        open = function() {
+          _origOpen();
+          if (window.visualViewport) {
+            $overlay.style.height = window.visualViewport.height + 'px';
+            $overlay.style.top = window.visualViewport.offsetTop + 'px';
+          }
+        };
+        var _origClose = close;
+        close = function() {
+          _origClose();
+          $overlay.style.height = '';
+          $overlay.style.top = '';
+        };
+      }
 
       // ── 把 open / close 掛到 window 上，以防其他地方需要呼叫 ──
       window.openSeatSearch  = open;
