@@ -756,6 +756,12 @@
       100% { background-position: 20px 0; }
     }
 
+    /* 轉彎行：垂直導引線只到中央（下半段） */
+    .route-guide-v.guide-to-turn {
+      top: 50%;
+      bottom: 0;
+    }
+
     /* 轉彎：紅毯分支 */
     .seat-map-aisle.route-turn-left,
     .seat-map-aisle.route-turn-right {
@@ -850,14 +856,19 @@
       background: #b53528;
     }
 
-    /* 轉角導引線 */
+    /* 轉角導引線：從水平紅毯交匯處向上延伸 */
     .seat-map-entrance-corner .route-guide-v {
       top: 0;
       bottom: 50%;
     }
 
     .seat-map-entrance-corner .route-arrow-tip {
-      top: -1px;
+      top: -2px;
+    }
+
+    /* 入口水平紅毯導引線也加箭頭 */
+    .seat-map-entrance-carpet .route-arrow-tip-right {
+      right: -1px;
     }
 
     @keyframes bounceRight {
@@ -5594,8 +5605,8 @@
             } else if (i === pos.row) {
               aisleClass += ' route-active';
               aisleClass += pos.side === 'left' ? ' route-turn-left' : ' route-turn-right';
-              innerHtml += '<div class="route-guide-v"></div>';
-              innerHtml += '<div class="route-arrow-tip"></div>';
+              // 垂直導引線只到中央（下半段），不超過轉彎點
+              innerHtml += '<div class="route-guide-v guide-to-turn"></div>';
               if (pos.side === 'left') {
                 innerHtml += '<div class="carpet-branch"><div class="route-guide-h flow-left"></div><div class="route-arrow-tip-left"></div></div>';
               } else {
@@ -5626,6 +5637,7 @@
         html += '<div class="seat-map-entrance-label"><span class="arrow">→</span> 入口</div>';
         html += '<div class="seat-map-entrance-carpet">';
         html += '<div class="route-guide-h flow-right"></div>';
+        html += '<div class="route-arrow-tip-right"></div>';
         html += '</div>';
         html += '<div class="seat-map-entrance-corner"><div class="route-guide-v"></div><div class="route-arrow-tip"></div></div>';
         html += '<div></div>';
