@@ -1146,7 +1146,34 @@
     .hero-content .fade-item:nth-child(1) { animation-delay: 0.3s; }
     .hero-content .fade-item:nth-child(2) { animation-delay: 0.6s; }
     .hero-content .fade-item:nth-child(3) { animation-delay: 0.9s; }
-    .hero-content .fade-item:nth-child(4) { animation-delay: 1.1s; }
+    .hero-content .fade-item:nth-child(4) { animation-delay: 1.2s; }
+    .hero-content .fade-item:nth-child(5) { animation-delay: 1.4s; }
+
+    .hero-invitation {
+      font-family: 'LXGW WenKai TC', 'Noto Serif TC', serif;
+      font-size: clamp(0.8rem, 2.2vw, 1.05rem);
+      line-height: 2;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 1.8rem;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      position: relative;
+      padding: 0.6rem 0;
+    }
+
+    .hero-invitation::before,
+    .hero-invitation::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 1px;
+      background: var(--gold-light);
+      margin: 0.5rem auto;
+      opacity: 0.6;
+    }
 
     @keyframes heroFadeIn {
       to { opacity: 1; transform: translateY(0); }
@@ -3974,6 +4001,7 @@
               </div>
             </div>
           </h1>
+          <div class="hero-invitation fade-item" id="heroInvitation"></div>
           <div class="hero-date fade-item">2026 · 04 · 26</div>
           <div class="hero-venue fade-item">臻悅美饌花園婚宴會館</div>
         </div>
@@ -4262,6 +4290,20 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // ===== 首頁邀請語隨機顯示 =====
+    (function() {
+      var invitations = [
+        '佳期已定　際蕙天成<br>謹訂於民國115年4月26日<br>敬備喜筵　恭候光臨',
+        '天賜良緣　共結連理<br>我們誠摯地邀請您<br>一同見證這幸福的時刻',
+        '執子之手　與子偕老<br>誠邀您蒞臨分享<br>我們攜手共度的喜悅'
+      ];
+      var idx = Math.floor(Math.random() * invitations.length);
+      var el = document.getElementById('heroInvitation');
+      if (el) el.innerHTML = invitations[idx];
+    })();
+  </script>
 
   <script>
     // ===== 桌面版顯示比例字體補償 =====
