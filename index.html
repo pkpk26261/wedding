@@ -5590,6 +5590,26 @@
         return;
       }
 
+      // ── 座位快取 ──
+      const SEAT_CACHE_KEY = 'wedding_seat_cache_v1';
+      const SEAT_CACHE_TTL = 10 * 60 * 1000; // 10 分鐘
+
+      function saveSeatCache(data) {
+        try {
+          localStorage.setItem(SEAT_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+        } catch(e) {}
+      }
+
+      function loadSeatCache() {
+        try {
+          var raw = localStorage.getItem(SEAT_CACHE_KEY);
+          if (!raw) return null;
+          var cache = JSON.parse(raw);
+          if (Date.now() - cache.ts > SEAT_CACHE_TTL) return null;
+          return cache.data;
+        } catch(e) { return null; }
+      }
+
       // ── 狀態 ──
       let seatData       = null;   // { tableName: [guestName, ...], ... }
       let isLoading      = false;
@@ -5623,7 +5643,7 @@
             $input.focus({ preventScroll: true });
           }
         }, 450);
-        // 預載座位資料
+        // 若背景預載尚未完成，才觸發載入
         if (!seatData && !isLoading && !hasError) loadData();
       }
 
@@ -5684,14 +5704,27 @@
       }
 
       // ── 載入座位資料 ──
-      function loadData() {
+      function loadData(opts) {
+        var silent = opts && opts.silent; // 背景預載時不顯示 loading UI
         if (!SEAT_SCRIPT_URL) {
           hasError = true;
-          renderError('座位查詢功能尚未設定，請聯繫新人');
+          if (!silent) renderError('座位查詢功能尚未設定，請聯繫新人');
           return;
         }
+
+        // 優先使用快取
+        var cached = loadSeatCache();
+        if (cached && !seatData) {
+          seatData = cached;
+          hasError = false;
+          if (isOpen) {
+            var val = ($input.value || '').trim();
+            if (val) doSearch(val); else renderDefault();
+          }
+        }
+
         isLoading = true;
-        renderLoading();
+        if (!silent && !seatData) renderLoading();
 
         fetch(SEAT_SCRIPT_URL)
           .then(function(res) {
@@ -5714,18 +5747,27 @@
 
             seatData = data;
             hasError = false;
-            var val = ($input.value || '').trim();
-            if (val) doSearch(val); else renderDefault();
+            saveSeatCache(data);
+            if (isOpen) {
+              var val = ($input.value || '').trim();
+              if (val) doSearch(val); else renderDefault();
+            }
           })
           .catch(function(err) {
             console.error('座位資料載入失敗:', err);
-            hasError = true;
-            renderError(err.message);
+            // 如果已有快取資料就不覆蓋為錯誤狀態
+            if (!seatData) {
+              hasError = true;
+              if (!silent) renderError(err.message);
+            }
           })
           .finally(function() {
             isLoading = false;
           });
       }
+
+      // ── 頁面載入後背景預載座位資料 ──
+      setTimeout(function() { if (!seatData && !isLoading) loadData({ silent: true }); }, 2000);
 
       // ── 宴會場桌位配置 ──
       var TABLE_LAYOUT = [
