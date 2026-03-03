@@ -20,10 +20,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://drive.google.com" crossorigin>
   <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-  <link rel="preconnect" href="https://script.google.com" crossorigin>
   <link rel="dns-prefetch" href="https://drive.google.com">
   <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=LXGW+WenKai+TC:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="dns-prefetch" href="https://www.youtube.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Great+Vibes&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500&family=LXGW+WenKai+TC:wght@300;400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -2418,7 +2418,7 @@
       letter-spacing: 6px;
       opacity: 0;
       transform: translateY(15px);
-      animation: announceTextIn 0.8s ease-out 0.8s forwards;
+      animation: announceTextIn 0.7s ease-out 0.4s forwards;
     }
 
     .loader-announce-sub {
@@ -2428,7 +2428,7 @@
       letter-spacing: 3px;
       opacity: 0;
       transform: translateY(10px);
-      animation: announceTextIn 0.8s ease-out 1.1s forwards;
+      animation: announceTextIn 0.7s ease-out 0.6s forwards;
     }
 
     /* 婚禮短語：際蕙天成 */
@@ -2440,7 +2440,7 @@
       margin-top: 0.6rem;
       opacity: 0;
       transform: translateY(12px);
-      animation: announceTextIn 0.8s ease-out 1.5s forwards;
+      animation: announceTextIn 0.8s ease-out 0.9s forwards;
     }
 
     .loader-announce-motto .motto-char {
@@ -2454,10 +2454,10 @@
       animation: mottoCharIn 0.6s ease-out forwards;
     }
 
-    .loader-announce-motto .motto-char:nth-child(1) { animation-delay: 1.6s; }
-    .loader-announce-motto .motto-char:nth-child(2) { animation-delay: 1.8s; color: var(--gold-light); }
-    .loader-announce-motto .motto-char:nth-child(3) { animation-delay: 2.0s; }
-    .loader-announce-motto .motto-char:nth-child(4) { animation-delay: 2.2s; color: var(--gold-light); }
+    .loader-announce-motto .motto-char:nth-child(1) { animation-delay: 1.0s; }
+    .loader-announce-motto .motto-char:nth-child(2) { animation-delay: 1.15s; color: var(--gold-light); }
+    .loader-announce-motto .motto-char:nth-child(3) { animation-delay: 1.3s; }
+    .loader-announce-motto .motto-char:nth-child(4) { animation-delay: 1.45s; color: var(--gold-light); }
 
     .loader-announce-motto-line {
       display: flex;
@@ -2466,7 +2466,7 @@
       gap: 1rem;
       margin-top: 0.5rem;
       opacity: 0;
-      animation: announceTextIn 0.6s ease-out 2.5s forwards;
+      animation: announceTextIn 0.6s ease-out 1.7s forwards;
     }
 
     .loader-announce-motto-line::before,
@@ -4535,14 +4535,14 @@
       }
       spawnParticles();
 
-      // Phase transition: after 3.8s, fade out announcement and show names
+      // Phase transition: after 2.5s, fade out announcement and show names
       setTimeout(() => {
         announce.classList.add('phase-out');
         setTimeout(() => {
           announce.style.display = 'none';
           reveal.classList.add('show');
-        }, 600);
-      }, 3800);
+        }, 500);
+      }, 2500);
 
       function animateProgress() {
         if (loaded) return;
@@ -4557,7 +4557,7 @@
       }
 
       // Start progress bar after phase 2 appears
-      setTimeout(() => { animateProgress(); }, 4800);
+      setTimeout(() => { animateProgress(); }, 3200);
 
       // 需要同時滿足三個條件才關閉 loader：
       // 1. window.load 完成
@@ -4566,7 +4566,7 @@
       let windowLoaded = false;
       let heroReady = false;
       let minTimeReached = false;
-      const minDisplay = 5800;
+      const minDisplay = 3800;
 
       function tryDismissLoader() {
         if (!windowLoaded || !heroReady || !minTimeReached) return;
@@ -4595,7 +4595,7 @@
         tryDismissLoader();
       }, minDisplay);
 
-      // 安全閥：若 12 秒後仍未就緒（網路極慢），強制關閉 loader
+      // 安全閥：若 8 秒後仍未就緒（網路極慢），強制關閉 loader
       setTimeout(() => {
         if (!heroReady || !windowLoaded) {
           loaded = true;
@@ -4604,7 +4604,7 @@
           loader.classList.add('hidden');
           setTimeout(() => { loader.style.display = 'none'; }, 1300);
         }
-      }, 12000);
+      }, 8000);
     })();
 
     // ===== Hero Slideshow =====
@@ -6136,6 +6136,8 @@
 
       // --- 點擊提示：顯示音樂區 + 解鎖滾動 + 自動播放 ---
       hint.addEventListener('click', function() {
+        // 載入 YouTube API（延遲載入）
+        loadYouTubeAPI();
         // 顯示音樂區塊
         if (musicSection) {
           musicSection.classList.add('revealed');
@@ -6161,6 +6163,7 @@
       // --- 播放按鈕點擊（保底）---
       if (playBtn) {
         playBtn.addEventListener('click', function() {
+          loadYouTubeAPI();
           if (ytPlayer && ytPlayerReady) {
             playMusic();
           } else {
@@ -6171,15 +6174,19 @@
       }
     })();
 
-    // ===== YouTube IFrame API Player =====
+    // ===== YouTube IFrame API Player (延遲載入) =====
     var ytPlayer;
     var ytPlayerReady = false;
-    (function () {
+    var _ytApiLoaded = false;
+    function loadYouTubeAPI() {
+      if (_ytApiLoaded) return;
+      _ytApiLoaded = true;
       var tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
       var firstScript = document.getElementsByTagName('script')[0];
       firstScript.parentNode.insertBefore(tag, firstScript);
-
+    }
+    (function () {
       window.onYouTubeIframeAPIReady = function () {
         ytPlayer = new YT.Player('ytPlayer', {
           videoId: 'SQ0DaB7D5AM',
@@ -6238,8 +6245,8 @@
       const ctx = canvas.getContext('2d');
       let w, h, particles = [], animId;
       const isMobile = () => window.innerWidth <= 768;
-      const PARTICLE_COUNT_DESKTOP = 45;
-      const PARTICLE_COUNT_MOBILE = 20;
+      const PARTICLE_COUNT_DESKTOP = 28;
+      const PARTICLE_COUNT_MOBILE = 15;
 
       function resize() {
         w = canvas.width = window.innerWidth;
