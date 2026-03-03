@@ -527,11 +527,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 66px; height: 66px;
+      width: 108px; height: 108px;
       border-radius: 50%;
       background: linear-gradient(135deg, #fff 0%, #fef0f4 100%);
       color: var(--text);
-      font-size: 0.72rem;
+      font-size: 0.9rem;
       letter-spacing: 3px;
       border: 2px solid rgba(212,132,159,0.3);
       box-shadow: 0 2px 8px rgba(212,132,159,0.12);
@@ -629,27 +629,13 @@
       min-height: 72px;
     }
 
-    /* 預設淡色走道 */
+    /* 紅布毯走道（固定位置，永遠顯示）*/
     .seat-map-aisle::before {
       content: '';
-      width: 18px;
+      width: 28px;
       height: 100%;
-      background: rgba(212,132,159,0.05);
-      border-left: 1px dashed rgba(212,132,159,0.10);
-      border-right: 1px dashed rgba(212,132,159,0.10);
-      position: absolute;
-    }
-
-    /* 紅色實心紅布毯：純色無邊 */
-    .seat-map-aisle.route-active::before {
-      width: 20px;
       background: #b53528;
-      border: none;
-    }
-
-    /* 紅毯不再有 ::after 紋路，保持乾淨 */
-    .seat-map-aisle.route-active::after {
-      content: none;
+      position: absolute;
     }
 
     /* ── 藍色路線指引（連續虛線箭頭 ─────→）── */
@@ -658,7 +644,7 @@
       left: 50%;
       top: 0;
       bottom: 0;
-      width: 2.5px;
+      width: 4px;
       transform: translateX(-50%);
       background: repeating-linear-gradient(
         to top,
@@ -677,9 +663,9 @@
       left: 50%;
       transform: translateX(-50%);
       width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-bottom: 10px solid #2980b9;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 13px solid #2980b9;
       z-index: 6;
       pointer-events: none;
     }
@@ -694,7 +680,7 @@
       top: 50%;
       left: 0;
       right: 0;
-      height: 2.5px;
+      height: 4px;
       transform: translateY(-50%);
       z-index: 5;
       pointer-events: none;
@@ -726,9 +712,9 @@
       left: -1px;
       transform: translateY(-50%);
       width: 0; height: 0;
-      border-top: 6px solid transparent;
-      border-bottom: 6px solid transparent;
-      border-right: 10px solid #2980b9;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 13px solid #2980b9;
       z-index: 6;
       pointer-events: none;
     }
@@ -739,9 +725,9 @@
       right: -1px;
       transform: translateY(-50%);
       width: 0; height: 0;
-      border-top: 6px solid transparent;
-      border-bottom: 6px solid transparent;
-      border-left: 10px solid #2980b9;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 13px solid #2980b9;
       z-index: 6;
       pointer-events: none;
     }
@@ -762,6 +748,20 @@
       bottom: 0;
     }
 
+    /* 轉彎連接點（確保垂直與水平線無縫銜接） */
+    .route-guide-v.guide-to-turn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 9px;
+      height: 9px;
+      background: #2980b9;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 7;
+    }
+
     /* 轉彎：紅毯分支 */
     .seat-map-aisle.route-turn-left,
     .seat-map-aisle.route-turn-right {
@@ -770,9 +770,11 @@
 
     .carpet-branch {
       position: absolute;
-      height: 20px;
-      background: #b53528;
-      z-index: 2;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 28px;
+      background: transparent;
+      z-index: 6;
     }
 
     .seat-map-aisle.route-turn-left .carpet-branch {
@@ -798,12 +800,15 @@
       font-size: 0.6rem;
       color: #b53528;
       font-weight: 700;
-      letter-spacing: 0.5px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
       padding: 0.4rem 0;
+      line-height: 1.5;
+      gap: 1px;
+      text-align: center;
     }
 
     .seat-map-entrance-label .arrow {
@@ -823,7 +828,7 @@
     .seat-map-entrance-carpet::after {
       content: '';
       width: 100%;
-      height: 20px;
+      height: 28px;
       background: #b53528;
     }
 
@@ -840,7 +845,7 @@
       left: 0;
       top: 50%;
       width: calc(50% + 10px);
-      height: 20px;
+      height: 28px;
       transform: translateY(-50%);
       background: #b53528;
     }
@@ -850,13 +855,13 @@
       position: absolute;
       left: 50%;
       top: 0;
-      width: 20px;
+      width: 28px;
       height: calc(50% + 10px);
       transform: translateX(-50%);
       background: #b53528;
     }
 
-    /* 轉角導引線：從水平紅毯交匯處向上延伸 */
+    /* 轉角導引線：從轉彎點向上延伸 */
     .seat-map-entrance-corner .route-guide-v {
       top: 0;
       bottom: 50%;
@@ -866,9 +871,23 @@
       top: -2px;
     }
 
-    /* 入口水平紅毯導引線也加箭頭 */
-    .seat-map-entrance-carpet .route-arrow-tip-right {
-      right: -1px;
+    /* 轉角：水平藍線從左邊界延伸到中心（連接入口水平箭頭） */
+    .seat-map-entrance-corner .route-guide-h {
+      left: 0;
+      right: 50%;
+    }
+
+    /* 轉角連接圓點（垂直與水平交匯處） */
+    .seat-map-entrance-corner .route-turn-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: #2980b9;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 8;
     }
 
     @keyframes bounceRight {
@@ -913,8 +932,8 @@
         margin: 4px auto;
       }
       .seat-map-main-table {
-        width: 50px; height: 50px;
-        font-size: 0.6rem;
+        width: 81px; height: 81px;
+        font-size: 0.72rem;
       }
       .seat-map-side-marker { font-size: 0.48rem; }
       .seat-map-aisle { min-height: 54px; }
@@ -938,8 +957,8 @@
       .seat-map-col-header-right { font-size: 0.5rem; letter-spacing: 2px; padding: 0.3rem 0; }
       .seat-map-main { padding: 0.5rem 0 0.3rem; }
       .seat-map-main-table {
-        width: 44px; height: 44px;
-        font-size: 0.55rem;
+        width: 72px; height: 72px;
+        font-size: 0.65rem;
       }
       .seat-map-table {
         width: 48px; height: 48px;
@@ -953,20 +972,19 @@
         padding: 0 1px;
       }
       .seat-map-aisle { min-height: 48px; }
-      .seat-map-aisle::before,
-      .seat-map-aisle.route-active::before { width: 16px; }
+      .seat-map-aisle::before { width: 22px; }
       .seat-map-aisle.route-turn-left .carpet-branch,
-      .seat-map-aisle.route-turn-right .carpet-branch { height: 16px; }
+      .seat-map-aisle.route-turn-right .carpet-branch { height: 22px; }
       .seat-map-entrance { min-height: 36px; }
-      .seat-map-entrance-carpet::after { height: 16px; }
-      .seat-map-entrance-corner::before { height: 16px; }
-      .seat-map-entrance-corner::after { width: 16px; }
+      .seat-map-entrance-carpet::after { height: 22px; }
+      .seat-map-entrance-corner::before { height: 22px; }
+      .seat-map-entrance-corner::after { width: 22px; }
       .seat-map-entrance-label { font-size: 0.42rem; }
-      .route-guide-v { width: 2px; }
-      .route-guide-h { height: 2px; }
-      .route-arrow-tip { border-left-width: 5px; border-right-width: 5px; border-bottom-width: 8px; }
-      .route-arrow-tip-left { border-top-width: 5px; border-bottom-width: 5px; border-right-width: 8px; }
-      .route-arrow-tip-right { border-top-width: 5px; border-bottom-width: 5px; border-left-width: 8px; }
+      .route-guide-v { width: 3px; }
+      .route-guide-h { height: 3px; }
+      .route-arrow-tip { border-left-width: 6px; border-right-width: 6px; border-bottom-width: 10px; }
+      .route-arrow-tip-left { border-top-width: 6px; border-bottom-width: 6px; border-right-width: 10px; }
+      .route-arrow-tip-right { border-top-width: 6px; border-bottom-width: 6px; border-left-width: 10px; }
     }
 
     /* ===== Page System ===== */
@@ -5556,21 +5574,12 @@
         html += routeHtml;
         html += '<div class="seat-map-container">';
 
-        // 講台
-        html += '<div class="seat-map-stage">講 台</div>';
+        // 宴會舞台
+        html += '<div class="seat-map-stage">宴 會 舞 台</div>';
 
         // 主桌
         var mainHL = (pos && pos.side === 'center') ? ' highlight' : '';
         html += '<div class="seat-map-main"><div class="seat-map-main-table' + mainHL + '">主桌</div></div>';
-
-        // 男方/女方 欄位標題
-        html += '<div class="seat-map-col-header">';
-        html += '<div></div>';
-        html += '<div class="seat-map-col-header-left">男方</div>';
-        html += '<div></div>';
-        html += '<div class="seat-map-col-header-right">女方</div>';
-        html += '<div></div>';
-        html += '</div>';
 
         // 桌位主體
         html += '<div class="seat-map-body">';
@@ -5582,8 +5591,8 @@
           var leftMark = '';
           if (SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'left') {
             var sm = SIDE_MARKERS[i];
-            var arrowSpan = sm.arrow ? '<i class="marker-arrow">' + sm.arrow + '</i> ' : '';
-            leftMark = sm.icon + '<br>' + arrowSpan + sm.text;
+            var arrowSpan = sm.arrow ? '<i class="marker-arrow">' + sm.arrow + '</i>' : '';
+            leftMark = sm.icon + '<br>' + sm.text + '<br>' + arrowSpan;
           }
           html += '<div class="seat-map-side-marker">' + leftMark + '</div>';
 
@@ -5596,14 +5605,11 @@
           var innerHtml = '';
           if (pos) {
             if (pos.side === 'center') {
-              aisleClass += ' route-active';
               innerHtml += '<div class="route-guide-v"></div>';
               if (i === 0) innerHtml += '<div class="route-arrow-tip"></div>';
             } else if (i > pos.row) {
-              aisleClass += ' route-active';
               innerHtml += '<div class="route-guide-v"></div>';
             } else if (i === pos.row) {
-              aisleClass += ' route-active';
               aisleClass += pos.side === 'left' ? ' route-turn-left' : ' route-turn-right';
               // 垂直導引線只到中央（下半段），不超過轉彎點
               innerHtml += '<div class="route-guide-v guide-to-turn"></div>';
@@ -5634,12 +5640,15 @@
 
         // ── 入口（L型紅毯 + 藍色箭頭）──
         html += '<div class="seat-map-entrance">';
-        html += '<div class="seat-map-entrance-label"><span class="arrow">→</span> 入口</div>';
+        html += '<div class="seat-map-entrance-label"><span>🚪</span><span>入口</span><span class="arrow">→</span></div>';
         html += '<div class="seat-map-entrance-carpet">';
         html += '<div class="route-guide-h flow-right"></div>';
-        html += '<div class="route-arrow-tip-right"></div>';
         html += '</div>';
-        html += '<div class="seat-map-entrance-corner"><div class="route-guide-v"></div><div class="route-arrow-tip"></div></div>';
+        html += '<div class="seat-map-entrance-corner">';
+        html += '<div class="route-guide-h flow-right"></div>';
+        html += '<div class="route-turn-dot"></div>';
+        html += '<div class="route-guide-v"></div>';
+        html += '</div>';
         html += '<div></div>';
         html += '<div></div>';
         html += '</div>';
