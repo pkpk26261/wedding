@@ -6329,11 +6329,11 @@
               }
             },
             onStateChange: function (e) {
-              // 影片播放結束時重置到開頭，避免顯示推薦影片
+              // 影片播放結束時自動重新播放
               if (e.data === 0) {
                 setTimeout(function() {
                   ytPlayer.seekTo(0);
-                  ytPlayer.pauseVideo();
+                  ytPlayer.playVideo();
                 }, 200);
               }
             },
