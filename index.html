@@ -399,6 +399,25 @@
       font-size: 0.85rem;
       font-weight: 500;
       letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .seat-result-table:hover {
+      background: var(--gold-dark);
+      transform: scale(1.04);
+    }
+
+    .seat-result-table:active {
+      transform: scale(0.97);
+    }
+
+    .seat-result-table .tap-hint {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      margin-left: 0.2rem;
     }
 
     .seat-result-table svg {
@@ -436,6 +455,49 @@
       color: #c0392b;
       font-size: 0.85rem;
       line-height: 1.6;
+    }
+
+    /* ===== 同名多桌提示 ===== */
+    .seat-disambig-hint {
+      background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: #8d6e00;
+      text-align: center;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+    }
+
+    /* ===== 同行人數標示 ===== */
+    .seat-result-party {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--gold-dark);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== 同桌賓客列表 ===== */
+    .seat-result-companions {
+      margin-top: 0.7rem;
+      padding-top: 0.6rem;
+      border-top: 1px dashed var(--gold-light);
+      font-size: 0.78rem;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .seat-result-companions .companions-label {
+      color: var(--text);
+      font-weight: 600;
+      margin-right: 0.3rem;
+    }
+
+    .seat-result-companions .companions-names {
+      letter-spacing: 0.3px;
     }
 
     /* ===== Seat Map (入座路線圖) — 圓桌 + 紅毯版 ===== */
@@ -5982,19 +6044,35 @@
           return;
         }
 
-        var results = [];
+        // 第一步：按桌聚合同名結果
+        // tableResults = [ { table, count, companions }, ... ]
+        var tableResults = [];
         var entries = Object.entries(seatData);
         for (var i = 0; i < entries.length; i++) {
           var tableName = entries[i][0];
           var guests    = entries[i][1];
+          var count     = 0;
           for (var j = 0; j < guests.length; j++) {
-            if (guests[j] === query) {
-              results.push({ name: guests[j], table: tableName });
+            if (guests[j] === query) count++;
+          }
+          if (count > 0) {
+            // 收集同桌的其他賓客（去掉自己的名字）
+            // HIDDEN_FROM_COMPANIONS：可被搜尋到，但不會出現在別人的同桌賓客列表中
+            var HIDDEN_FROM_COMPANIONS = ['黃裕仁'];
+            var companions = [];
+            for (var j = 0; j < guests.length; j++) {
+              if (guests[j] !== query && HIDDEN_FROM_COMPANIONS.indexOf(guests[j]) === -1) {
+                // 避免重複顯示同一位同桌賓客
+                if (companions.indexOf(guests[j]) === -1) {
+                  companions.push(guests[j]);
+                }
+              }
             }
+            tableResults.push({ table: tableName, count: count, companions: companions });
           }
         }
 
-        if (results.length === 0) {
+        if (tableResults.length === 0) {
           // 判斷查詢是否含中文字元（排除 IME 拼音輸入中的狀態）
           var hasChinese = /[\u4e00-\u9fff]/.test(query);
           if (hasChinese) {
@@ -6011,28 +6089,98 @@
           return;
         }
 
+        // 多桌同名時顯示提示
+        var multiTable = tableResults.length > 1;
+
         var html = '';
-        for (var k = 0; k < results.length; k++) {
-          var r = results[k];
-          var highlighted = r.name.replace(
+
+        if (multiTable) {
+          html += '<div class="seat-disambig-hint">⚠️ 有多桌出現「' + escHtml(query) + '」，請依同桌賓客確認您的桌位</div>';
+        }
+
+        for (var k = 0; k < tableResults.length; k++) {
+          var r = tableResults[k];
+          var highlighted = escHtml(query).replace(
             new RegExp('(' + escRegex(query) + ')', 'g'),
             '<mark>$1</mark>'
           );
+
+          // 人數標示（含本人）：count 是同名出現次數，代表此人 + 同行人數
+          var partyLabel = '';
+          if (r.count > 1) {
+            partyLabel = '<span class="seat-result-party">👥 共 ' + r.count + ' 位（含同行賓客）</span>';
+          }
+
+          // 同桌賓客列表（幫助辨識 & 確認桌位）
+          var companionHtml = '';
+          if (r.companions.length > 0) {
+            var showCompanions = multiTable || r.companions.length <= 10;
+            if (showCompanions) {
+              companionHtml = '<div class="seat-result-companions">';
+              companionHtml += '<span class="companions-label">同桌賓客：</span>';
+              var displayList = r.companions.slice(0, 8);
+              companionHtml += '<span class="companions-names">';
+              for (var c = 0; c < displayList.length; c++) {
+                if (c > 0) companionHtml += '、';
+                companionHtml += escHtml(displayList[c]);
+              }
+              if (r.companions.length > 8) {
+                companionHtml += '⋯等 ' + r.companions.length + ' 位';
+              }
+              companionHtml += '</span></div>';
+            }
+          }
+
           html +=
             '<div class="seat-result-card">' +
               '<div class="seat-result-name">' + highlighted + '</div>' +
-              '<div class="seat-result-table">' +
+              partyLabel +
+              '<div class="seat-result-table" data-table="' + escHtml(r.table) + '">' +
                 '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>' +
                 escHtml(r.table) +
+                '<span class="tap-hint">▸ 路線</span>' +
               '</div>' +
+              companionHtml +
             '</div>';
         }
 
-        // 附加座位路線圖（以第一筆結果的桌名產生）
-        html += generateSeatingMap(results[0].table);
-
         $results.innerHTML = html;
       }
+
+      // ── 點擊桌名徽章展開/收合路線圖 ──
+      $results.addEventListener('click', function(e) {
+        var badge = e.target.closest('.seat-result-table');
+        if (!badge) return;
+        var tableName = badge.getAttribute('data-table');
+        if (!tableName) return;
+
+        var card = badge.closest('.seat-result-card');
+        if (!card) return;
+
+        // 如果這張卡片下方已有地圖則收合
+        var existingMap = card.nextElementSibling;
+        if (existingMap && existingMap.classList.contains('seat-map')) {
+          existingMap.remove();
+          return;
+        }
+
+        // 移除其他已展開的地圖
+        var oldMaps = $results.querySelectorAll('.seat-map');
+        for (var i = 0; i < oldMaps.length; i++) oldMaps[i].remove();
+
+        // 在這張卡片後面插入地圖
+        var mapHtml = generateSeatingMap(tableName);
+        var temp = document.createElement('div');
+        temp.innerHTML = mapHtml;
+        var mapEl = temp.firstElementChild;
+        if (mapEl) {
+          card.insertAdjacentElement('afterend', mapEl);
+          // 捲動讓地圖可見
+          setTimeout(function() {
+            mapEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        }
+      });
 
       // ══════════════════════════════════════════════
       //  事件綁定（全部使用 addEventListener，無 inline handler）
