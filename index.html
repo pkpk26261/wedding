@@ -570,15 +570,45 @@
       border: 1px solid rgba(212,132,159,0.15);
     }
 
+    .seat-map-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 36px;
+      right: 36px;
+      height: 2px;
+      background: #333;
+      z-index: 2;
+    }
+    .seat-map-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 36px;
+      right: 36px;
+      border: 2px solid #333;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     /* 講台 */
     .seat-map-stage {
-      background: var(--charcoal);
-      color: var(--white);
+      background: #fdf6f8;
       text-align: center;
       padding: 0.5rem 0;
+      position: relative;
+    }
+
+    .seat-map-stage span {
+      display: inline-block;
+      background: var(--charcoal);
+      color: var(--white);
       font-size: 0.75rem;
       letter-spacing: 8px;
-      font-weight: 500;
+      font-weight: 700;
+      padding: 0.4rem 2rem;
+      border-radius: 4px 4px 0 0;
     }
 
     /* 男方/女方 欄位標題 */
@@ -642,7 +672,8 @@
 
     /* 側邊標記 */
     .seat-map-side-marker {
-      font-size: 0.56rem;
+      font-size: 0.72rem;
+      font-weight: 700;
       color: var(--text-light);
       display: flex;
       flex-direction: column;
@@ -653,6 +684,54 @@
       letter-spacing: 0.5px;
       line-height: 1.5;
       text-align: center;
+    }
+
+    .seat-map-side-marker.wall-right {
+      border-right: none;
+    }
+
+    .seat-map-side-marker.wall-left {
+      border-left: none;
+    }
+
+    .seat-map-side-marker.wall-right-gap,
+    .seat-map-side-marker.wall-left-gap {
+      position: relative;
+      z-index: 3;
+    }
+    .seat-map-side-marker.wall-right-gap::before {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      background: #fdf6f8;
+    }
+    .seat-map-side-marker.wall-left-gap::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      background: #fdf6f8;
+    }
+
+    /* 櫃台（合併兩行） */
+    .seat-map-counter {
+      grid-row: span 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      letter-spacing: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      border: 2px solid #333;
+      background: #fdf6f8;
+      z-index: 3;
     }
 
     /* 出口入口箭頭標記 */
@@ -880,7 +959,7 @@
 
     .seat-map-entrance-label {
       grid-column: 1 / 2;
-      font-size: 0.6rem;
+      font-size: 0.75rem;
       color: #b53528;
       font-weight: 700;
       display: flex;
@@ -892,6 +971,18 @@
       line-height: 1.5;
       gap: 1px;
       text-align: center;
+      position: relative;
+      z-index: 3;
+    }
+
+    .seat-map-entrance-label::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      background: #fdf6f8;
     }
 
     .seat-map-entrance-label .arrow {
@@ -4366,7 +4457,7 @@
       <!-- 開車 -->
       <div class="transport-section-title">
         <span class="transport-section-icon">🚗</span>自行開車
-        <span style="font-size:0.7rem;color:var(--text-light);font-weight:400;letter-spacing:1px;">（備有免費停車場）</span>
+        <span style="font-size:0.7rem;color:var(--text-light);font-weight:400;letter-spacing:1px;">（備有2H免費停車場）</span>
       </div>
 
       <div class="transport-car-label">國道三號（北上）</div>
@@ -5928,8 +6019,8 @@
       var TABLE_LAYOUT = [
         { left: '男方親友', right: '女方親友', row: 0 },
         { left: '男方長輩', right: '女方長輩', row: 1 },
-        { left: '男方親戚', right: '女方親戚', row: 2 },
-        { left: '男方同學', right: '女方同學', row: 3 },
+        { left: '男方親戚', right: '', row: 2 },
+        { left: '', right: '女方同學', row: 3 },
         { left: '男方同事', right: '女方同事', row: 4 },
         { left: '男方朋友', right: '女方朋友', row: 5 },
         { left: '素食專桌', right: '綜合朋友', row: 6 },
@@ -5938,8 +6029,8 @@
 
       // 側邊標記: row index → { side, text, icon }
       var SIDE_MARKERS = {
-        0: { side: 'left', text: '出口', icon: '🚪', arrow: '←' },
-        2: { side: 'right', text: '廁所', icon: '🚻' }
+        2: { side: 'right', text: '廁所', icon: '🚻' },
+        3: { side: 'left', text: '出口', icon: '🚪', arrow: '←' }
       };
 
       // ── 查找桌位在地圖上的位置 ──
@@ -5950,10 +6041,10 @@
         }
         for (var i = 0; i < TABLE_LAYOUT.length; i++) {
           var r = TABLE_LAYOUT[i];
-          if (tableName === r.left || tableName.indexOf(r.left) >= 0 || r.left.indexOf(tableName) >= 0) {
+          if (r.left && (tableName === r.left || tableName.indexOf(r.left) >= 0 || r.left.indexOf(tableName) >= 0)) {
             return { row: r.row, side: 'left', name: r.left };
           }
-          if (tableName === r.right || tableName.indexOf(r.right) >= 0 || r.right.indexOf(tableName) >= 0) {
+          if (r.right && (tableName === r.right || tableName.indexOf(r.right) >= 0 || r.right.indexOf(tableName) >= 0)) {
             return { row: r.row, side: 'right', name: r.right };
           }
         }
@@ -5991,7 +6082,7 @@
         html += '<div class="seat-map-container">';
 
         // 宴會舞台
-        html += '<div class="seat-map-stage">宴 會 舞 台</div>';
+        html += '<div class="seat-map-stage"><span>宴 會 舞 台</span></div>';
 
         // 主桌
         var mainHL = (pos && pos.side === 'center') ? ' highlight' : '';
@@ -6004,17 +6095,29 @@
           var r = TABLE_LAYOUT[i];
 
           // 左側標記
-          var leftMark = '';
-          if (SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'left') {
-            var sm = SIDE_MARKERS[i];
-            var arrowSpan = sm.arrow ? '<i class="marker-arrow">' + sm.arrow + '</i>' : '';
-            leftMark = sm.icon + '<br>' + sm.text + '<br>' + arrowSpan;
+          if (i === 5) {
+            // 櫃台：合併第6、7行
+            html += '<div class="seat-map-counter">櫃台</div>';
+          } else if (i === 6) {
+            // 已被櫃台合併，跳過
+          } else {
+            var leftMark = '';
+            var isExit = SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'left' && SIDE_MARKERS[i].text === '出口';
+            if (SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'left') {
+              var sm = SIDE_MARKERS[i];
+              var arrowSpan = sm.arrow ? '<i class="marker-arrow">' + sm.arrow + '</i>' : '';
+              leftMark = sm.icon + '<br>' + sm.text + '<br>' + arrowSpan;
+            }
+            html += '<div class="seat-map-side-marker' + (isExit ? ' wall-right-gap' : ' wall-right') + '">' + leftMark + '</div>';
           }
-          html += '<div class="seat-map-side-marker">' + leftMark + '</div>';
 
           // 左桌
-          var leftHL = (pos && pos.name === r.left) ? ' highlight' : '';
-          html += '<div class="seat-map-table' + leftHL + '">' + r.left + '</div>';
+          if (r.left) {
+            var leftHL = (pos && pos.name === r.left) ? ' highlight' : '';
+            html += '<div class="seat-map-table' + leftHL + '">' + r.left + '</div>';
+          } else {
+            html += '<div></div>';
+          }
 
           // 紅毯走道 + 藍色箭頭 + 轉彎分支
           var aisleClass = 'seat-map-aisle';
@@ -6039,17 +6142,22 @@
           html += '<div class="' + aisleClass + '">' + innerHtml + '</div>';
 
           // 右桌
-          var rightHL = (pos && pos.name === r.right) ? ' highlight' : '';
-          html += '<div class="seat-map-table' + rightHL + '">' + r.right + '</div>';
+          if (r.right) {
+            var rightHL = (pos && pos.name === r.right) ? ' highlight' : '';
+            html += '<div class="seat-map-table' + rightHL + '">' + r.right + '</div>';
+          } else {
+            html += '<div></div>';
+          }
 
           // 右側標記
           var rightMark = '';
+          var isRestroom = SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'right' && SIDE_MARKERS[i].text === '廁所';
           if (SIDE_MARKERS[i] && SIDE_MARKERS[i].side === 'right') {
             var smr = SIDE_MARKERS[i];
             var arrowSpanR = smr.arrow ? '<i class="marker-arrow">' + smr.arrow + '</i> ' : '';
             rightMark = smr.icon + '<br>' + smr.text + (smr.arrow ? ' <i class="marker-arrow">' + smr.arrow + '</i>' : '');
           }
-          html += '<div class="seat-map-side-marker">' + rightMark + '</div>';
+          html += '<div class="seat-map-side-marker' + (isRestroom ? ' wall-left-gap' : ' wall-left') + '">' + rightMark + '</div>';
         }
 
         html += '</div>'; // end body
@@ -6066,7 +6174,7 @@
         html += '<div class="route-guide-v"></div>';
         html += '</div>';
         html += '<div></div>';
-        html += '<div></div>';
+        html += '<div class="seat-map-side-marker wall-left"></div>';
         html += '</div>';
 
         html += '</div>'; // end container
