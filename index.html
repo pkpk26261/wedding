@@ -1095,6 +1095,8 @@
       .seat-map-label { font-size: 0.8rem; letter-spacing: 2px; }
       .seat-map-route-text { font-size: 0.75rem; padding: 0.6rem 0.9rem; }
       .seat-map-container { max-width: 360px; }
+      .seat-map-container::before { left: 28px; right: 28px; }
+      .seat-map-container::after { left: 28px; right: 28px; }
       .seat-map-body,
       .seat-map-entrance,
       .seat-map-col-header {
@@ -1109,7 +1111,10 @@
         width: 81px; height: 81px;
         font-size: 0.72rem;
       }
-      .seat-map-side-marker { font-size: 0.48rem; }
+      .seat-map-side-marker { font-size: 0.6rem; }
+      .seat-map-counter { font-size: 0.65rem; }
+      .seat-map-entrance-label { font-size: 0.62rem; }
+      .seat-map-stage span { font-size: 0.65rem; padding: 0.35rem 1.5rem; }
       .seat-map-aisle { min-height: 54px; }
       .seat-map-col-header-left,
       .seat-map-col-header-right { font-size: 0.55rem; }
@@ -1121,12 +1126,14 @@
       .seat-map-label { font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
       .seat-map-route-text { font-size: 0.7rem; padding: 0.5rem 0.8rem; margin-bottom: 0.7rem; }
       .seat-map-container { max-width: 320px; }
+      .seat-map-container::before { left: 24px; right: 24px; }
+      .seat-map-container::after { left: 24px; right: 24px; }
       .seat-map-body,
       .seat-map-entrance,
       .seat-map-col-header {
         grid-template-columns: 26px 1fr 24px 1fr 26px;
       }
-      .seat-map-stage { padding: 0.35rem 0; font-size: 0.58rem; letter-spacing: 4px; }
+      .seat-map-stage span { font-size: 0.58rem; letter-spacing: 4px; padding: 0.3rem 1.2rem; }
       .seat-map-col-header-left,
       .seat-map-col-header-right { font-size: 0.5rem; letter-spacing: 2px; padding: 0.3rem 0; }
       .seat-map-main { padding: 0.5rem 0 0.3rem; }
@@ -1142,9 +1149,11 @@
       .seat-map-table.highlight { font-size: 0.52rem; }
       .seat-map-table.highlight::after { font-size: 0.55rem; top: -7px; right: -4px; }
       .seat-map-side-marker {
-        font-size: 0.42rem;
+        font-size: 0.52rem;
         padding: 0 1px;
       }
+      .seat-map-counter { font-size: 0.56rem; letter-spacing: 2px; }
+      .seat-map-entrance-label { font-size: 0.52rem; }
       .seat-map-aisle { min-height: 48px; }
       .seat-map-aisle::before { width: 22px; }
       .seat-map-aisle.route-turn-left .carpet-branch,
@@ -1153,7 +1162,6 @@
       .seat-map-entrance-carpet::after { height: 22px; }
       .seat-map-entrance-corner::before { height: 22px; }
       .seat-map-entrance-corner::after { width: 22px; }
-      .seat-map-entrance-label { font-size: 0.42rem; }
       .route-guide-v { width: 3px; }
       .route-guide-h { height: 3px; }
       .route-arrow-tip { border-left-width: 6px; border-right-width: 6px; border-bottom-width: 10px; }
