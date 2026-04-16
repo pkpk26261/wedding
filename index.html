@@ -6026,13 +6026,13 @@
       // ── 宴會場桌位配置 ──
       var TABLE_LAYOUT = [
         { left: '男方親友', right: '女方親友', row: 0 },
-        { left: '素食專桌', right: '女方長輩', row: 1 },
-        { left: '男方親戚', right: '', row: 2 },
-        { left: '', right: '女方同學', row: 3 },
-        { left: '男方同事', right: '女方同事', row: 4 },
-        { left: '男方朋友', right: '女方朋友', row: 5 },
-        { left: '綜合朋友', right: '綜合朋友', row: 6 },
-        { left: '男方預備', right: '女方預備', row: 7 }
+        { left: '素食專桌', right: '女方親戚1', row: 1 },
+        { left: '女方親戚2', right: '', row: 2 },
+        { left: '', right: '女方親戚3', row: 3 },
+        { left: '師友同席', right: '同事桌', row: 4 },
+        { left: '新娘朋友', right: '朋友桌A', row: 5 },
+        { left: '朋友桌B', right: '朋友桌C', row: 6 },
+        { left: '朋友桌D', right: '表演團隊', row: 7 }
       ];
 
       // 側邊標記: row index → { side, text, icon }
@@ -6191,6 +6191,17 @@
         return html;
       }
 
+      // ── 姓名匹配（支援「/」分隔的複合姓名）──
+      function nameMatches(guestEntry, query) {
+        if (guestEntry === query) return true;
+        if (guestEntry.indexOf('/') === -1) return false;
+        var parts = guestEntry.split('/');
+        for (var p = 0; p < parts.length; p++) {
+          if (parts[p].trim() === query) return true;
+        }
+        return false;
+      }
+
       // ── 執行搜尋 ──
       function doSearch(query) {
         if (!seatData) {
@@ -6208,7 +6219,7 @@
           var guests    = entries[i][1];
           var count     = 0;
           for (var j = 0; j < guests.length; j++) {
-            if (guests[j] === query) count++;
+            if (nameMatches(guests[j], query)) count++;
           }
           if (count > 0) {
             // 收集同桌的其他賓客（去掉自己的名字）
@@ -6216,10 +6227,34 @@
             var HIDDEN_FROM_COMPANIONS = ['黃裕仁'];
             var companions = [];
             for (var j = 0; j < guests.length; j++) {
-              if (guests[j] !== query && HIDDEN_FROM_COMPANIONS.indexOf(guests[j]) === -1) {
-                // 避免重複顯示同一位同桌賓客
-                if (companions.indexOf(guests[j]) === -1) {
-                  companions.push(guests[j]);
+              var entry = guests[j];
+              if (nameMatches(entry, query)) {
+                // 複合姓名（如「蘇琬仙/黃合永」）：拆分後把非搜尋者的名字加入同桌列表
+                if (entry.indexOf('/') !== -1) {
+                  var parts = entry.split('/');
+                  for (var p = 0; p < parts.length; p++) {
+                    var name = parts[p].trim();
+                    if (name !== query && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1 && companions.indexOf(name) === -1) {
+                      companions.push(name);
+                    }
+                  }
+                }
+                continue; // 跳過自己
+              }
+              // 非匹配條目：加入同桌賓客
+              if (HIDDEN_FROM_COMPANIONS.indexOf(entry) !== -1) continue;
+              if (entry.indexOf('/') !== -1) {
+                // 拆分複合姓名，逐一加入（排除隱藏名單與重複）
+                var parts = entry.split('/');
+                for (var p = 0; p < parts.length; p++) {
+                  var name = parts[p].trim();
+                  if (name && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1 && companions.indexOf(name) === -1) {
+                    companions.push(name);
+                  }
+                }
+              } else {
+                if (companions.indexOf(entry) === -1) {
+                  companions.push(entry);
                 }
               }
             }
