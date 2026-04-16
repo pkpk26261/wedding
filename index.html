@@ -6031,7 +6031,7 @@
         { left: '', right: '師友同席', row: 3 },
         { left: '女方親戚3', right: '同事桌', row: 4 },
         { left: '新娘朋友', right: '朋友桌A', row: 5 },
-        { left: '朋友桌B', right: '朋友桌C', row: 6 },
+        { left: '朋友桌C', right: '朋友桌B', row: 6 },
         { left: '朋友桌D', right: '美芝團隊', row: 7 }
       ];
 
@@ -6260,7 +6260,12 @@
                 companionCounts[entry] = (companionCounts[entry] || 0) + 1;
               }
             }
-            tableResults.push({ table: tableName, count: count, companions: companions, companionCounts: companionCounts, totalGuests: guests.length });
+            // 計算全桌人數（排除隱藏名單）
+            var visibleTotal = 0;
+            for (var j2 = 0; j2 < guests.length; j2++) {
+              if (HIDDEN_FROM_COMPANIONS.indexOf(guests[j2]) === -1) visibleTotal++;
+            }
+            tableResults.push({ table: tableName, count: count, companions: companions, companionCounts: companionCounts, totalGuests: visibleTotal });
           }
         }
 
