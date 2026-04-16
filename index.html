@@ -6226,6 +6226,7 @@
             // HIDDEN_FROM_COMPANIONS：可被搜尋到，但不會出現在別人的同桌賓客列表中
             var HIDDEN_FROM_COMPANIONS = ['黃裕仁'];
             var companions = [];
+            var companionCounts = {};
             for (var j = 0; j < guests.length; j++) {
               var entry = guests[j];
               if (nameMatches(entry, query)) {
@@ -6234,8 +6235,9 @@
                   var parts = entry.split('/');
                   for (var p = 0; p < parts.length; p++) {
                     var name = parts[p].trim();
-                    if (name !== query && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1 && companions.indexOf(name) === -1) {
-                      companions.push(name);
+                    if (name !== query && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1) {
+                      if (companions.indexOf(name) === -1) companions.push(name);
+                      companionCounts[name] = (companionCounts[name] || 0) + 1;
                     }
                   }
                 }
@@ -6248,17 +6250,17 @@
                 var parts = entry.split('/');
                 for (var p = 0; p < parts.length; p++) {
                   var name = parts[p].trim();
-                  if (name && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1 && companions.indexOf(name) === -1) {
-                    companions.push(name);
+                  if (name && HIDDEN_FROM_COMPANIONS.indexOf(name) === -1) {
+                    if (companions.indexOf(name) === -1) companions.push(name);
+                    companionCounts[name] = (companionCounts[name] || 0) + 1;
                   }
                 }
               } else {
-                if (companions.indexOf(entry) === -1) {
-                  companions.push(entry);
-                }
+                if (companions.indexOf(entry) === -1) companions.push(entry);
+                companionCounts[entry] = (companionCounts[entry] || 0) + 1;
               }
             }
-            tableResults.push({ table: tableName, count: count, companions: companions });
+            tableResults.push({ table: tableName, count: count, companions: companions, companionCounts: companionCounts, totalGuests: guests.length });
           }
         }
 
@@ -6313,18 +6315,21 @@
               for (var c = 0; c < displayList.length; c++) {
                 if (c > 0) companionHtml += '、';
                 companionHtml += escHtml(displayList[c]);
+                var cnt = r.companionCounts[displayList[c]];
+                if (cnt > 1) companionHtml += ' ×' + cnt;
               }
               if (r.companions.length > 8) {
                 companionHtml += '⋯等 ' + r.companions.length + ' 位';
               }
-              companionHtml += '</span></div>';
+              companionHtml += '</span>';
+              companionHtml += '<span class="companions-total">（全桌共 ' + r.totalGuests + ' 人）</span>';
+              companionHtml += '</div>';
             }
           }
 
           html +=
             '<div class="seat-result-card">' +
-              '<div class="seat-result-name">' + highlighted + '</div>' +
-              partyLabel +
+              '<div class="seat-result-name">' + highlighted + partyLabel + '</div>' +
               '<div class="seat-result-table" data-table="' + escHtml(r.table) + '">' +
                 '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>' +
                 escHtml(r.table) +
