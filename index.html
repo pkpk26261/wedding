@@ -6348,6 +6348,23 @@
         }
 
         $results.innerHTML = html;
+
+        // ── 唯一結果（無同名同姓）：自動展開路線圖 ──
+        if (!multiTable && tableResults.length === 1) {
+          var autoCard = $results.querySelector('.seat-result-card');
+          if (autoCard) {
+            var mapHtml = generateSeatingMap(tableResults[0].table);
+            var temp = document.createElement('div');
+            temp.innerHTML = mapHtml;
+            var mapEl = temp.firstElementChild;
+            if (mapEl) {
+              autoCard.insertAdjacentElement('afterend', mapEl);
+              setTimeout(function() {
+                mapEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }, 100);
+            }
+          }
+        }
       }
 
       // ── 點擊桌名徽章展開/收合路線圖 ──
